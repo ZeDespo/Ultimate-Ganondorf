@@ -1,0 +1,51 @@
+---
+version: '3'
+includes:
+    env_taskfile:
+        taskfile: ./env.yml
+        dir: .
+tasks:
+    build:
+        cmd: cargo skyline build --{{.RELEASE}}
+        desc: "Build src folder into `.nro` plugin."
+        vars: 
+            RELEASE: '{{default "" .RELEASE}}'
+    clean: 
+        cmds:
+            - rm {{.NRO_GLOBAL_PLUGIN}} || echo "No global plugin to delete!"
+            - rm -r {{.SSBU_MOD_DIR}}/* || echo "No mod assets to delete!"
+        desc: "Remove all traces of the mod."
+        silent: true
+    deploy-global-plugin:
+        cmd: find {{.BUILD_DIR}} -name "*.nro" -exec cp {} {{.NRO_GLOBAL_PLUGINS_DIR}}/{{.GLOBAL_NRO_MOD_NAME}} xargs cp -t {{.NRO_GLOBAL_PLUGINS_DIR}}
+        desc: "Deploy `.nro` plugin to the skyline plugins directory."
+        vars:
+            BUILD_DIR: '{{default "target/aarch64-skyline-switch/debug" .BUILD_DIR}}'
+    deploy-local-plugin:
+        cmd: find {{.BUILD_DIR}} -name "*.nro" -exec cp {} {{.SSBU_MOD_DIR}}/plugin.nro \;
+        desc: "Deploy `.nro` plugin as a local `plugin.nro` file for some mod."
+        vars: 
+            BUILD_DIR: '{{default "target/aarch64-skyline-switch/debug" .BUILD_DIR}}'
+    deploy-mod-assets:
+        cmds: 
+            - mkdir -p {{.SSBU_MOD_DIR}}
+            - cp -r romfs/* {{.SSBU_MOD_DIR}}
+        desc: "Deploy assets related to the mod, such as animations, effects, audio, and UI elements."
+        deps: 
+            - clean
+    publish-dev: 
+        cmds: 
+            - task: deploy-mod-assets
+            - task: build
+            - task: deploy-local-plugin
+        desc: "Debug mod by deploying assets, building a debug NRO, and moving the plugin."
+    publish: 
+        cmds: 
+            - task: deploy-mod-assets
+            - task: build
+              vars: 
+                RELEASE: "release"
+            - task: deploy-local-plugin
+              vars: 
+                BUILD_DIR: target/aarch64-skyline-switch/release
+
