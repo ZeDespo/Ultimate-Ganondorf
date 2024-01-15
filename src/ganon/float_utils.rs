@@ -6,13 +6,18 @@ use skyline_smash::app::BattleObjectModuleAccessor;
 use smash::app::lua_bind::*;
 use smash::app::sv_animcmd::*;
 use smash::lib::lua_const::*;
+use smash_script::macros;
 use {
-    smash::{app::lua_bind::*, hash40, lua2cpp::*, lua_const::*},
+    smash::{app::lua_bind::*, hash40, lua2cpp::*},
     smashline::*,
 };
 
 const MAX_FLOAT_FRAMES: i16 = 90;
 const STARTING_FLOAT_FRAME: f32 = 2.0;
+const X_MAX: f32 = 1.155;
+const X_ACCEL_MULT: f32 = 0.12;
+const Y_MAX: f32 = 0.4;
+const Y_ACCEL_MULT: f32 = 0.03;
 
 unsafe extern "C" fn check_jump(boma: *mut BattleObjectModuleAccessor) -> bool {
     if ControlModule::check_button_on_trriger(boma, *CONTROL_PAD_BUTTON_JUMP)
@@ -24,21 +29,33 @@ unsafe extern "C" fn check_jump(boma: *mut BattleObjectModuleAccessor) -> bool {
     return false;
 }
 
-unsafe extern "C" fn transition_to_fall(boma: *mut BattleObjectModuleAccessor, status_kind: &i32) {
-    if KineticModule::get_kinetic_type(boma) == *FIGHTER_KINETIC_TYPE_MOTION_AIR
-        && [
-            *FIGHTER_STATUS_KIND_SPECIAL_LW,
-            *FIGHTER_STATUS_KIND_SPECIAL_HI,
-            *FIGHTER_STATUS_KIND_SPECIAL_S,
-            *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_CATCH,
-            *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_END,
-        ]
-        .contains(status_kind)
-            == false
-    {
-        KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_FALL);
-    }
-    StatusModule::change_status_request_from_script(boma, *FIGHTER_STATUS_KIND_FALL, true);
+unsafe extern "C" fn float_effect(fighter: &mut L2CFighterCommon) {
+    macros::EFFECT_FOLLOW(
+        fighter,
+        Hash40::new("ganon_rekkikyaku"),
+        Hash40::new("kneer"),
+        12,
+        -1.5,
+        0,
+        0,
+        0,
+        0,
+        0.5,
+        true,
+    );
+    macros::EFFECT_FOLLOW(
+        fighter,
+        Hash40::new("ganon_rekkikyaku"),
+        Hash40::new("kneel"),
+        12,
+        -1.5,
+        0,
+        0,
+        0,
+        0,
+        0.5,
+        true,
+    );
 }
 
 // 0 == CAN FLOAT
@@ -62,20 +79,6 @@ impl fmt::Display for FloatStatus {
 }
 
 impl FloatStatus {
-    fn decrement(self: Self) -> Self {
-        match self {
-            FloatStatus::Floating(i) => {
-                let j = i - 1;
-                if j == 1 {
-                    return FloatStatus::CannotFloat;
-                } else {
-                    return FloatStatus::Floating(j);
-                }
-            }
-            _ => return self,
-        }
-    }
-
     // Floating status should be set when:
     // 1) Ganon is on the ground
     // 2) Ganon does a special move in the air
@@ -120,7 +123,7 @@ impl FloatStatus {
     ) -> FloatStatus {
         match self {
             FloatStatus::Floating(i) => {
-                if i == 1 || check_special_button_off || is_jump {
+                if i == 0 {
                     return FloatStatus::CannotFloat;
                 }
             }
@@ -151,10 +154,30 @@ impl FloatStatus {
 
 static mut FLOAT: [FloatStatus; 8] = [FloatStatus::CanFloat; 8];
 
-pub unsafe extern "C" fn ganon_float(boma: *mut BattleObjectModuleAccessor) {
-    if hash40("special_air_n") != MotionModule::motion_kind(boma) {
-        return;
+#[derive(Copy, Clone)]
+struct Speed {
+    x: f32,
+    y: f32,
+}
+
+impl Speed {
+    fn calculate_new_speed(self: Self, stick_x: f32, stick_y: f32) -> Speed {
+        let mut x_add = stick_x * X_ACCEL_MULT;
+        let mut y_add = stick_y * Y_ACCEL_MULT;
+        if (x_add > 0.0 && self.x > X_MAX) || (x_add < 0.0 && self.x < -X_MAX) {
+            x_add = 0.0;
+        }
+        if (y_add > 0.0 && self.y > Y_MAX) || (y_add < 0.0 && self.y < -Y_MAX) {
+            y_add = 0.0;
+        }
+        return Self { x: x_add, y: y_add };
     }
+}
+
+static mut SPEED: [Speed; 8] = [Speed { x: 0.0, y: 0.0 }; 8];
+
+pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
+    let boma = fighter.module_accessor;
     let status_kind = smash::app::lua_bind::StatusModule::status_kind(boma);
     let situation_kind = StatusModule::situation_kind(boma);
     let entry_id = WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize;
@@ -182,11 +205,39 @@ pub unsafe extern "C" fn ganon_float(boma: *mut BattleObjectModuleAccessor) {
         "Entry id {}: New float state: {}",
         entry_id, FLOAT[entry_id]
     );
-    match FLOAT[entry_id] {
-        FloatStatus::CannotFloat => transition_to_fall(boma, &status_kind),
-        FloatStatus::Floating(i) => {
-            FLOAT[entry_id] = FloatStatus::Floating(i - 1);
+    if hash40("special_air_n") == MotionModule::motion_kind(boma) {
+        println!("Starting float logic...");
+        match FLOAT[entry_id] {
+            FloatStatus::Floating(i) => {
+                if motion_module_frame == STARTING_FLOAT_FRAME {
+                    macros::PLAY_SE(fighter, Hash40::new("se_ganon_special_l01"))
+                }
+                if i % 30 == 0 || i == MAX_FLOAT_FRAMES {
+                    float_effect(fighter);
+                }
+                FLOAT[entry_id] = FloatStatus::Floating(i - 1);
+                if KineticModule::get_kinetic_type(boma) != *FIGHTER_KINETIC_TYPE_MOTION_AIR {
+                    KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_AIR);
+                }
+                let new_speed = SPEED[entry_id].calculate_new_speed(
+                    ControlModule::get_stick_x(boma) * PostureModule::lr(boma),
+                    ControlModule::get_stick_y(boma),
+                );
+                KineticModule::add_speed(
+                    boma,
+                    &smash::phx::Vector3f {
+                        x: new_speed.x,
+                        y: new_speed.y,
+                        z: 0.0,
+                    },
+                );
+                SPEED[entry_id] = Speed {
+                    x: SPEED[entry_id].x + new_speed.x,
+                    y: SPEED[entry_id].y + new_speed.y,
+                };
+                CancelModule::enable_cancel(boma);
+            }
+            _ => SPEED[entry_id] = Speed { x: 0.0, y: 0.0 },
         }
-        _ => {}
     }
 }
