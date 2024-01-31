@@ -113,10 +113,7 @@ unsafe extern "C" fn ganon_speciallw(agent: &mut L2CAgentBase) {
     }
     frame(agent.lua_state_agent, 24.0);
     if macros::is_excute(agent) {
-        if ControlModule::check_button_on_trriger(
-            agent.module_accessor,
-            *CONTROL_PAD_BUTTON_SPECIAL,
-        ) {
+        if ControlModule::check_button_on(agent.module_accessor, *CONTROL_PAD_BUTTON_SPECIAL) {
             StatusModule::change_status_request_from_script(
                 agent.module_accessor,
                 *FIGHTER_GANON_STATUS_KIND_SPECIAL_LW_END,
@@ -305,10 +302,7 @@ unsafe extern "C" fn ganon_specialairlw(agent: &mut L2CAgentBase) {
     }
     frame(agent.lua_state_agent, 24.0);
     if macros::is_excute(agent) {
-        if ControlModule::check_button_on_trriger(
-            agent.module_accessor,
-            *CONTROL_PAD_BUTTON_SPECIAL,
-        ) {
+        if ControlModule::check_button_on(agent.module_accessor, *CONTROL_PAD_BUTTON_SPECIAL) {
             StatusModule::change_status_request_from_script(
                 agent.module_accessor,
                 *FIGHTER_GANON_STATUS_KIND_SPECIAL_LW_END,

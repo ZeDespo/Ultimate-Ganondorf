@@ -12,7 +12,7 @@ use {
     smashline::*,
 };
 
-const MAX_FLOAT_FRAMES: i16 = 90;
+const MAX_FLOAT_FRAMES: i16 = 121;
 const STARTING_FLOAT_FRAME: f32 = 2.0;
 const X_MAX: f32 = 1.155;
 const X_ACCEL_MULT: f32 = 0.12;
@@ -115,12 +115,11 @@ impl FloatStatus {
     fn transition_to_cannot_float_if_able(
         self: Self,
         status_kind: &i32,
-        check_special_button_off: bool,
         is_jump: bool,
     ) -> FloatStatus {
         match self {
             FloatStatus::Floating(i) => {
-                if i == 0 {
+                if i == 0 || is_jump {
                     return FloatStatus::CannotFloat;
                 }
             }
@@ -196,11 +195,9 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
             situation_kind,
             smash::app::sv_information::is_ready_go(),
         ),
-        FloatStatus::Floating(_) => FLOAT[entry_id].transition_to_cannot_float_if_able(
-            &status_kind,
-            ControlModule::check_button_off(boma, *CONTROL_PAD_BUTTON_SPECIAL),
-            check_jump(boma),
-        ),
+        FloatStatus::Floating(_) => {
+            FLOAT[entry_id].transition_to_cannot_float_if_able(&status_kind, check_jump(boma))
+        }
     };
     println!(
         "Entry id {}: New float state: {}",
