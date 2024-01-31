@@ -16,9 +16,7 @@ const MAX_FLOAT_FRAMES: i16 = 90;
 const STARTING_FLOAT_FRAME: f32 = 2.0;
 const X_MAX: f32 = 1.155;
 const X_ACCEL_MULT: f32 = 0.12;
-// const Y_MAX: f32 = 0.4;
 const Y_MAX: f32 = X_MAX;
-// const Y_ACCEL_MULT: f32 = 0.03;
 const Y_ACCEL_MULT: f32 = X_ACCEL_MULT;
 
 unsafe extern "C" fn check_jump(boma: *mut BattleObjectModuleAccessor) -> bool {
@@ -60,9 +58,6 @@ unsafe extern "C" fn float_effect(fighter: &mut L2CFighterCommon) {
     );
 }
 
-// 0 == CAN FLOAT
-// 1 == CANNOT FLOAT
-// > 1 == CURRENTLY FLOATING
 #[derive(Copy, Clone)]
 enum FloatStatus {
     Floating(i16),
