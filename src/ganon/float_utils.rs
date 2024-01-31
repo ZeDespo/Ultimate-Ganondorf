@@ -138,9 +138,13 @@ impl FloatStatus {
         return self;
     }
 
-    fn transition_to_floating_if_able(self: Self, motion_module_frame: &f32) -> FloatStatus {
+    fn transition_to_floating_if_able(
+        self: Self,
+        motion_module_frame: &f32,
+        is_special_air: bool,
+    ) -> FloatStatus {
         if let FloatStatus::CanFloat = self {
-            if *motion_module_frame == STARTING_FLOAT_FRAME {
+            if *motion_module_frame == STARTING_FLOAT_FRAME && is_special_air {
                 return FloatStatus::Floating(MAX_FLOAT_FRAMES);
             }
         }
@@ -182,13 +186,14 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
     let situation_kind = StatusModule::situation_kind(boma);
     let entry_id = WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize;
     let motion_module_frame = MotionModule::frame(boma);
+    let is_special_air_n = MotionModule::motion_kind(boma) == hash40("special_air_n");
     println!(
         "Entry id {}: Original float state: {}",
         entry_id, FLOAT[entry_id]
     );
     FLOAT[entry_id] = match FLOAT[entry_id] {
         FloatStatus::CanFloat => {
-            FLOAT[entry_id].transition_to_floating_if_able(&motion_module_frame)
+            FLOAT[entry_id].transition_to_floating_if_able(&motion_module_frame, is_special_air_n)
         }
         FloatStatus::CannotFloat => FLOAT[entry_id].transition_to_can_float_if_able(
             &status_kind,
@@ -203,7 +208,7 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
         "Entry id {}: New float state: {}",
         entry_id, FLOAT[entry_id]
     );
-    if hash40("special_air_n") == MotionModule::motion_kind(boma) {
+    if is_special_air_n {
         println!("Starting float logic...");
         if let FloatStatus::Floating(i) = FLOAT[entry_id] {
             if motion_module_frame == STARTING_FLOAT_FRAME {
