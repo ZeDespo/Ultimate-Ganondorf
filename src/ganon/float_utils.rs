@@ -211,11 +211,21 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
     if is_special_air_n {
         println!("Starting float logic...");
         match FLOAT[entry_id] {
+            FloatStatus::CannotFloat | FloatStatus::Floating(0) => {
+                SPEED[entry_id] = Speed::reset();
+                if motion_module_frame == STARTING_FLOAT_FRAME {
+                    StatusModule::change_status_request_from_script(
+                        boma,
+                        *FIGHTER_STATUS_KIND_FALL_AERIAL,
+                        true,
+                    );
+                }
+            }
             FloatStatus::Floating(i) => {
                 if motion_module_frame == STARTING_FLOAT_FRAME {
                     macros::PLAY_SE(fighter, Hash40::new("se_ganon_special_l01"))
                 }
-                if i % 30 == 0 || i == MAX_FLOAT_FRAMES {
+                if i % 30 == 0 {
                     float_effect(fighter);
                 }
                 FLOAT[entry_id] = FloatStatus::Floating(i - 1);
@@ -239,16 +249,6 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
                     y: SPEED[entry_id].y + new_speed.y,
                 };
                 CancelModule::enable_cancel(boma);
-            }
-            FloatStatus::CannotFloat => {
-                SPEED[entry_id] = Speed::reset();
-                if motion_module_frame == STARTING_FLOAT_FRAME {
-                    StatusModule::change_status_request_from_script(
-                        boma,
-                        *FIGHTER_STATUS_KIND_FALL_AERIAL.into(),
-                        false.into(),
-                    );
-                }
             }
             _ => SPEED[entry_id] = Speed::reset(),
         }
