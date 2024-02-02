@@ -12,7 +12,7 @@ use {
     smashline::*,
 };
 
-const MAX_FLOAT_FRAMES: i16 = 121;
+const MAX_FLOAT_FRAMES: i16 = 90;
 const STARTING_FLOAT_FRAME: f32 = 2.0;
 const X_MAX: f32 = 1.155;
 const X_ACCEL_MULT: f32 = 0.12;
@@ -119,7 +119,7 @@ impl FloatStatus {
     ) -> FloatStatus {
         match self {
             FloatStatus::Floating(i) => {
-                if i == 0 || is_jump {
+                if i < 0 || is_jump {
                     return FloatStatus::CannotFloat;
                 }
             }
@@ -187,12 +187,14 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
     let entry_id = WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize;
     let motion_module_frame = MotionModule::frame(boma);
     let is_special_air_n = MotionModule::motion_kind(boma) == hash40("special_air_n");
+    let is_jump = check_jump(boma);
     println!(
         "Entry id {}: Original float state: {}",
         entry_id, FLOAT[entry_id]
     );
     FLOAT[entry_id] = match FLOAT[entry_id] {
         FloatStatus::CanFloat => {
+            FLOAT[entry_id].transition_to_cannot_float_if_able(&status_kind, is_jump);
             FLOAT[entry_id].transition_to_floating_if_able(&motion_module_frame, is_special_air_n)
         }
         FloatStatus::CannotFloat => FLOAT[entry_id].transition_to_can_float_if_able(
@@ -201,7 +203,7 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
             smash::app::sv_information::is_ready_go(),
         ),
         FloatStatus::Floating(_) => {
-            FLOAT[entry_id].transition_to_cannot_float_if_able(&status_kind, check_jump(boma))
+            FLOAT[entry_id].transition_to_cannot_float_if_able(&status_kind, is_jump)
         }
     };
     println!(
@@ -211,7 +213,6 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
     println!("Starting float logic...");
     match FLOAT[entry_id] {
         FloatStatus::CannotFloat => {
-            SPEED[entry_id] = Speed::reset();
             if motion_module_frame == STARTING_FLOAT_FRAME && is_special_air_n {
                 StatusModule::change_status_request_from_script(
                     boma,
@@ -231,22 +232,28 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
             if KineticModule::get_kinetic_type(boma) != *FIGHTER_KINETIC_TYPE_MOTION_AIR {
                 KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_AIR);
             }
-            let new_speed = SPEED[entry_id].calculate_new_speed(
-                ControlModule::get_stick_x(boma) * PostureModule::lr(boma),
-                ControlModule::get_stick_y(boma),
-            );
-            KineticModule::add_speed(
-                boma,
-                &smash::phx::Vector3f {
-                    x: new_speed.x,
-                    y: new_speed.y,
-                    z: 0.0,
-                },
-            );
-            SPEED[entry_id] = Speed {
-                x: SPEED[entry_id].x + new_speed.x,
-                y: SPEED[entry_id].y + new_speed.y,
-            };
+            if i - 1 <= 0 {
+                SPEED[entry_id] = Speed::reset();
+                FLOAT[entry_id] = FloatStatus::CannotFloat;
+                KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_FALL);
+            } else {
+                let new_speed = SPEED[entry_id].calculate_new_speed(
+                    ControlModule::get_stick_x(boma) * PostureModule::lr(boma),
+                    ControlModule::get_stick_y(boma),
+                );
+                KineticModule::add_speed(
+                    boma,
+                    &smash::phx::Vector3f {
+                        x: new_speed.x,
+                        y: new_speed.y,
+                        z: 0.0,
+                    },
+                );
+                SPEED[entry_id] = Speed {
+                    x: SPEED[entry_id].x + new_speed.x,
+                    y: SPEED[entry_id].y + new_speed.y,
+                };
+            }
             CancelModule::enable_cancel(boma);
         }
         _ => {}
