@@ -208,51 +208,47 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
         "Entry id {}: New float state: {}",
         entry_id, FLOAT[entry_id]
     );
-    if is_special_air_n {
-        println!("Starting float logic...");
-        match FLOAT[entry_id] {
-            FloatStatus::CannotFloat | FloatStatus::Floating(0) => {
-                SPEED[entry_id] = Speed::reset();
-                if motion_module_frame == STARTING_FLOAT_FRAME {
-                    StatusModule::change_status_request_from_script(
-                        boma,
-                        *FIGHTER_STATUS_KIND_FALL_AERIAL,
-                        true,
-                    );
-                }
-            }
-            FloatStatus::Floating(i) => {
-                if motion_module_frame == STARTING_FLOAT_FRAME {
-                    macros::PLAY_SE(fighter, Hash40::new("se_ganon_special_l01"))
-                }
-                if i % 30 == 0 {
-                    float_effect(fighter);
-                }
-                FLOAT[entry_id] = FloatStatus::Floating(i - 1);
-                if KineticModule::get_kinetic_type(boma) != *FIGHTER_KINETIC_TYPE_MOTION_AIR {
-                    KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_AIR);
-                }
-                let new_speed = SPEED[entry_id].calculate_new_speed(
-                    ControlModule::get_stick_x(boma) * PostureModule::lr(boma),
-                    ControlModule::get_stick_y(boma),
-                );
-                KineticModule::add_speed(
+    println!("Starting float logic...");
+    match FLOAT[entry_id] {
+        FloatStatus::CannotFloat => {
+            SPEED[entry_id] = Speed::reset();
+            if motion_module_frame == STARTING_FLOAT_FRAME && is_special_air_n {
+                StatusModule::change_status_request_from_script(
                     boma,
-                    &smash::phx::Vector3f {
-                        x: new_speed.x,
-                        y: new_speed.y,
-                        z: 0.0,
-                    },
+                    *FIGHTER_STATUS_KIND_FALL_AERIAL,
+                    true,
                 );
-                SPEED[entry_id] = Speed {
-                    x: SPEED[entry_id].x + new_speed.x,
-                    y: SPEED[entry_id].y + new_speed.y,
-                };
-                CancelModule::enable_cancel(boma);
             }
-            _ => SPEED[entry_id] = Speed::reset(),
         }
-    } else {
-        SPEED[entry_id] = Speed::reset();
+        FloatStatus::Floating(i) => {
+            if motion_module_frame == STARTING_FLOAT_FRAME && is_special_air_n {
+                macros::PLAY_SE(fighter, Hash40::new("se_ganon_special_l01"))
+            }
+            if i % 30 == 0 {
+                float_effect(fighter);
+            }
+            FLOAT[entry_id] = FloatStatus::Floating(i - 1);
+            if KineticModule::get_kinetic_type(boma) != *FIGHTER_KINETIC_TYPE_MOTION_AIR {
+                KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_AIR);
+            }
+            let new_speed = SPEED[entry_id].calculate_new_speed(
+                ControlModule::get_stick_x(boma) * PostureModule::lr(boma),
+                ControlModule::get_stick_y(boma),
+            );
+            KineticModule::add_speed(
+                boma,
+                &smash::phx::Vector3f {
+                    x: new_speed.x,
+                    y: new_speed.y,
+                    z: 0.0,
+                },
+            );
+            SPEED[entry_id] = Speed {
+                x: SPEED[entry_id].x + new_speed.x,
+                y: SPEED[entry_id].y + new_speed.y,
+            };
+            CancelModule::enable_cancel(boma);
+        }
+        _ => {}
     }
 }
