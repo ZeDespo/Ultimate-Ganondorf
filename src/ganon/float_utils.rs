@@ -241,7 +241,6 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
                 KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_AIR);
             }
             if i - 1 <= 0 {
-                FLOAT[entry_id] = FloatStatus::CannotFloat;
                 KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_FALL);
             } else {
                 let new_speed = SPEED[entry_id].calculate_new_speed(
