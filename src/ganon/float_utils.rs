@@ -99,11 +99,12 @@ impl FloatStatus {
                 *FIGHTER_STATUS_KIND_DEAD,
             ]
             .contains(status_kind)
-                || situation_kind != SITUATION_KIND_AIR
-                || is_ready_go == false
             {
                 return FloatStatus::CanFloat;
             }
+        }
+        if situation_kind != SITUATION_KIND_AIR || !is_ready_go {
+            return FloatStatus::CanFloat;
         }
         return self;
     }
@@ -120,7 +121,7 @@ impl FloatStatus {
     ) -> FloatStatus {
         match self {
             FloatStatus::Floating(i) => {
-                if i - 1 <= 0 || is_jump || situation_kind != SITUATION_KIND_AIR {
+                if i == 0 || is_jump || situation_kind != SITUATION_KIND_AIR {
                     return FloatStatus::CannotFloat;
                 }
             }
@@ -181,9 +182,14 @@ impl Speed {
 
 static mut SPEED: [Speed; 8] = [Speed { x: 0.0, y: 0.0 }; 8];
 
+struct GanonState {
+    fs: FloatStatus,
+    speed: Speed,
+}
+
 pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
     let boma = fighter.module_accessor;
-    let status_kind = smash::app::lua_bind::StatusModule::status_kind(boma);
+    let status_kind = StatusModule::status_kind(boma);
     let situation_kind = StatusModule::situation_kind(boma);
     let entry_id = WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize;
     let motion_module_frame = MotionModule::frame(boma);
@@ -231,7 +237,8 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
         }
         FloatStatus::Floating(i) => {
             if motion_module_frame == STARTING_FLOAT_FRAME && is_special_air_n {
-                macros::PLAY_SE(fighter, Hash40::new("se_ganon_special_l01"))
+                macros::PLAY_SE(fighter, Hash40::new("se_ganon_special_l01"));
+                CancelModule::enable_cancel(boma);
             }
             if i % 30 == 0 {
                 float_effect(fighter);
@@ -240,9 +247,9 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
             if KineticModule::get_kinetic_type(boma) != *FIGHTER_KINETIC_TYPE_MOTION_AIR {
                 KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_AIR);
             }
-            if i - 1 <= 0 {
+            if i - 1 == 0 {
                 KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_FALL);
-            } else {
+            } else if status_kind != *FIGHTER_STATUS_KIND_ATTACK_AIR {
                 let new_speed = SPEED[entry_id].calculate_new_speed(
                     ControlModule::get_stick_x(boma) * PostureModule::lr(boma),
                     ControlModule::get_stick_y(boma),
@@ -260,7 +267,6 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
                     y: SPEED[entry_id].y + new_speed.y,
                 };
             }
-            CancelModule::enable_cancel(boma);
         }
         _ => SPEED[entry_id] = Speed::reset(),
     }
