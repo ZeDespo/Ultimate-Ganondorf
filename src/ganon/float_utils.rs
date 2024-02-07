@@ -144,9 +144,15 @@ impl FloatStatus {
         self: Self,
         motion_module_frame: &f32,
         is_special_air: bool,
+        status_kind: &i32,
+        prev_status_kind: &i32,
     ) -> FloatStatus {
         if let FloatStatus::CanFloat = self {
-            if *motion_module_frame == STARTING_FLOAT_FRAME && is_special_air {
+            if *motion_module_frame == STARTING_FLOAT_FRAME
+                && (is_special_air
+                    || (*prev_status_kind == *FIGHTER_STATUS_KIND_JUMP
+                        && *status_kind == *FIGHTER_STATUS_KIND_FALL))
+            {
                 return FloatStatus::Floating(MAX_FLOAT_FRAMES);
             }
         }
@@ -201,6 +207,7 @@ static mut GS: [GanonState; 8] = [GanonState {
 
 pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
     let boma = fighter.module_accessor;
+    let prev_status_kind = StatusModule::prev_status_kind(boma, 0);
     let status_kind = StatusModule::status_kind(boma);
     let situation_kind = StatusModule::situation_kind(boma);
     let entry_id = WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize;
@@ -219,9 +226,12 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
                 is_jump,
                 situation_kind,
             );
-            GS[entry_id]
-                .fs
-                .transition_to_floating_if_able(&motion_module_frame, is_special_air_n)
+            GS[entry_id].fs.transition_to_floating_if_able(
+                &motion_module_frame,
+                is_special_air_n,
+                &status_kind,
+                &prev_status_kind,
+            )
         }
         FloatStatus::CannotFloat => GS[entry_id].fs.transition_to_can_float_if_able(
             &status_kind,
