@@ -19,16 +19,6 @@ const X_ACCEL_MULT: f32 = 0.12;
 const Y_MAX: f32 = X_MAX;
 const Y_ACCEL_MULT: f32 = X_ACCEL_MULT;
 
-unsafe extern "C" fn check_jump(boma: *mut BattleObjectModuleAccessor) -> bool {
-    if ControlModule::check_button_on_trriger(boma, *CONTROL_PAD_BUTTON_JUMP)
-        || ControlModule::check_button_on_trriger(boma, *CONTROL_PAD_BUTTON_FLICK_JUMP)
-        || ControlModule::check_button_on_trriger(boma, *CONTROL_PAD_BUTTON_JUMP_MINI)
-    {
-        return true;
-    }
-    return false;
-}
-
 unsafe extern "C" fn float_effect(fighter: &mut L2CFighterCommon) {
     macros::EFFECT_FOLLOW(
         fighter,
@@ -83,8 +73,7 @@ impl FloatStatus {
     // 4) The match is over.
     fn transition_to_can_float_if_able(
         self: Self,
-        status_kind: &i32,
-        situation_kind: i32,
+        init_values: &InitValues,
         is_ready_go: bool,
     ) -> FloatStatus {
         if let FloatStatus::CannotFloat = self {
@@ -98,12 +87,12 @@ impl FloatStatus {
                 *FIGHTER_STATUS_KIND_LOSE,
                 *FIGHTER_STATUS_KIND_DEAD,
             ]
-            .contains(status_kind)
+            .contains(&init_values.status_kind)
             {
                 return FloatStatus::CanFloat;
             }
         }
-        if situation_kind != SITUATION_KIND_AIR || !is_ready_go {
+        if init_values.situation_kind != SITUATION_KIND_AIR || !is_ready_go {
             return FloatStatus::CanFloat;
         }
         return self;
@@ -113,15 +102,19 @@ impl FloatStatus {
     // 1) Ganon floated for the maximum time allotted
     // 2) Ganon cancels the floating with another jump.
     // 3) Ganon performs an air dodge at any time.
-    fn transition_to_cannot_float_if_able(
-        self: Self,
-        status_kind: &i32,
-        is_jump: bool,
-        situation_kind: i32,
-    ) -> FloatStatus {
+    fn transition_to_cannot_float_if_able(self: Self, init_values: &InitValues) -> FloatStatus {
         match self {
             FloatStatus::Floating(i) => {
-                if i == 0 || is_jump || situation_kind != SITUATION_KIND_AIR {
+                if i == 0
+                    || init_values.is_jump
+                    || init_values.situation_kind != SITUATION_KIND_AIR
+                    || [
+                        *FIGHTER_STATUS_KIND_DAMAGE_FLY,
+                        *FIGHTER_STATUS_KIND_DAMAGE_FLY_METEOR,
+                        *FIGHTER_STATUS_KIND_DAMAGE_FLY_ROLL,
+                    ]
+                    .contains(&init_values.status_kind)
+                {
                     return FloatStatus::CannotFloat;
                 }
             }
@@ -131,7 +124,7 @@ impl FloatStatus {
                     *FIGHTER_STATUS_KIND_ESCAPE_AIR_SLIDE,
                     *FIGHTER_STATUS_KIND_JUMP_AERIAL,
                 ]
-                .contains(status_kind)
+                .contains(&init_values.status_kind)
                 {
                     return FloatStatus::CannotFloat;
                 }
@@ -140,18 +133,10 @@ impl FloatStatus {
         return self;
     }
 
-    fn transition_to_floating_if_able(
-        self: Self,
-        motion_module_frame: &f32,
-        is_special_air: bool,
-        status_kind: &i32,
-        prev_status_kind: &i32,
-    ) -> FloatStatus {
+    fn transition_to_floating_if_able(self: Self, init_values: &InitValues) -> FloatStatus {
         if let FloatStatus::CanFloat = self {
-            if *motion_module_frame == STARTING_FLOAT_FRAME
-                && (is_special_air
-                    || (*prev_status_kind == *FIGHTER_STATUS_KIND_JUMP
-                        && *status_kind == *FIGHTER_STATUS_KIND_FALL))
+            if init_values.motion_module_frame == STARTING_FLOAT_FRAME
+                && init_values.is_special_air_n()
             {
                 return FloatStatus::Floating(MAX_FLOAT_FRAMES);
             }
@@ -160,7 +145,7 @@ impl FloatStatus {
     }
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 struct Speed {
     x: f32,
     y: f32,
@@ -184,75 +169,67 @@ impl Speed {
     }
 }
 
+#[derive(Debug)]
+struct InitValues {
+    prev_status_kind: i32,
+    status_kind: i32,
+    situation_kind: i32,
+    motion_kind: u64,
+    entry_id: usize,
+    motion_module_frame: f32,
+    is_jump: bool,
+}
+
+impl InitValues {
+    fn is_special_air_n(self: &Self) -> bool {
+        self.motion_kind == hash40("special_air_n")
+    }
+
+    fn is_start_of_float(self: &Self) -> bool {
+        self.motion_module_frame == STARTING_FLOAT_FRAME && self.is_special_air_n()
+    }
+}
+
 #[derive(Copy, Clone)]
 struct GanonState {
     fs: FloatStatus,
     speed: Speed,
     attack_1: bool,
-    hp: f32,
-}
-
-impl GanonState {
-    pub fn stop_float_check(self, current_damage: f32) -> bool {
-        self.attack_1 || current_damage - self.hp >= 1.0
-    }
 }
 
 static mut GS: [GanonState; 8] = [GanonState {
     fs: FloatStatus::CanFloat,
     speed: Speed { x: 0.0, y: 0.0 },
     attack_1: false,
-    hp: 0.0,
 }; 8];
 
 pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
     let boma = fighter.module_accessor;
-    let prev_status_kind = StatusModule::prev_status_kind(boma, 0);
-    let status_kind = StatusModule::status_kind(boma);
-    let situation_kind = StatusModule::situation_kind(boma);
-    let entry_id = WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize;
-    let motion_module_frame = MotionModule::frame(boma);
-    let is_special_air_n = MotionModule::motion_kind(boma) == hash40("special_air_n");
-    let is_jump = check_jump(boma);
-    let current_damage = DamageModule::damage(boma, 0);
-    println!(
-        "Entry id {}: Original float state: {}",
-        entry_id, GS[entry_id].fs
-    );
-    GS[entry_id].fs = match GS[entry_id].fs {
-        FloatStatus::CanFloat => {
-            GS[entry_id].fs.transition_to_cannot_float_if_able(
-                &status_kind,
-                is_jump,
-                situation_kind,
-            );
-            GS[entry_id].fs.transition_to_floating_if_able(
-                &motion_module_frame,
-                is_special_air_n,
-                &status_kind,
-                &prev_status_kind,
-            )
-        }
-        FloatStatus::CannotFloat => GS[entry_id].fs.transition_to_can_float_if_able(
-            &status_kind,
-            situation_kind,
-            smash::app::sv_information::is_ready_go(),
-        ),
-        FloatStatus::Floating(_) => GS[entry_id].fs.transition_to_cannot_float_if_able(
-            &status_kind,
-            is_jump,
-            situation_kind,
-        ),
+    let iv = InitValues {
+        prev_status_kind: StatusModule::prev_status_kind(boma, 0),
+        status_kind: StatusModule::status_kind(boma),
+        situation_kind: StatusModule::situation_kind(boma),
+        entry_id: WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize,
+        motion_module_frame: MotionModule::frame(boma),
+        motion_kind: MotionModule::motion_kind(boma),
+        is_jump: ControlModule::check_button_on_trriger(boma, *CONTROL_PAD_BUTTON_JUMP)
+            || ControlModule::check_button_on_trriger(boma, *CONTROL_PAD_BUTTON_FLICK_JUMP)
+            || ControlModule::check_button_on_trriger(boma, *CONTROL_PAD_BUTTON_JUMP_MINI),
     };
-    println!(
-        "Entry id {}: New float state: {}",
-        entry_id, GS[entry_id].fs
-    );
-    println!("Starting float logic...");
-    match GS[entry_id].fs {
+    println!("{:#?}", iv);
+    println!("Original float state: {}", GS[iv.entry_id].fs);
+    GS[iv.entry_id].fs = match GS[iv.entry_id].fs {
+        FloatStatus::CanFloat => GS[iv.entry_id].fs.transition_to_floating_if_able(&iv),
+        FloatStatus::CannotFloat => GS[iv.entry_id]
+            .fs
+            .transition_to_can_float_if_able(&iv, smash::app::sv_information::is_ready_go()),
+        FloatStatus::Floating(_) => GS[iv.entry_id].fs.transition_to_cannot_float_if_able(&iv),
+    };
+    println!("New float state: {}", GS[iv.entry_id].fs);
+    match GS[iv.entry_id].fs {
         FloatStatus::CannotFloat => {
-            GS[entry_id].speed = Speed::reset();
-            if motion_module_frame == STARTING_FLOAT_FRAME && is_special_air_n {
+            GS[iv.entry_id].speed = Speed::reset();
+            if iv.is_start_of_float() {
                 StatusModule::change_status_request_from_script(
                     boma,
                     *FIGHTER_STATUS_KIND_FALL_AERIAL,
@@ -261,21 +238,22 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
             }
         }
         FloatStatus::Floating(i) => {
-            if motion_module_frame == STARTING_FLOAT_FRAME && is_special_air_n {
+            println!("Current speed: {:#?}", GS[iv.entry_id].speed);
+            if iv.is_start_of_float() {
                 macros::PLAY_SE(fighter, Hash40::new("se_ganon_special_l01"));
                 CancelModule::enable_cancel(boma);
             }
             if i % 30 == 0 {
                 float_effect(fighter);
             }
-            GS[entry_id].fs = FloatStatus::Floating(i - 1);
+            GS[iv.entry_id].fs = FloatStatus::Floating(i - 1);
             if KineticModule::get_kinetic_type(boma) != *FIGHTER_KINETIC_TYPE_MOTION_AIR {
                 KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_AIR);
             }
             if i - 1 == 0 {
                 KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_FALL);
-            } else if status_kind != *FIGHTER_STATUS_KIND_ATTACK_AIR {
-                let new_speed = GS[entry_id].speed.calculate_new_speed(
+            } else {
+                let new_speed = GS[iv.entry_id].speed.calculate_new_speed(
                     ControlModule::get_stick_x(boma) * PostureModule::lr(boma),
                     ControlModule::get_stick_y(boma),
                 );
@@ -287,12 +265,13 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
                         z: 0.0,
                     },
                 );
-                GS[entry_id].speed = Speed {
-                    x: GS[entry_id].speed.x + new_speed.x,
-                    y: GS[entry_id].speed.y + new_speed.y,
+                GS[iv.entry_id].speed = Speed {
+                    x: GS[iv.entry_id].speed.x + new_speed.x,
+                    y: GS[iv.entry_id].speed.y + new_speed.y,
                 };
             }
+            println!("New speed: {:#?}", GS[iv.entry_id].speed);
         }
-        _ => GS[entry_id].speed = Speed::reset(),
+        _ => GS[iv.entry_id].speed = Speed::reset(),
     }
 }
