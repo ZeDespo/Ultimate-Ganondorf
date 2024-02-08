@@ -1,16 +1,8 @@
 //! Miscellaneous variables, utility functions, and others to help
 //! facilitate critical functions to the mod.
-use core::fmt;
-
-use skyline_smash::app::BattleObjectModuleAccessor;
 use smash::app::lua_bind::*;
-use smash::app::sv_animcmd::*;
 use smash::lib::lua_const::*;
-use smash_script::macros;
-use {
-    smash::{app::lua_bind::*, hash40, lua2cpp::*},
-    smashline::*,
-};
+use smash::{hash40, lua2cpp::*};
 
 static WARLOCK_APPEAL: [u64; 2] = [hash40("appeal_hi_l"), hash40("appeal_hi_r")];
 
