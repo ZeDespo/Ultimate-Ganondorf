@@ -102,7 +102,11 @@ impl FloatStatus {
     // 1) Ganon floated for the maximum time allotted
     // 2) Ganon cancels the floating with another jump.
     // 3) Ganon performs an air dodge at any time.
-    fn transition_to_cannot_float_if_able(self: Self, init_values: &InitValues) -> FloatStatus {
+    fn transition_to_cannot_float_if_able(
+        self: Self,
+        init_values: &InitValues,
+        has_attacked: bool,
+    ) -> FloatStatus {
         match self {
             FloatStatus::Floating(i) => {
                 if i == 0
@@ -114,6 +118,7 @@ impl FloatStatus {
                         *FIGHTER_STATUS_KIND_DAMAGE_FLY_ROLL,
                     ]
                     .contains(&init_values.status_kind)
+                    || (init_values.status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR && has_attacked)
                 {
                     return FloatStatus::CannotFloat;
                 }
@@ -194,13 +199,13 @@ impl InitValues {
 struct GanonState {
     fs: FloatStatus,
     speed: Speed,
-    attack_1: bool,
+    has_attacked: bool,
 }
 
 static mut GS: [GanonState; 8] = [GanonState {
     fs: FloatStatus::CanFloat,
     speed: Speed { x: 0.0, y: 0.0 },
-    attack_1: false,
+    has_attacked: false,
 }; 8];
 
 pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
@@ -223,18 +228,23 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
         FloatStatus::CannotFloat => GS[iv.entry_id]
             .fs
             .transition_to_can_float_if_able(&iv, smash::app::sv_information::is_ready_go()),
-        FloatStatus::Floating(_) => GS[iv.entry_id].fs.transition_to_cannot_float_if_able(&iv),
+        FloatStatus::Floating(_) => GS[iv.entry_id]
+            .fs
+            .transition_to_cannot_float_if_able(&iv, GS[iv.entry_id].has_attacked),
     };
     println!("New float state: {}", GS[iv.entry_id].fs);
     match GS[iv.entry_id].fs {
         FloatStatus::CannotFloat => {
             GS[iv.entry_id].speed = Speed::reset();
+            GS[iv.entry_id].has_attacked = false;
             if iv.is_start_of_float() {
                 StatusModule::change_status_request_from_script(
                     boma,
                     *FIGHTER_STATUS_KIND_FALL_AERIAL,
                     true,
                 );
+            } else if iv.status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR {
+                KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_FALL);
             }
         }
         FloatStatus::Floating(i) => {
@@ -249,6 +259,9 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
             GS[iv.entry_id].fs = FloatStatus::Floating(i - 1);
             if KineticModule::get_kinetic_type(boma) != *FIGHTER_KINETIC_TYPE_MOTION_AIR {
                 KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_AIR);
+            }
+            if iv.prev_status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR {
+                GS[iv.entry_id].has_attacked = true;
             }
             if i - 1 == 0 {
                 KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_FALL);
