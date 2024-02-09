@@ -110,12 +110,14 @@ impl FloatStatus {
         match self {
             FloatStatus::Floating(i) => {
                 if i == 0
-                    || init_values.is_jump
+                    || init_values.is_jump // TODO Is this necessary if we have *FIGHTER_STATUS_KIND_JUMP_AERIAL?
                     || init_values.situation_kind != SITUATION_KIND_AIR
                     || [
                         *FIGHTER_STATUS_KIND_DAMAGE_FLY,
                         *FIGHTER_STATUS_KIND_DAMAGE_FLY_METEOR,
                         *FIGHTER_STATUS_KIND_DAMAGE_FLY_ROLL,
+                        *FIGHTER_STATUS_KIND_ESCAPE_AIR,
+                        *FIGHTER_STATUS_KIND_ESCAPE_AIR_SLIDE,
                     ]
                     .contains(&init_values.status_kind)
                     || (init_values.status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR && has_attacked)
@@ -123,17 +125,7 @@ impl FloatStatus {
                     return FloatStatus::CannotFloat;
                 }
             }
-            _ => {
-                if [
-                    *FIGHTER_STATUS_KIND_ESCAPE_AIR,
-                    *FIGHTER_STATUS_KIND_ESCAPE_AIR_SLIDE,
-                    *FIGHTER_STATUS_KIND_JUMP_AERIAL,
-                ]
-                .contains(&init_values.status_kind)
-                {
-                    return FloatStatus::CannotFloat;
-                }
-            }
+            _ => {}
         }
         return self;
     }

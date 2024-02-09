@@ -11,7 +11,7 @@ use smash::app::sv_animcmd::*;
 use smash::lib::lua_const::*;
 use smash_script::macros;
 use smashline::*;
-static WARLOCK_APPEAL: [u64; 2] = [hash40("appeal_hi_l"), hash40("appeal_hi_r")];
+
 const WARLOCK_N_TURN_FRAMES: i16 = 127;
 
 #[derive(Copy, Clone)]
@@ -27,7 +27,20 @@ pub unsafe extern "C" fn warlock_punch(fighter: &mut L2CFighterCommon) {
     let entry_id = WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize;
     match WARLOCK_ENTRIES[entry_id] {
         WarlockMutex::Ready => {
-            if ControlModule::check_button_on_trriger(boma, *CONTROL_PAD_BUTTON_APPEAL_HI) {
+            let status_kind = StatusModule::status_kind(boma);
+            let invalid_status_kinds = [
+                *FIGHTER_STATUS_KIND_ATTACK,
+                *FIGHTER_STATUS_KIND_ATTACK_AIR,
+                *FIGHTER_STATUS_KIND_FALL_SPECIAL,
+                *FIGHTER_STATUS_KIND_SPECIAL_S,
+                *FIGHTER_STATUS_KIND_SPECIAL_HI,
+                *FIGHTER_STATUS_KIND_SPECIAL_LW,
+                *FIGHTER_STATUS_KIND_ESCAPE_AIR,
+                *FIGHTER_STATUS_KIND_ESCAPE_AIR_SLIDE,
+            ];
+            if ControlModule::check_button_on_trriger(boma, *CONTROL_PAD_BUTTON_APPEAL_HI)
+                && !invalid_status_kinds.contains(&status_kind)
+            {
                 WARLOCK_ENTRIES[entry_id] = WarlockMutex::Executing(WARLOCK_N_TURN_FRAMES);
                 PostureModule::reverse_lr(boma);
                 PostureModule::update_rot_y_lr(boma);
@@ -41,13 +54,4 @@ pub unsafe extern "C" fn warlock_punch(fighter: &mut L2CFighterCommon) {
         WarlockMutex::Executing(0) => WARLOCK_ENTRIES[entry_id] = WarlockMutex::Ready,
         WarlockMutex::Executing(i) => WARLOCK_ENTRIES[entry_id] = WarlockMutex::Executing(i - 1),
     }
-    // if WARLOCK_APPEAL.contains(&MotionModule::motion_kind(boma)) {
-    //     PostureModule::reverse_lr(boma);
-    //     PostureModule::update_rot_y_lr(boma);
-    //     StatusModule::change_status_request_from_script(
-    //         boma,
-    //         *FIGHTER_GANON_STATUS_KIND_SPECIAL_N_TURN,
-    //         true,
-    //     );
-    // }
 }
