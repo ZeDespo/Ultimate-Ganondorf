@@ -94,9 +94,9 @@ impl FloatStatus {
         match self {
             FloatStatus::Floating(i) => {
                 if i == 0
-                    || init_values.is_jump // TODO Is this necessary if we have *FIGHTER_STATUS_KIND_JUMP_AERIAL?
                     || init_values.situation_kind != SITUATION_KIND_AIR
                     || [
+                        *FIGHTER_STATUS_KIND_JUMP_AERIAL,
                         *FIGHTER_STATUS_KIND_DAMAGE_FLY,
                         *FIGHTER_STATUS_KIND_DAMAGE_FLY_METEOR,
                         *FIGHTER_STATUS_KIND_DAMAGE_FLY_ROLL,
@@ -148,7 +148,6 @@ struct InitValues {
     motion_kind: u64,
     entry_id: usize,
     motion_module_frame: f32,
-    is_jump: bool,
 }
 
 impl InitValues {
@@ -170,9 +169,6 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
         entry_id: WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize,
         motion_module_frame: MotionModule::frame(boma),
         motion_kind: MotionModule::motion_kind(boma),
-        is_jump: ControlModule::check_button_on_trriger(boma, *CONTROL_PAD_BUTTON_JUMP)
-            || ControlModule::check_button_on_trriger(boma, *CONTROL_PAD_BUTTON_FLICK_JUMP)
-            || ControlModule::check_button_on_trriger(boma, *CONTROL_PAD_BUTTON_JUMP_MINI),
     };
     println!("{:#?}", iv);
     println!("Original float state: {}", GS[iv.entry_id].fs);
