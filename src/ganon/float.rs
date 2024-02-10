@@ -13,7 +13,7 @@ use {
     smashline::*,
 };
 
-const MAX_FLOAT_FRAMES: i16 = 90;
+const MAX_FLOAT_FRAMES: i16 = 105;
 const STARTING_FLOAT_FRAME: f32 = 2.0;
 const X_MAX: f32 = 1.155;
 const X_ACCEL_MULT: f32 = 0.12;
@@ -50,11 +50,6 @@ unsafe extern "C" fn float_effect(fighter: &mut L2CFighterCommon) {
 }
 
 impl FloatStatus {
-    // Floating status should be set when:
-    // 1) Ganon is on the ground
-    // 2) Ganon does a special move in the air
-    // 3) Ganon loses a stock
-    // 4) The match is over.
     fn transition_to_can_float_if_able(
         self: Self,
         init_values: &InitValues,
@@ -82,34 +77,27 @@ impl FloatStatus {
         return self;
     }
 
-    // Floating should be disabled when:
-    // 1) Ganon floated for the maximum time allotted
-    // 2) Ganon cancels the floating with another jump.
-    // 3) Ganon performs an air dodge at any time.
     fn transition_to_cannot_float_if_able(
         self: Self,
         init_values: &InitValues,
         has_attacked: bool,
     ) -> FloatStatus {
-        match self {
-            FloatStatus::Floating(i) => {
-                if i == 0
-                    || init_values.situation_kind != SITUATION_KIND_AIR
-                    || [
-                        *FIGHTER_STATUS_KIND_JUMP_AERIAL,
-                        *FIGHTER_STATUS_KIND_DAMAGE_FLY,
-                        *FIGHTER_STATUS_KIND_DAMAGE_FLY_METEOR,
-                        *FIGHTER_STATUS_KIND_DAMAGE_FLY_ROLL,
-                        *FIGHTER_STATUS_KIND_ESCAPE_AIR,
-                        *FIGHTER_STATUS_KIND_ESCAPE_AIR_SLIDE,
-                    ]
-                    .contains(&init_values.status_kind)
-                    || (init_values.status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR && has_attacked)
-                {
-                    return FloatStatus::CannotFloat;
-                }
+        if let FloatStatus::Floating(i) = self {
+            if i == 0
+                || init_values.situation_kind != SITUATION_KIND_AIR
+                || [
+                    *FIGHTER_STATUS_KIND_JUMP_AERIAL,
+                    *FIGHTER_STATUS_KIND_DAMAGE_FLY,
+                    *FIGHTER_STATUS_KIND_DAMAGE_FLY_METEOR,
+                    *FIGHTER_STATUS_KIND_DAMAGE_FLY_ROLL,
+                    *FIGHTER_STATUS_KIND_ESCAPE_AIR,
+                    *FIGHTER_STATUS_KIND_ESCAPE_AIR_SLIDE,
+                ]
+                .contains(&init_values.status_kind)
+                || (init_values.status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR && has_attacked)
+            {
+                return FloatStatus::CannotFloat;
             }
-            _ => {}
         }
         return self;
     }
@@ -219,6 +207,7 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
                     ControlModule::get_stick_x(boma) * PostureModule::lr(boma),
                     ControlModule::get_stick_y(boma),
                 );
+                println!("Calculated new speed: {:#?}", new_speed);
                 KineticModule::add_speed(
                     boma,
                     &smash::phx::Vector3f {
