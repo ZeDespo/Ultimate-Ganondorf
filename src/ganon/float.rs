@@ -2,6 +2,7 @@
 //! facilitate critical functions to the mod.
 use core::fmt;
 
+use super::utils::*;
 use skyline_smash::app::BattleObjectModuleAccessor;
 use smash::app::lua_bind::*;
 use smash::app::sv_animcmd::*;
@@ -46,23 +47,6 @@ unsafe extern "C" fn float_effect(fighter: &mut L2CFighterCommon) {
         0.5,
         true,
     );
-}
-
-#[derive(Copy, Clone)]
-enum FloatStatus {
-    Floating(i16),
-    CanFloat,
-    CannotFloat,
-}
-
-impl fmt::Display for FloatStatus {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            FloatStatus::CanFloat => write!(f, "'CanFloat'"),
-            FloatStatus::CannotFloat => write!(f, "'CannotFloat'"),
-            FloatStatus::Floating(i) => write!(f, "'Floating({})'", i),
-        }
-    }
 }
 
 impl FloatStatus {
@@ -142,12 +126,6 @@ impl FloatStatus {
     }
 }
 
-#[derive(Copy, Clone, Debug)]
-struct Speed {
-    x: f32,
-    y: f32,
-}
-
 impl Speed {
     fn calculate_new_speed(self: Self, stick_x: f32, stick_y: f32) -> Speed {
         let mut x_add = stick_x * X_ACCEL_MULT;
@@ -159,10 +137,6 @@ impl Speed {
             y_add = 0.0;
         }
         return Self { x: x_add, y: y_add };
-    }
-
-    fn reset() -> Speed {
-        Speed { x: 0.0, y: 0.0 }
     }
 }
 
@@ -186,19 +160,6 @@ impl InitValues {
         self.motion_module_frame == STARTING_FLOAT_FRAME && self.is_special_air_n()
     }
 }
-
-#[derive(Copy, Clone)]
-struct GanonState {
-    fs: FloatStatus,
-    speed: Speed,
-    has_attacked: bool,
-}
-
-static mut GS: [GanonState; 8] = [GanonState {
-    fs: FloatStatus::CanFloat,
-    speed: Speed { x: 0.0, y: 0.0 },
-    has_attacked: false,
-}; 8];
 
 pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
     let boma = fighter.module_accessor;

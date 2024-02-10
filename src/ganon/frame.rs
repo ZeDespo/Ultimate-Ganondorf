@@ -1,5 +1,5 @@
-use crate::ganon::float_utils::ganon_float;
-use crate::ganon::warlock_punch_on_taunt::warlock_punch;
+use crate::ganon::float::ganon_float;
+use crate::ganon::warlock_punch::warlock_punch;
 use {
     smash::{app::lua_bind::*, hash40, lua2cpp::*},
     smashline::*,

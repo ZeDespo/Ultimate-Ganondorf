@@ -1,7 +1,8 @@
 mod acmd;
-mod float_utils;
+mod float;
 mod frame;
-mod warlock_punch_on_taunt;
+mod utils;
+mod warlock_punch;
 
 pub fn install() {
     acmd::install();
