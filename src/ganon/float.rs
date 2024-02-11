@@ -1,5 +1,12 @@
 //! Miscellaneous variables, utility functions, and others to help
 //! facilitate critical functions to the mod.
+//!
+//!
+//!
+//! 0x10 - 16 - SPECIAL_FALL
+//! 0x12 - 18 - MOTION_AIR
+//! 0x14 - 20 - MOTION_FALL
+//!
 use core::fmt;
 
 use super::utils::*;
@@ -13,12 +20,20 @@ use {
     smashline::*,
 };
 
-const MAX_FLOAT_FRAMES: i16 = 105;
+const MAX_FLOAT_FRAMES: i16 = 90;
 const STARTING_FLOAT_FRAME: f32 = 2.0;
 const X_MAX: f32 = 1.155;
 const X_ACCEL_MULT: f32 = 0.12;
 const Y_MAX: f32 = X_MAX;
 const Y_ACCEL_MULT: f32 = X_ACCEL_MULT;
+
+// TODO: This code has a weird quirk to it. Whenever an attack is thrown
+// during a float, Ganondorf loses his ability to move in the last direction the
+// attack was thrown in. On top of that, for the next 30 frames after the attack was thrown,
+// Ganondorf can move in the opposite direction at twice the normal speed he's allowed to.
+// It's probably a misunderstanding of the physics engine, and I'd be more than happy to buff
+// Ganon's float, but for now, will need to make this a feature.
+const ATTACK_FRAME_LOSS: f32 = 30.0;
 
 unsafe extern "C" fn float_effect(fighter: &mut L2CFighterCommon) {
     macros::EFFECT_FOLLOW(
@@ -160,6 +175,7 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
     };
     println!("{:#?}", iv);
     println!("Original float state: {}", GS[iv.entry_id].fs);
+    println!("Kinetic type: {}", KineticModule::get_kinetic_type(boma));
     GS[iv.entry_id].fs = match GS[iv.entry_id].fs {
         FloatStatus::CanFloat => GS[iv.entry_id].fs.transition_to_floating_if_able(&iv),
         FloatStatus::CannotFloat => GS[iv.entry_id]
