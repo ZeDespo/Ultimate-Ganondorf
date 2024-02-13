@@ -36,7 +36,7 @@ const Y_ACCEL_MULT: f32 = X_ACCEL_MULT;
 //
 // It's probably a misunderstanding of the physics engine, and I'd be more than happy to buff
 // Ganon's float, but for now, will need to make this a feature.
-const ATTACK_FRAME_LOSS: f32 = 30.0;
+const ATTACK_FRAME_LOSS: i16 = 30;
 
 unsafe extern "C" fn float_effect(fighter: &mut L2CFighterCommon) {
     macros::EFFECT_FOLLOW(
@@ -72,7 +72,6 @@ impl FloatStatus {
         if [
             *FIGHTER_STATUS_KIND_SPECIAL_LW,
             *FIGHTER_STATUS_KIND_SPECIAL_HI,
-            // *FIGHTER_STATUS_KIND_SPECIAL_S,
             *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_CATCH,
             *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_END,
             *FIGHTER_STATUS_KIND_WIN,
@@ -213,6 +212,10 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
                 KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_AIR);
             }
             if iv.prev_status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR {
+                let attack_frame_loss = i - ATTACK_FRAME_LOSS - 1;
+                if !GS[iv.entry_id].has_attacked && attack_frame_loss > 1 {
+                    GS[iv.entry_id].fs = FloatStatus::Floating(i - ATTACK_FRAME_LOSS - 1)
+                }
                 GS[iv.entry_id].has_attacked = true;
             }
             if i - 1 == 0 {
