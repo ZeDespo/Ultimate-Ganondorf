@@ -68,28 +68,20 @@ unsafe extern "C" fn float_effect(fighter: &mut L2CFighterCommon) {
 }
 
 impl FloatStatus {
-    fn transition_to_can_float_if_able(
-        self: Self,
-        init_values: &InitValues,
-        is_ready_go: bool,
-    ) -> FloatStatus {
-        if let FloatStatus::CannotFloat = self {
-            if [
-                *FIGHTER_STATUS_KIND_SPECIAL_LW,
-                *FIGHTER_STATUS_KIND_SPECIAL_HI,
-                *FIGHTER_STATUS_KIND_SPECIAL_S,
-                *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_CATCH,
-                *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_END,
-                *FIGHTER_STATUS_KIND_WIN,
-                *FIGHTER_STATUS_KIND_LOSE,
-                *FIGHTER_STATUS_KIND_DEAD,
-            ]
-            .contains(&init_values.status_kind)
-            {
-                return FloatStatus::CanFloat;
-            }
-        }
-        if init_values.situation_kind != SITUATION_KIND_AIR || !is_ready_go {
+    fn transition_to_can_float_if_able(self: Self, init_values: &InitValues) -> FloatStatus {
+        if [
+            *FIGHTER_STATUS_KIND_SPECIAL_LW,
+            *FIGHTER_STATUS_KIND_SPECIAL_HI,
+            // *FIGHTER_STATUS_KIND_SPECIAL_S,
+            *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_CATCH,
+            *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_END,
+            *FIGHTER_STATUS_KIND_WIN,
+            *FIGHTER_STATUS_KIND_LOSE,
+            *FIGHTER_STATUS_KIND_DEAD,
+        ]
+        .contains(&init_values.status_kind)
+            || init_values.situation_kind != SITUATION_KIND_AIR
+        {
             return FloatStatus::CanFloat;
         }
         return self;
@@ -121,12 +113,9 @@ impl FloatStatus {
     }
 
     fn transition_to_floating_if_able(self: Self, init_values: &InitValues) -> FloatStatus {
-        if let FloatStatus::CanFloat = self {
-            if init_values.motion_module_frame == STARTING_FLOAT_FRAME
-                && init_values.is_special_air_n()
-            {
-                return FloatStatus::Floating(MAX_FLOAT_FRAMES);
-            }
+        if init_values.motion_module_frame == STARTING_FLOAT_FRAME && init_values.is_special_air_n()
+        {
+            return FloatStatus::Floating(MAX_FLOAT_FRAMES);
         }
         return self;
     }
@@ -154,6 +143,7 @@ struct InitValues {
     motion_kind: u64,
     entry_id: usize,
     motion_module_frame: f32,
+    is_ready_go: bool,
 }
 
 impl InitValues {
@@ -175,18 +165,24 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
         entry_id: WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize,
         motion_module_frame: MotionModule::frame(boma),
         motion_kind: MotionModule::motion_kind(boma),
+        is_ready_go: smash::app::sv_information::is_ready_go(),
     };
     println!("{:#?}", iv);
     println!("Original float state: {}", GS[iv.entry_id].fs);
     println!("Kinetic type: {}", KineticModule::get_kinetic_type(boma));
     GS[iv.entry_id].fs = match GS[iv.entry_id].fs {
         FloatStatus::CanFloat => GS[iv.entry_id].fs.transition_to_floating_if_able(&iv),
-        FloatStatus::CannotFloat => GS[iv.entry_id]
-            .fs
-            .transition_to_can_float_if_able(&iv, smash::app::sv_information::is_ready_go()),
-        FloatStatus::Floating(_) => GS[iv.entry_id]
-            .fs
-            .transition_to_cannot_float_if_able(&iv, GS[iv.entry_id].has_attacked),
+        FloatStatus::CannotFloat => GS[iv.entry_id].fs.transition_to_can_float_if_able(&iv),
+        FloatStatus::Floating(_) => {
+            let fs = GS[iv.entry_id]
+                .fs
+                .transition_to_cannot_float_if_able(&iv, GS[iv.entry_id].has_attacked);
+            if matches!(fs, FloatStatus::Floating(_)) {
+                GS[iv.entry_id].fs.transition_to_can_float_if_able(&iv)
+            } else {
+                fs
+            }
+        }
     };
     println!("New float state: {}", GS[iv.entry_id].fs);
     match GS[iv.entry_id].fs {
