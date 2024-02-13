@@ -142,7 +142,6 @@ struct InitValues {
     motion_kind: u64,
     entry_id: usize,
     motion_module_frame: f32,
-    is_ready_go: bool,
 }
 
 impl InitValues {
@@ -164,7 +163,6 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
         entry_id: WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize,
         motion_module_frame: MotionModule::frame(boma),
         motion_kind: MotionModule::motion_kind(boma),
-        is_ready_go: smash::app::sv_information::is_ready_go(),
     };
     println!("{:#?}", iv);
     println!("Original float state: {}", GS[iv.entry_id].fs);
@@ -213,8 +211,13 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
             }
             if iv.prev_status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR {
                 let attack_frame_loss = i - ATTACK_FRAME_LOSS - 1;
-                if !GS[iv.entry_id].has_attacked && attack_frame_loss > 1 {
-                    GS[iv.entry_id].fs = FloatStatus::Floating(i - ATTACK_FRAME_LOSS - 1)
+                if !GS[iv.entry_id].has_attacked {
+                    println!("New float i value: {}", attack_frame_loss);
+                    if attack_frame_loss > 1 {
+                        GS[iv.entry_id].fs = FloatStatus::Floating(attack_frame_loss);
+                    } else {
+                        GS[iv.entry_id].fs = FloatStatus::Floating(2);
+                    }
                 }
                 GS[iv.entry_id].has_attacked = true;
             }
