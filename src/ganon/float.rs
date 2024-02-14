@@ -208,16 +208,27 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
             GS[iv.entry_id].fs = FloatStatus::Floating(i - 1);
             if KineticModule::get_kinetic_type(boma) != *FIGHTER_KINETIC_TYPE_MOTION_AIR {
                 KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_AIR);
+                if iv.prev_status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR {
+                    let speed = GS[iv.entry_id].speed;
+                    KineticModule::add_speed(
+                        boma,
+                        &smash::phx::Vector3f {
+                            x: speed.x,
+                            y: speed.y,
+                            z: 0.0,
+                        },
+                    );
+                }
             }
             if iv.prev_status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR {
                 let attack_frame_loss = i - ATTACK_FRAME_LOSS - 1;
                 if !GS[iv.entry_id].has_attacked {
-                    println!("New float i value: {}", attack_frame_loss);
-                    if attack_frame_loss > 1 {
-                        GS[iv.entry_id].fs = FloatStatus::Floating(attack_frame_loss);
-                    } else {
-                        GS[iv.entry_id].fs = FloatStatus::Floating(2);
-                    }
+                    // println!("New float i value: {}", attack_frame_loss);
+                    // if attack_frame_loss > 1 {
+                    //     GS[iv.entry_id].fs = FloatStatus::Floating(attack_frame_loss);
+                    // } else {
+                    //     GS[iv.entry_id].fs = FloatStatus::Floating(2);
+                    // }
                 }
                 GS[iv.entry_id].has_attacked = true;
             }
