@@ -43,11 +43,9 @@ impl Speed {
 pub struct GanonState {
     pub fs: FloatStatus,
     pub speed: Speed,
-    pub has_attacked: bool,
 }
 
 pub static mut GS: [GanonState; 8] = [GanonState {
     fs: FloatStatus::CanFloat,
     speed: Speed { x: 0.0, y: 0.0 },
-    has_attacked: false,
 }; 8];

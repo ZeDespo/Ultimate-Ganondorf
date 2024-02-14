@@ -86,11 +86,7 @@ impl FloatStatus {
         return self;
     }
 
-    fn transition_to_cannot_float_if_able(
-        self: Self,
-        init_values: &InitValues,
-        has_attacked: bool,
-    ) -> FloatStatus {
+    fn transition_to_cannot_float_if_able(self: Self, init_values: &InitValues) -> FloatStatus {
         if let FloatStatus::Floating(i) = self {
             if i == 0
                 || init_values.situation_kind != SITUATION_KIND_AIR
@@ -103,7 +99,6 @@ impl FloatStatus {
                     *FIGHTER_STATUS_KIND_ESCAPE_AIR_SLIDE,
                 ]
                 .contains(&init_values.status_kind)
-                || (init_values.status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR && has_attacked)
             {
                 return FloatStatus::CannotFloat;
             }
@@ -171,9 +166,7 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
         FloatStatus::CanFloat => GS[iv.entry_id].fs.transition_to_floating_if_able(&iv),
         FloatStatus::CannotFloat => GS[iv.entry_id].fs.transition_to_can_float_if_able(&iv),
         FloatStatus::Floating(_) => {
-            let fs = GS[iv.entry_id]
-                .fs
-                .transition_to_cannot_float_if_able(&iv, GS[iv.entry_id].has_attacked);
+            let fs = GS[iv.entry_id].fs.transition_to_cannot_float_if_able(&iv);
             if matches!(fs, FloatStatus::Floating(_)) {
                 GS[iv.entry_id].fs.transition_to_can_float_if_able(&iv)
             } else {
@@ -185,7 +178,6 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
     match GS[iv.entry_id].fs {
         FloatStatus::CannotFloat => {
             GS[iv.entry_id].speed = Speed::reset();
-            GS[iv.entry_id].has_attacked = false;
             if iv.is_start_of_float() {
                 StatusModule::change_status_request_from_script(
                     boma,
@@ -219,18 +211,6 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
                         },
                     );
                 }
-            }
-            if iv.prev_status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR {
-                let attack_frame_loss = i - ATTACK_FRAME_LOSS - 1;
-                if !GS[iv.entry_id].has_attacked {
-                    // println!("New float i value: {}", attack_frame_loss);
-                    // if attack_frame_loss > 1 {
-                    //     GS[iv.entry_id].fs = FloatStatus::Floating(attack_frame_loss);
-                    // } else {
-                    //     GS[iv.entry_id].fs = FloatStatus::Floating(2);
-                    // }
-                }
-                GS[iv.entry_id].has_attacked = true;
             }
             if i - 1 == 0 {
                 KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_FALL);
