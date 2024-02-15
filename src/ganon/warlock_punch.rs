@@ -23,6 +23,30 @@ enum WarlockMutex {
 
 static mut WARLOCK_ENTRIES: [WarlockMutex; 8] = [WarlockMutex::Ready; 8];
 
+unsafe extern "C" fn execute_punch(boma: *mut BattleObjectModuleAccessor, direction: f32) {
+    if direction != 0.0 {
+        PostureModule::set_lr(boma, -direction); // Reverse for true direction
+    } else {
+        PostureModule::set_lr(boma, -PostureModule::lr(boma))
+    }
+    PostureModule::update_rot_y_lr(boma);
+    StatusModule::change_status_request_from_script(
+        boma,
+        *FIGHTER_GANON_STATUS_KIND_SPECIAL_N_TURN,
+        true,
+    );
+}
+
+unsafe extern "C" fn get_taunt_button_press(boma: *mut BattleObjectModuleAccessor) -> f32 {
+    if ControlModule::check_button_on_trriger(boma, *CONTROL_PAD_BUTTON_APPEAL_S_L) {
+        -1.0
+    } else if ControlModule::check_button_on_trriger(boma, *CONTROL_PAD_BUTTON_APPEAL_S_R) {
+        1.0
+    } else {
+        0.0
+    }
+}
+
 unsafe extern "C" fn is_true_neutral_special(boma: *mut BattleObjectModuleAccessor) -> bool {
     ControlModule::get_stick_x(boma).abs() < 0.2
         && ControlModule::get_stick_y(boma).abs() < 0.2
@@ -45,19 +69,15 @@ pub unsafe extern "C" fn warlock_punch(fighter: &mut L2CFighterCommon) {
                 *FIGHTER_STATUS_KIND_ESCAPE_AIR,
                 *FIGHTER_STATUS_KIND_ESCAPE_AIR_SLIDE,
             ];
-            if (ControlModule::check_button_on_trriger(boma, *CONTROL_PAD_BUTTON_APPEAL_HI)
-                || (is_true_neutral_special(boma)
-                    && matches!(GS[entry_id].fs, FloatStatus::Floating(_))))
-                && !invalid_status_kinds.contains(&status_kind)
-            {
-                WARLOCK_ENTRIES[entry_id] = WarlockMutex::Executing(WARLOCK_N_TURN_FRAMES);
-                PostureModule::reverse_lr(boma);
-                PostureModule::update_rot_y_lr(boma);
-                StatusModule::change_status_request_from_script(
-                    boma,
-                    *FIGHTER_GANON_STATUS_KIND_SPECIAL_N_TURN,
-                    true,
-                );
+            if !invalid_status_kinds.contains(&status_kind) {
+                let direction = get_taunt_button_press(boma);
+                if direction != 0.0
+                    || (is_true_neutral_special(boma)
+                        && matches!(GS[entry_id].fs, FloatStatus::Floating(_)))
+                {
+                    WARLOCK_ENTRIES[entry_id] = WarlockMutex::Executing(WARLOCK_N_TURN_FRAMES);
+                    execute_punch(boma, direction);
+                }
             }
         }
         WarlockMutex::Executing(0) => WARLOCK_ENTRIES[entry_id] = WarlockMutex::Ready,

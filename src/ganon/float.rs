@@ -27,17 +27,6 @@ const X_ACCEL_MULT: f32 = 0.12;
 const Y_MAX: f32 = X_MAX;
 const Y_ACCEL_MULT: f32 = X_ACCEL_MULT;
 
-// TODO: This code has a weird quirk to it. Whenever an attack is thrown
-// during a float while Ganondorf moves through the air, Ganondorf loses his ability
-// to move in the last direction the attack was thrown in.
-//
-// On top of that, for the remainder of the float status. Ganondorf can move in the
-// opposite direction at twice the normal speed he's allowed to.
-//
-// It's probably a misunderstanding of the physics engine, and I'd be more than happy to buff
-// Ganon's float, but for now, will need to make this a feature.
-const ATTACK_FRAME_LOSS: i16 = 30;
-
 unsafe extern "C" fn float_effect(fighter: &mut L2CFighterCommon) {
     macros::EFFECT_FOLLOW(
         fighter,
