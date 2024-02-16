@@ -13,7 +13,8 @@ Gone is the Vacuum kick, Ganondorf's new up-tilt is now an anti-air / combo-exte
 In lieu of his warlock punch, Ganondorf has been given two new abilities:
 
 1. When used on the ground, Ganondorf will teleport in the direction he's facing. In 
-this state, he is completely intangible until the teleport is complete.
+this state, he is completely intangible until the teleport is complete. Opponents
+near the portal will be blown away.
 
 2. When used in the air, Ganondorf will enter his float. Ganondorf can move freely in the air for a short
 time, and can perform all of his aerials. With exception to his side-special, Ganondorf 
