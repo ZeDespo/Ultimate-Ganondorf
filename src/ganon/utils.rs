@@ -1,14 +1,5 @@
+//! General utility functions necessary for the mod to work.
 use core::fmt;
-
-use skyline_smash::app::BattleObjectModuleAccessor;
-use smash::app::lua_bind::*;
-use smash::app::sv_animcmd::*;
-use smash::lib::lua_const::*;
-use smash_script::macros;
-use {
-    smash::{app::lua_bind::*, hash40, lua2cpp::*},
-    smashline::*,
-};
 
 #[derive(Copy, Clone)]
 pub enum FloatStatus {

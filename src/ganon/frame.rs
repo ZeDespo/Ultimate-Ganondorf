@@ -1,9 +1,6 @@
 use crate::ganon::float::ganon_float;
 use crate::ganon::warlock_punch::warlock_punch;
-use {
-    smash::{app::lua_bind::*, hash40, lua2cpp::*},
-    smashline::*,
-};
+use {smash::lua2cpp::*, smashline::*};
 
 pub unsafe extern "C" fn ganon_frame(fighter: &mut L2CFighterCommon) {
     ganon_float(fighter);

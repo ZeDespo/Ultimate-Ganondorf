@@ -1,14 +1,15 @@
+//! *NOTE*: This file is solely the work of the Ultimate S team, headed by `@chrispo`.
+//!
+//! The only credit I can claim is converting the library to use Smashline 2.
 use smash::app::lua_bind::*;
 use smash::app::sv_animcmd::*;
 use smash::lib::lua_const::*;
-use smash::lib::{L2CAgent, L2CValue};
 use smash::lua2cpp::*;
 use smash::phx::Hash40;
 use smash_script::*;
 use smashline::*;
 
 unsafe extern "C" fn ganon_utilt(fighter: &mut L2CAgentBase) {
-    let lua_state = fighter.lua_state_agent;
     frame(fighter.lua_state_agent, 12.0);
     if macros::is_excute(fighter) {
         macros::ATTACK(
@@ -504,7 +505,6 @@ unsafe extern "C" fn ganon_utilt(fighter: &mut L2CAgentBase) {
 }
 
 unsafe extern "C" fn ganon_utilt_eff(fighter: &mut L2CAgentBase) {
-    let lua_state = fighter.lua_state_agent;
     frame(fighter.lua_state_agent, 13.0);
     if macros::is_excute(fighter) {
         macros::EFFECT_FOLLOW(
@@ -607,7 +607,6 @@ unsafe extern "C" fn ganon_utilt_eff(fighter: &mut L2CAgentBase) {
 }
 
 unsafe extern "C" fn ganon_utilt_expr(fighter: &mut L2CAgentBase) {
-    let lua_state = fighter.lua_state_agent;
     frame(fighter.lua_state_agent, 15.0);
     if macros::is_excute(fighter) {
         macros::QUAKE(fighter, *CAMERA_QUAKE_KIND_M);
@@ -615,7 +614,6 @@ unsafe extern "C" fn ganon_utilt_expr(fighter: &mut L2CAgentBase) {
 }
 
 unsafe extern "C" fn ganon_utilt_snd(fighter: &mut L2CAgentBase) {
-    let lua_state = fighter.lua_state_agent;
     frame(fighter.lua_state_agent, 13.0);
     if macros::is_excute(fighter) {
         macros::PLAY_SE(fighter, Hash40::new("se_ganon_attackhard_h02"));

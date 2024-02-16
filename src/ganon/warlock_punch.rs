@@ -1,20 +1,18 @@
-//! Miscellaneous variables, utility functions, and others to help
-//! facilitate critical functions to the mod.
-use core::fmt;
+//! Just because we replaced the neutral special doesn't mean we want to be rid of the
+//! Warlock Punch.
+//!
+//! This file will bind mount the Warlock punch to other inputs.
 use smash::app::lua_bind::*;
 use smash::lib::lua_const::*;
-use smash::{hash40, lua2cpp::*};
+use smash::lua2cpp::*;
 
 use super::utils::{FloatStatus, GS};
 use skyline_smash::app::BattleObjectModuleAccessor;
-use smash::app::lua_bind::*;
-use smash::app::sv_animcmd::*;
-use smash::lib::lua_const::*;
-use smash_script::macros;
 use smashline::*;
 
 const WARLOCK_N_TURN_FRAMES: i16 = 127;
 
+/// To determine state of Warlock Punch.
 #[derive(Copy, Clone)]
 enum WarlockMutex {
     Ready,
@@ -23,6 +21,7 @@ enum WarlockMutex {
 
 static mut WARLOCK_ENTRIES: [WarlockMutex; 8] = [WarlockMutex::Ready; 8];
 
+/// Position Ganondorf to perform the Warlock punch.
 unsafe extern "C" fn execute_punch(boma: *mut BattleObjectModuleAccessor, direction: f32) {
     if direction != 0.0 {
         PostureModule::set_lr(boma, -direction); // Reverse for true direction
@@ -37,6 +36,7 @@ unsafe extern "C" fn execute_punch(boma: *mut BattleObjectModuleAccessor, direct
     );
 }
 
+/// Determine which taunt button was pressed, if at all, and return a corresponding value.
 unsafe extern "C" fn get_taunt_button_press(boma: *mut BattleObjectModuleAccessor) -> f32 {
     if ControlModule::check_button_on_trriger(boma, *CONTROL_PAD_BUTTON_APPEAL_S_L) {
         -1.0
@@ -47,12 +47,16 @@ unsafe extern "C" fn get_taunt_button_press(boma: *mut BattleObjectModuleAccesso
     }
 }
 
+/// Check if we are pressing the special button, to perform a neutral special attack.
 unsafe extern "C" fn is_true_neutral_special(boma: *mut BattleObjectModuleAccessor) -> bool {
     ControlModule::get_stick_x(boma).abs() < 0.2
         && ControlModule::get_stick_y(boma).abs() < 0.2
         && ControlModule::check_button_on_trriger(boma, *CONTROL_PAD_BUTTON_SPECIAL)
 }
 
+/// Do the Warlock punch if any of the following conditions are met:
+/// - The left taunt / right taunt button is pressed.
+/// - The special button is pressed when Ganondorf is floating.
 pub unsafe extern "C" fn warlock_punch(fighter: &mut L2CFighterCommon) {
     let boma = fighter.module_accessor;
     let entry_id = WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize;

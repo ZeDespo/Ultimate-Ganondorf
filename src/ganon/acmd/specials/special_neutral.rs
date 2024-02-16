@@ -1,17 +1,14 @@
-use super::*;
+//! *NOTE*: This file is solely the work of the Ultimate S team, headed by `@chrispo`.
+//!
+//! The only credit I can claim is converting the library to use Smashline 2 and for
+//! some Rust formatting.
 use smash::app::lua_bind::*;
 use smash::app::sv_animcmd::*;
-use smash::app::utility::get_kind;
-use smash::app::*;
-use smash::hash40;
 use smash::lib::lua_const::*;
-use smash::lib::{L2CAgent, L2CValue};
 use smash::lua2cpp::*;
 use smash::phx::Hash40;
-use smash::phx::Vector3f;
 use smash_script::*;
 use smashline::*;
-use std::mem;
 
 pub fn install() {
     Agent::new("ganon")
@@ -131,7 +128,6 @@ unsafe extern "C" fn ganon_teleport(fighter: &mut L2CAgentBase) {
 }
 
 unsafe extern "C" fn ganon_teleport_eff(fighter: &mut L2CAgentBase) {
-    let lua_state = fighter.lua_state_agent;
     for _ in 0..6 {
         if macros::is_excute(fighter) {
             macros::EFFECT_FOLLOW(
@@ -283,7 +279,6 @@ unsafe extern "C" fn ganon_teleport_snd(fighter: &mut L2CAgentBase) {
 }
 
 unsafe extern "C" fn ganon_teleport_expr(fighter: &mut L2CAgentBase) {
-    let lua_state = fighter.lua_state_agent;
     frame(fighter.lua_state_agent, 41.0);
     if macros::is_excute(fighter) {
         macros::QUAKE(fighter, *CAMERA_QUAKE_KIND_L);

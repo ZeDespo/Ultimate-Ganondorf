@@ -1,12 +1,11 @@
-use skyline_smash::app::BattleObjectModuleAccessor;
 use smash::app::lua_bind::*;
 use smash::app::sv_animcmd::*;
 use smash::lib::lua_const::*;
 use smash_script::macros;
-use {
-    smash::{app::lua_bind::*, hash40, lua2cpp::*},
-    smashline::*,
-};
+use {smash::lua2cpp::*, smashline::*};
+
+/// When Ganondorf keeps the special button held down, his special move should transition
+/// to it's ending status kind.
 unsafe extern "C" fn ganon_speciallw(agent: &mut L2CAgentBase) {
     frame(agent.lua_state_agent, 10.0);
     if macros::is_excute(agent) {

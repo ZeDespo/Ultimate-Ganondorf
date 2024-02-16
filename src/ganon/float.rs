@@ -1,32 +1,69 @@
-//! Miscellaneous variables, utility functions, and others to help
-//! facilitate critical functions to the mod.
-//!
-//!
-//!
-//! 0x10 - 16 - SPECIAL_FALL
-//! 0x12 - 18 - MOTION_AIR
-//! 0x14 - 20 - MOTION_FALL
-//!
-use core::fmt;
-
+//! In lieu of his warlock punch in the air, Ganondorf has been given the ability to
+//! float. In his float state, Ganondorf can move freely in the air, and perform all
+//! of his aerials. His specials will remove his float status; however, given the right
+//! control inputs, his side-special can get some serious distance.
 use super::utils::*;
 use skyline_smash::app::BattleObjectModuleAccessor;
 use smash::app::lua_bind::*;
-use smash::app::sv_animcmd::*;
 use smash::lib::lua_const::*;
 use smash_script::macros;
 use {
-    smash::{app::lua_bind::*, hash40, lua2cpp::*},
+    smash::{hash40, lua2cpp::*},
     smashline::*,
 };
 
-const MAX_FLOAT_FRAMES: i16 = 90;
-const STARTING_FLOAT_FRAME: f32 = 2.0;
-const X_MAX: f32 = 1.155;
-const X_ACCEL_MULT: f32 = 0.12;
-const Y_MAX: f32 = X_MAX;
-const Y_ACCEL_MULT: f32 = X_ACCEL_MULT;
+const MAX_FLOAT_FRAMES: i16 = 91; // Float by this amount
+const STARTING_FLOAT_FRAME: f32 = 2.0; // When the float frame will start.
+const X_MAX: f32 = 1.155; // Maximum velocity that can be achieved for X movements.
+const X_ACCEL_MULT: f32 = 0.12; // Multiplier for internal calculations
+const Y_MAX: f32 = X_MAX; // Same as `X_MAX`, but for Y movement
+const Y_ACCEL_MULT: f32 = X_ACCEL_MULT; // Ditto
 
+/// Adjust speed to Ganondorf's float depending on the current control stick positions.
+unsafe extern "C" fn adjust_float_velocity(boma: *mut BattleObjectModuleAccessor, iv: &InitValues) {
+    let new_speed = GS[iv.entry_id].speed.calculate_new_speed(
+        ControlModule::get_stick_x(boma) * PostureModule::lr(boma),
+        ControlModule::get_stick_y(boma),
+    );
+    println!("Calculated speed additions: {:#?}", new_speed);
+    KineticModule::add_speed(
+        boma,
+        &smash::phx::Vector3f {
+            x: new_speed.x,
+            y: new_speed.y,
+            z: 0.0,
+        },
+    );
+    GS[iv.entry_id].speed = Speed {
+        x: GS[iv.entry_id].speed.x + new_speed.x,
+        y: GS[iv.entry_id].speed.y + new_speed.y,
+    };
+    println!("New speed: {:#?}", GS[iv.entry_id].speed);
+}
+
+/// This function will keep Ganondorf's float consistent. He will remain in the air
+/// by constantly changing his `KineticType`, and will ensure that his speed remains
+/// consistent after he performs an attack.
+///
+/// - [x] Address bug where after Ganondorf performs an attack, his float velocity stops.
+unsafe extern "C" fn check_float_velocity(boma: *mut BattleObjectModuleAccessor, iv: &InitValues) {
+    if KineticModule::get_kinetic_type(boma) != *FIGHTER_KINETIC_TYPE_MOTION_AIR {
+        KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_AIR);
+        if iv.prev_status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR {
+            let speed = GS[iv.entry_id].speed;
+            KineticModule::add_speed(
+                boma,
+                &smash::phx::Vector3f {
+                    x: speed.x,
+                    y: speed.y,
+                    z: 0.0,
+                },
+            );
+        }
+    }
+}
+
+/// Cosmetic effect that will further show Ganondorf's float status.
 unsafe extern "C" fn float_effect(fighter: &mut L2CFighterCommon) {
     macros::EFFECT_FOLLOW(
         fighter,
@@ -56,7 +93,11 @@ unsafe extern "C" fn float_effect(fighter: &mut L2CFighterCommon) {
     );
 }
 
+/// Implement how Ganondorf's current float status is handled.
 impl FloatStatus {
+    /// Ganondorf can regain his ability to float when...
+    /// - he is in a neutral state, (i.e. is on the ground, started a new match)
+    /// - he catches an oppoent with side-special or up-special
     fn transition_to_can_float_if_able(self: Self, init_values: &InitValues) -> FloatStatus {
         if [
             *FIGHTER_STATUS_KIND_SPECIAL_LW,
@@ -75,6 +116,11 @@ impl FloatStatus {
         return self;
     }
 
+    /// Ganondorf will lose his float after he...
+    /// - Performs any special move
+    /// - Gets hit (and launched) while floating
+    /// - His float timer naturall expires
+    /// - Performs an air dodge.
     fn transition_to_cannot_float_if_able(self: Self, init_values: &InitValues) -> FloatStatus {
         if let FloatStatus::Floating(i) = self {
             if i == 0
@@ -96,16 +142,18 @@ impl FloatStatus {
         return self;
     }
 
+    /// Switch to a float status if the special button is pressed and in the air.
     fn transition_to_floating_if_able(self: Self, init_values: &InitValues) -> FloatStatus {
-        if init_values.motion_module_frame == STARTING_FLOAT_FRAME && init_values.is_special_air_n()
-        {
+        if init_values.is_start_of_float() {
             return FloatStatus::Floating(MAX_FLOAT_FRAMES);
         }
         return self;
     }
 }
 
+/// Controls air velocity when floating.
 impl Speed {
+    /// Provides the new x / y speed.
     fn calculate_new_speed(self: Self, stick_x: f32, stick_y: f32) -> Speed {
         let mut x_add = stick_x * X_ACCEL_MULT;
         let mut y_add = stick_y * Y_ACCEL_MULT;
@@ -119,6 +167,8 @@ impl Speed {
     }
 }
 
+/// A convenience struct that holds necessary values. It beats having a function
+/// accept numerous parameters.
 #[derive(Debug)]
 struct InitValues {
     prev_status_kind: i32,
@@ -139,6 +189,8 @@ impl InitValues {
     }
 }
 
+/// The main driver logic for floating, given the current frame, this _main_ block will
+/// determine the current float status and handle each case.
 pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
     let boma = fighter.module_accessor;
     let iv = InitValues {
@@ -151,7 +203,6 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
     };
     println!("{:#?}", iv);
     println!("Original float state: {}", GS[iv.entry_id].fs);
-    println!("Kinetic type: {}", KineticModule::get_kinetic_type(boma));
     GS[iv.entry_id].fs = match GS[iv.entry_id].fs {
         FloatStatus::CanFloat => GS[iv.entry_id].fs.transition_to_floating_if_able(&iv),
         FloatStatus::CannotFloat => GS[iv.entry_id].fs.transition_to_can_float_if_able(&iv),
@@ -188,42 +239,12 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
                 float_effect(fighter);
             }
             GS[iv.entry_id].fs = FloatStatus::Floating(i - 1);
-            if KineticModule::get_kinetic_type(boma) != *FIGHTER_KINETIC_TYPE_MOTION_AIR {
-                KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_AIR);
-                if iv.prev_status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR {
-                    let speed = GS[iv.entry_id].speed;
-                    KineticModule::add_speed(
-                        boma,
-                        &smash::phx::Vector3f {
-                            x: speed.x,
-                            y: speed.y,
-                            z: 0.0,
-                        },
-                    );
-                }
-            }
+            check_float_velocity(boma, &iv);
             if i - 1 == 0 {
                 KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_FALL);
             } else {
-                let new_speed = GS[iv.entry_id].speed.calculate_new_speed(
-                    ControlModule::get_stick_x(boma) * PostureModule::lr(boma),
-                    ControlModule::get_stick_y(boma),
-                );
-                println!("Calculated new speed: {:#?}", new_speed);
-                KineticModule::add_speed(
-                    boma,
-                    &smash::phx::Vector3f {
-                        x: new_speed.x,
-                        y: new_speed.y,
-                        z: 0.0,
-                    },
-                );
-                GS[iv.entry_id].speed = Speed {
-                    x: GS[iv.entry_id].speed.x + new_speed.x,
-                    y: GS[iv.entry_id].speed.y + new_speed.y,
-                };
+                adjust_float_velocity(boma, &iv);
             }
-            println!("New speed: {:#?}", GS[iv.entry_id].speed);
         }
         _ => GS[iv.entry_id].speed = Speed::reset(),
     }
