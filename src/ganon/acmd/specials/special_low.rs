@@ -1,7 +1,7 @@
 use smash::app::lua_bind::*;
 use smash::app::sv_animcmd::*;
 use smash::lib::lua_const::*;
-use smash_script::macros;
+use smash_script::{macros, shield};
 use {smash::lua2cpp::*, smashline::*};
 
 /// When Ganondorf keeps the special button held down, his special move should transition
@@ -22,6 +22,7 @@ unsafe extern "C" fn ganon_speciallw(agent: &mut L2CAgentBase) {
         );
     }
     frame(agent.lua_state_agent, 16.0);
+    shield!();
     if macros::is_excute(agent) {
         macros::ATTACK(
             agent,
@@ -42,7 +43,7 @@ unsafe extern "C" fn ganon_speciallw(agent: &mut L2CAgentBase) {
             None,
             1.0,
             1.0,
-            *ATTACK_SETOFF_KIND_ON,
+            *ATTACK_SETOFF_KIND_OFF,
             *ATTACK_LR_CHECK_F,
             false,
             4,
@@ -81,7 +82,7 @@ unsafe extern "C" fn ganon_speciallw(agent: &mut L2CAgentBase) {
             None,
             1.0,
             1.0,
-            *ATTACK_SETOFF_KIND_ON,
+            *ATTACK_SETOFF_KIND_OFF,
             *ATTACK_LR_CHECK_F,
             false,
             4,
