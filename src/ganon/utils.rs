@@ -1,4 +1,4 @@
-//! General utility functions necessary for the mod to work.
+//! General utility scripts that will enable Ganondorf's core function hooking.
 use core::fmt;
 
 #[derive(Copy, Clone)]
