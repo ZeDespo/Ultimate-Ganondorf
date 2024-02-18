@@ -5,7 +5,7 @@ This repository is largely a port from Ultimate S, using Smashline 2.
 
 ## What was ported from Ult-S 
 
-*Note: All entries in this section can be found in Ultimate S's change log [here](https://docs.google.com/document/d/1gys8XOEnWDPZlxPB0yOVv1fCWIXJwanWTrETpU23jp4/edit#heading=h.qsh70q). Anything in italics is something I added from the source.*
+*Note: All entries in this section can be found in Ultimate S's change log [here](https://docs.google.com/document/d/1gys8XOEnWDPZlxPB0yOVv1fCWIXJwanWTrETpU23jp4/edit#heading=h.qsh70q). Anything in italics is something I added from the source / details a minor change.*
 
 ### Fighter parameters
 
@@ -15,9 +15,10 @@ This repository is largely a port from Ultimate S, using Smashline 2.
 - Airspeed increased 0.83 -> 0.92
 - Weight reduced 118 -> 115
 - Air accel multiplier increased 0.03 -> 0.05
-- Late Uair active frames altered 14-16 -> 14-18
 - Dair autocancels earlier 32 > 30
-
+- Up air LL increased 11 > 13
+- Bair LL increased 11 > 12
+- Dair LL increased 16 > 20
 
 ### Up-Tilt
 
@@ -26,6 +27,16 @@ Utilt is now a 2 hit move:
     - Damage 24/13 (early/late) -> 3/13 (hit 1 / 2)
     - Startup 60 -> 12/15
     - Angle 361/70 (early/late) -> 270/361 (grounded/aerial)
+
+### Up-Smash
+
+- Startup reduced 20 -> 11
+- Damage reduced 24/21 -> 19*/16*
+
+
+### Up-Air 
+
+- Late Uair active frames altered 14-16 -> 14-18
 
 
 ### Neutral Special (Ground)
@@ -98,3 +109,10 @@ the Warlock Punch as well as Ganondorf's turn direction.
 - If floating and you press the special button, Ganondorf will use the Warlock Punch in 
 the direction he is currently facing.
 
+### Forward Smash 
+
+- Ignored nerf reducing damage from 24 -> 20.
+
+### Neutral Air 
+
+- Ignored nerf reducing final hit damage from 12/9 -> 10/8.5
