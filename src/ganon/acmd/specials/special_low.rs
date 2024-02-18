@@ -1,12 +1,18 @@
 use smash::app::lua_bind::*;
 use smash::app::sv_animcmd::*;
 use smash::lib::lua_const::*;
-use smash_script::{macros, shield};
+use smash_script::macros;
 use {smash::lua2cpp::*, smashline::*};
 
-/// When Ganondorf keeps the special button held down, his special move should transition
-/// to it's ending status kind.
+use crate::utils::shield::*;
+
+/// - Downb can now be cancelled early with a second B press. *Cancellable on frame 24.*
+/// - Wizard Kick Hitbox size increased 3/4 -> 4/5 *on ground only*.
+/// - Grounded downb is faster. *Starts at frame 7*.
+/// - Grounded downb now crosses shields up.
 unsafe extern "C" fn ganon_speciallw(agent: &mut L2CAgentBase) {
+    frame(agent.lua_state_agent, 1.0);
+    macros::FT_MOTION_RATE(agent, 0.7);
     frame(agent.lua_state_agent, 10.0);
     if macros::is_excute(agent) {
         FighterAreaModuleImpl::enable_fix_jostle_area_xy(agent.module_accessor, 3.0, 6.0, 8.5, 9.5);
@@ -22,7 +28,7 @@ unsafe extern "C" fn ganon_speciallw(agent: &mut L2CAgentBase) {
         );
     }
     frame(agent.lua_state_agent, 16.0);
-    shield!();
+    macros::FT_MOTION_RATE(agent, 0.95);
     if macros::is_excute(agent) {
         macros::ATTACK(
             agent,
@@ -34,7 +40,7 @@ unsafe extern "C" fn ganon_speciallw(agent: &mut L2CAgentBase) {
             65,
             0,
             65,
-            3.0,
+            4.0,
             2.7,
             0.0,
             0.0,
@@ -73,7 +79,7 @@ unsafe extern "C" fn ganon_speciallw(agent: &mut L2CAgentBase) {
             65,
             0,
             65,
-            4.0,
+            5.0,
             7.0,
             0.0,
             0.0,
@@ -102,6 +108,22 @@ unsafe extern "C" fn ganon_speciallw(agent: &mut L2CAgentBase) {
             *COLLISION_SOUND_ATTR_KICK,
             *ATTACK_REGION_KICK,
         );
+        activate_reflector(
+            agent,
+            0,
+            Hash40::new("kneer"),
+            6.0,
+            2.7,
+            2.0,
+            0.0,
+            2.7,
+            2.0,
+            0.0,
+            2.0,
+            1.2,
+            200,
+            0.01,
+        );
         JostleModule::set_status(agent.module_accessor, false);
     }
     wait(agent.lua_state_agent, 1.0);
@@ -114,6 +136,7 @@ unsafe extern "C" fn ganon_speciallw(agent: &mut L2CAgentBase) {
     frame(agent.lua_state_agent, 24.0);
     if macros::is_excute(agent) {
         if ControlModule::check_button_on(agent.module_accessor, *CONTROL_PAD_BUTTON_SPECIAL) {
+            disable_reflector(agent, 0);
             StatusModule::change_status_request_from_script(
                 agent.module_accessor,
                 *FIGHTER_GANON_STATUS_KIND_SPECIAL_LW_END,
@@ -121,17 +144,19 @@ unsafe extern "C" fn ganon_speciallw(agent: &mut L2CAgentBase) {
             );
         }
     }
-    frame(agent.lua_state_agent, 35.0);
+    frame(agent.lua_state_agent, 38.0); // Formerly 35.0, adjusted for new motion rate.
     if macros::is_excute(agent) {
         FighterAreaModuleImpl::enable_fix_jostle_area_xy(agent.module_accessor, 8.0, 8.0, 8.0, 4.0);
     }
-    frame(agent.lua_state_agent, 36.0);
+    frame(agent.lua_state_agent, 39.0); // Formerly 36.0, adjusted for new motion rate
     if macros::is_excute(agent) {
+        disable_reflector(agent, 0);
         AttackModule::clear_all(agent.module_accessor);
         JostleModule::set_status(agent.module_accessor, true);
     }
 }
 
+/// - Downb can now be cancelled early with a second B press. *Cancellable on frame 24.*
 unsafe extern "C" fn ganon_specialairlw(agent: &mut L2CAgentBase) {
     frame(agent.lua_state_agent, 16.0);
     if macros::is_excute(agent) {
@@ -300,7 +325,7 @@ unsafe extern "C" fn ganon_specialairlw(agent: &mut L2CAgentBase) {
             *ATTACK_REGION_KICK,
         );
     }
-    frame(agent.lua_state_agent, 24.0);
+    frame(agent.lua_state_agent, 27.0); // W/O motion rate, should be about frame 24.0
     if macros::is_excute(agent) {
         if ControlModule::check_button_on(agent.module_accessor, *CONTROL_PAD_BUTTON_SPECIAL) {
             StatusModule::change_status_request_from_script(
