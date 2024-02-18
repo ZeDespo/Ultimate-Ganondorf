@@ -33,11 +33,15 @@ Utilt is now a 2 hit move:
 - Startup reduced 20 -> 11
 - Damage reduced 24/21 -> 19*/16*
 
+### Forward-Air
+
+- Autocancels earlier 45 -36
+- BKB increased 20 - 40
+- KBG reduced 93 -> 85
 
 ### Up-Air 
 
 - Late Uair active frames altered 14-16 -> 14-18
-
 
 ### Neutral Special (Ground)
 
@@ -116,3 +120,8 @@ the direction he is currently facing.
 ### Neutral Air 
 
 - Ignored nerf reducing final hit damage from 12/9 -> 10/8.5
+
+### Forward Air 
+
+- Ignored nerf reducing damage from 17/18 -> 12/13 
+- Ignored buff increasing hitbox size 
