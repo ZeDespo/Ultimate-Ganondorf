@@ -240,9 +240,11 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
                 KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_FALL);
             }
             if iv.teleport_into_float {
+                WorkModule::turn_off_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG);
+                CancelModule::enable_cancel(boma);
                 macros::WHOLE_HIT(fighter, *HIT_STATUS_NORMAL);
                 VisibilityModule::set_whole(boma, true);
-                WorkModule::turn_off_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG);
+                GS[iv.entry_id].fs = FloatStatus::CanFloat;
             }
         }
         FloatStatus::Floating(i) => {

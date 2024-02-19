@@ -65,6 +65,26 @@ pub unsafe extern "C" fn ganon_teleport_handler(fighter: &mut L2CFighterCommon) 
                     y: WorkModule::get_float(boma, GANON_TELEPORT_NEW_Y_POS),
                 },
             );
+            macros::EFFECT(
+                fighter,
+                Hash40::new("ganon_entry"),
+                Hash40::new("hip"),
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0.6,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                true,
+            );
+            macros::LAST_EFFECT_SET_RATE(fighter, 2.5);
             WorkModule::set_int(
                 boma,
                 TeleportStatus::Transit as i32,
