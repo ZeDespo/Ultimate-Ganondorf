@@ -34,7 +34,6 @@ impl Position2D {
 pub struct GanonState {
     pub fs: FloatStatus,
     pub speed: Position2D,
-    // pub tp: TeleportProgress,
 }
 
 #[repr(i32)]

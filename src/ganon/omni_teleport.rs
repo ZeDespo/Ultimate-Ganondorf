@@ -44,7 +44,9 @@ impl TeleportStatus {
 //      - Instantly restore CanFloat status.
 pub unsafe extern "C" fn ganon_teleport_handler(fighter: &mut L2CFighterCommon) {
     let boma = fighter.module_accessor;
-    let ts = TeleportStatus::from_int(WorkModule::get_int(boma, GANON_TELEPORT_WORK_INT));
+    let pre_ts_int = WorkModule::get_int(boma, GANON_TELEPORT_WORK_INT);
+    println!("Teleport Status {:#?}", pre_ts_int);
+    let ts = TeleportStatus::from_int(pre_ts_int);
     let curr_situation_kind = StatusModule::situation_kind(boma);
     if !StatusModule::status_kind(boma) == *FIGHTER_STATUS_KIND_SPECIAL_N
         && !curr_situation_kind == SITUATION_KIND_GROUND
@@ -74,6 +76,6 @@ pub unsafe extern "C" fn ganon_teleport_handler(fighter: &mut L2CFighterCommon) 
     if StatusModule::situation_kind(boma) == *SITUATION_KIND_AIR && ts.suspend_kinetic_energy()
     // && !WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG)
     {
-        WorkModule::on_flag(boma, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG);
+        WorkModule::set_flag(boma, true, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG);
     }
 }

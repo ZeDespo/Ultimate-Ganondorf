@@ -193,6 +193,12 @@ impl InitValues {
 /// determine the current float status and handle each case.
 pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
     let boma = fighter.module_accessor;
+    if WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG) {
+        println!("Teleport into float!");
+        WorkModule::set_flag(boma, false, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG);
+        WorkModule::set_flag(boma, true, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG);
+        MotionModule::change_motion_kind(boma, Hash40::new("special_air_n"));
+    }
     let iv = InitValues {
         prev_status_kind: StatusModule::prev_status_kind(boma, 0),
         status_kind: StatusModule::status_kind(boma),
@@ -201,13 +207,6 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
         motion_module_frame: MotionModule::frame(boma),
         motion_kind: MotionModule::motion_kind(boma),
     };
-    if WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG) {
-        // macros::WHOLE_HIT(fighter, *HIT_STATUS_NORMAL);
-        // VisibilityModule::set_whole(boma, true);
-        println!("Teleport into float!");
-        WorkModule::off_flag(boma, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG);
-        WorkModule::on_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG);
-    }
     println!("{:#?}", iv);
     println!("Original float state: {}", GS[iv.entry_id].fs);
     GS[iv.entry_id].fs = match GS[iv.entry_id].fs {
@@ -223,6 +222,17 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
         }
     };
     println!("New float state: {}", GS[iv.entry_id].fs);
+    if WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG) {
+        println!("Special Teleport to float logic...");
+        macros::WHOLE_HIT(fighter, *HIT_STATUS_NORMAL);
+        VisibilityModule::set_whole(boma, true);
+        WorkModule::turn_off_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG);
+        WorkModule::set_int(
+            boma,
+            TeleportStatus::NotApplicable as i32,
+            GANON_TELEPORT_WORK_INT,
+        );
+    }
     match GS[iv.entry_id].fs {
         FloatStatus::CannotFloat => {
             GS[iv.entry_id].speed = Position2D::reset();
