@@ -227,16 +227,10 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
         }
     };
     println!("New float state: {}", GS[iv.entry_id].fs);
-    if WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG) {
-        println!("Special Teleport to float logic...");
-        macros::WHOLE_HIT(fighter, *HIT_STATUS_NORMAL);
-        VisibilityModule::set_whole(boma, true);
-        WorkModule::turn_off_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG);
-    }
     match GS[iv.entry_id].fs {
         FloatStatus::CannotFloat => {
             GS[iv.entry_id].speed = Position2D::reset();
-            if iv.is_start_of_float() {
+            if iv.is_start_of_float() || iv.teleport_into_float {
                 StatusModule::change_status_request_from_script(
                     boma,
                     *FIGHTER_STATUS_KIND_FALL_AERIAL,
@@ -244,6 +238,11 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
                 );
             } else if iv.status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR {
                 KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_FALL);
+            }
+            if iv.teleport_into_float {
+                macros::WHOLE_HIT(fighter, *HIT_STATUS_NORMAL);
+                VisibilityModule::set_whole(boma, true);
+                WorkModule::turn_off_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG);
             }
         }
         FloatStatus::Floating(i) => {
@@ -259,7 +258,7 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
             check_float_velocity(boma, &iv);
             if i - 1 == 0 {
                 KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_FALL);
-            } else {
+            } else if !iv.teleport_into_float {
                 adjust_float_velocity(boma, &iv);
             }
         }
