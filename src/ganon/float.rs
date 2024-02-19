@@ -147,6 +147,9 @@ impl FloatStatus {
         if init_values.is_start_of_float() {
             return FloatStatus::Floating(MAX_FLOAT_FRAMES);
         }
+        if init_values.teleport_into_float {
+            return FloatStatus::Floating(29);
+        }
         return self;
     }
 }
@@ -177,6 +180,7 @@ struct InitValues {
     motion_kind: u64,
     entry_id: usize,
     motion_module_frame: f32,
+    teleport_into_float: bool,
 }
 
 impl InitValues {
@@ -206,6 +210,7 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
         entry_id: WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize,
         motion_module_frame: MotionModule::frame(boma),
         motion_kind: MotionModule::motion_kind(boma),
+        teleport_into_float: WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG),
     };
     println!("{:#?}", iv);
     println!("Original float state: {}", GS[iv.entry_id].fs);
@@ -227,11 +232,6 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
         macros::WHOLE_HIT(fighter, *HIT_STATUS_NORMAL);
         VisibilityModule::set_whole(boma, true);
         WorkModule::turn_off_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG);
-        WorkModule::set_int(
-            boma,
-            TeleportStatus::NotApplicable as i32,
-            GANON_TELEPORT_WORK_INT,
-        );
     }
     match GS[iv.entry_id].fs {
         FloatStatus::CannotFloat => {

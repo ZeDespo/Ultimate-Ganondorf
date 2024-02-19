@@ -73,9 +73,15 @@ pub unsafe extern "C" fn ganon_teleport_handler(fighter: &mut L2CFighterCommon) 
         }
         _ => {}
     }
-    if StatusModule::situation_kind(boma) == *SITUATION_KIND_AIR && ts.suspend_kinetic_energy()
-    // && !WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG)
+    if StatusModule::situation_kind(boma) == *SITUATION_KIND_AIR
+        && ts.suspend_kinetic_energy()
+        && !WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG)
     {
         WorkModule::set_flag(boma, true, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG);
+        WorkModule::set_int(
+            boma,
+            TeleportStatus::NotApplicable as i32,
+            GANON_TELEPORT_WORK_INT,
+        );
     }
 }
