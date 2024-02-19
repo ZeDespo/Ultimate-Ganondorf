@@ -2,6 +2,8 @@
 //!
 //! The only credit I can claim is converting the library to use Smashline 2 and for
 //! some Rust formatting.
+use crate::ganon::utils::{TeleportStatus, GANON_TELEPORT_WORK_INT};
+use skyline_smash::app::*;
 use smash::app::lua_bind::*;
 use smash::app::sv_animcmd::*;
 use smash::lib::lua_const::*;
@@ -25,104 +27,139 @@ pub fn install() {
 
 unsafe extern "C" fn ganon_teleport(fighter: &mut L2CAgentBase) {
     macros::FT_MOTION_RATE(fighter, /*FSM*/ 0.5);
+    frame(fighter.lua_state_agent, 1.0);
+    if macros::is_excute(fighter) {
+        WorkModule::set_int(
+            fighter.module_accessor,
+            TeleportStatus::Start.to_int(),
+            GANON_TELEPORT_WORK_INT,
+        );
+    }
     frame(fighter.lua_state_agent, 16.0);
     if macros::is_excute(fighter) {
+        WorkModule::set_int(
+            fighter.module_accessor,
+            TeleportStatus::PreTransit.to_int(),
+            GANON_TELEPORT_WORK_INT,
+        );
         macros::WHOLE_HIT(fighter, *HIT_STATUS_XLU);
         VisibilityModule::set_whole(fighter.module_accessor, false);
         JostleModule::set_status(fighter.module_accessor, false);
-        macros::SET_SPEED_EX(fighter, 7.2, 0, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN);
+        // macros::SET_SPEED_EX(fighter, 7.2, 0, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN);
+        // Testing teleport in air
+
+        // PostureModule::set_pos_2d(
+        //     fighter.module_accessor,
+        //     &smash::phx::Vector2f { x: 40.0, y: 40.0 },
+        // );
+        GroundModule::set_correct(
+            fighter.module_accessor,
+            GroundCorrectKind(*GROUND_CORRECT_KIND_AIR),
+        );
     }
     frame(fighter.lua_state_agent, 35.0);
     macros::FT_MOTION_RATE(fighter, /*FSM*/ 1);
     if macros::is_excute(fighter) {
+        WorkModule::set_int(
+            fighter.module_accessor,
+            TeleportStatus::End.to_int(),
+            GANON_TELEPORT_WORK_INT,
+        );
         macros::WHOLE_HIT(fighter, *HIT_STATUS_NORMAL);
         VisibilityModule::set_whole(fighter.module_accessor, true);
         JostleModule::set_status(fighter.module_accessor, true);
+        // Testing teleport in air
+        // KineticModule::unable_energy_all(fighter.module_accessor);
         macros::SET_SPEED_EX(fighter, 0.0, 0, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN);
     }
     frame(fighter.lua_state_agent, 41.0);
     if macros::is_excute(fighter) {
         macros::ATTACK(
             fighter,
-            /*ID*/ 0,
-            /*Part*/ 0,
-            /*Bone*/ Hash40::new("hip"),
-            /*Damage*/ 24.0,
-            /*Angle*/ 361,
-            /*KBG*/ 100,
-            /*FKB*/ 150,
-            /*BKB*/ 0,
-            /*Size*/ 12.0,
-            /*X*/ 0.0,
-            /*Y*/ 0.0,
-            /*Z*/ 0.0,
-            /*X2*/ None,
-            /*Y2*/ None,
-            /*Z2*/ None,
-            /*Hitlag*/ 1.0,
-            /*SDI*/ 1.0,
-            /*Clang_Rebound*/ *ATTACK_SETOFF_KIND_OFF,
-            /*FacingRestrict*/ *ATTACK_LR_CHECK_POS,
-            /*SetWeight*/ true,
-            /*ShieldDamage*/ -10,
-            /*Trip*/ 0.0,
-            /*Rehit*/ 0,
-            /*Reflectable*/ false,
-            /*Absorbable*/ false,
-            /*Flinchless*/ false,
-            /*DisableHitlag*/ false,
-            /*Direct_Hitbox*/ true,
-            /*Ground_or_Air*/ *COLLISION_SITUATION_MASK_G,
-            /*Hitbits*/ *COLLISION_CATEGORY_MASK_ALL,
-            /*CollisionPart*/ *COLLISION_PART_MASK_ALL,
-            /*FriendlyFire*/ false,
-            /*Effect*/ Hash40::new("collision_attr_purple"),
-            /*SFXLevel*/ *ATTACK_SOUND_LEVEL_L,
-            /*SFXType*/ *COLLISION_SOUND_ATTR_FIRE,
-            /*Type*/ *ATTACK_REGION_PUNCH,
+            0,
+            0,
+            Hash40::new("hip"),
+            24.0,
+            361,
+            100,
+            150,
+            0,
+            12.0,
+            0.0,
+            0.0,
+            0.0,
+            None,
+            None,
+            None,
+            1.0,
+            1.0,
+            *ATTACK_SETOFF_KIND_OFF,
+            *ATTACK_LR_CHECK_POS,
+            true,
+            -10,
+            0.0,
+            0,
+            false,
+            false,
+            false,
+            false,
+            true,
+            *COLLISION_SITUATION_MASK_G,
+            *COLLISION_CATEGORY_MASK_ALL,
+            *COLLISION_PART_MASK_ALL,
+            false,
+            Hash40::new("collision_attr_purple"),
+            *ATTACK_SOUND_LEVEL_L,
+            *COLLISION_SOUND_ATTR_FIRE,
+            *ATTACK_REGION_PUNCH,
         );
         macros::ATTACK(
             fighter,
-            /*ID*/ 1,
-            /*Part*/ 0,
-            /*Bone*/ Hash40::new("hip"),
-            /*Damage*/ 24.0,
-            /*Angle*/ 361,
-            /*KBG*/ 100,
-            /*FKB*/ 120,
-            /*BKB*/ 0,
-            /*Size*/ 8.0,
-            /*X*/ 0.0,
-            /*Y*/ 0.0,
-            /*Z*/ 0.0,
-            /*X2*/ None,
-            /*Y2*/ None,
-            /*Z2*/ None,
-            /*Hitlag*/ 1.0,
-            /*SDI*/ 1.0,
-            /*Clang_Rebound*/ *ATTACK_SETOFF_KIND_OFF,
-            /*FacingRestrict*/ *ATTACK_LR_CHECK_POS,
-            /*SetWeight*/ true,
-            /*ShieldDamage*/ -10,
-            /*Trip*/ 0.0,
-            /*Rehit*/ 0,
-            /*Reflectable*/ false,
-            /*Absorbable*/ false,
-            /*Flinchless*/ false,
-            /*DisableHitlag*/ false,
-            /*Direct_Hitbox*/ true,
-            /*Ground_or_Air*/ *COLLISION_SITUATION_MASK_A,
-            /*Hitbits*/ *COLLISION_CATEGORY_MASK_ALL,
-            /*CollisionPart*/ *COLLISION_PART_MASK_ALL,
-            /*FriendlyFire*/ false,
-            /*Effect*/ Hash40::new("collision_attr_purple"),
-            /*SFXLevel*/ *ATTACK_SOUND_LEVEL_L,
-            /*SFXType*/ *COLLISION_SOUND_ATTR_FIRE,
-            /*Type*/ *ATTACK_REGION_PUNCH,
+            1,
+            0,
+            Hash40::new("hip"),
+            24.0,
+            361,
+            100,
+            120,
+            0,
+            8.0,
+            0.0,
+            0.0,
+            0.0,
+            None,
+            None,
+            None,
+            1.0,
+            1.0,
+            *ATTACK_SETOFF_KIND_OFF,
+            *ATTACK_LR_CHECK_POS,
+            true,
+            -10,
+            0.0,
+            0,
+            false,
+            false,
+            false,
+            false,
+            true,
+            *COLLISION_SITUATION_MASK_A,
+            *COLLISION_CATEGORY_MASK_ALL,
+            *COLLISION_PART_MASK_ALL,
+            false,
+            Hash40::new("collision_attr_purple"),
+            *ATTACK_SOUND_LEVEL_L,
+            *COLLISION_SOUND_ATTR_FIRE,
+            *ATTACK_REGION_PUNCH,
         );
     }
     frame(fighter.lua_state_agent, 49.0);
     if macros::is_excute(fighter) {
+        WorkModule::set_int(
+            fighter.module_accessor,
+            TeleportStatus::NotApplicable.to_int(),
+            GANON_TELEPORT_WORK_INT,
+        );
         AttackModule::clear_all(fighter.module_accessor);
     }
 }

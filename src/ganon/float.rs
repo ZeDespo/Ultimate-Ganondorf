@@ -34,7 +34,7 @@ unsafe extern "C" fn adjust_float_velocity(boma: *mut BattleObjectModuleAccessor
             z: 0.0,
         },
     );
-    GS[iv.entry_id].speed = Speed {
+    GS[iv.entry_id].speed = Position2D {
         x: GS[iv.entry_id].speed.x + new_speed.x,
         y: GS[iv.entry_id].speed.y + new_speed.y,
     };
@@ -152,9 +152,9 @@ impl FloatStatus {
 }
 
 /// Controls air velocity when floating.
-impl Speed {
+impl Position2D {
     /// Provides the new x / y speed.
-    fn calculate_new_speed(self: Self, stick_x: f32, stick_y: f32) -> Speed {
+    fn calculate_new_speed(self: Self, stick_x: f32, stick_y: f32) -> Position2D {
         let mut x_add = stick_x * X_ACCEL_MULT;
         let mut y_add = stick_y * Y_ACCEL_MULT;
         if (x_add > 0.0 && self.x > X_MAX) || (x_add < 0.0 && self.x < -X_MAX) {
@@ -201,6 +201,13 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
         motion_module_frame: MotionModule::frame(boma),
         motion_kind: MotionModule::motion_kind(boma),
     };
+    if WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG) {
+        // macros::WHOLE_HIT(fighter, *HIT_STATUS_NORMAL);
+        // VisibilityModule::set_whole(boma, true);
+        println!("Teleport into float!");
+        WorkModule::off_flag(boma, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG);
+        WorkModule::on_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG);
+    }
     println!("{:#?}", iv);
     println!("Original float state: {}", GS[iv.entry_id].fs);
     GS[iv.entry_id].fs = match GS[iv.entry_id].fs {
@@ -218,7 +225,7 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
     println!("New float state: {}", GS[iv.entry_id].fs);
     match GS[iv.entry_id].fs {
         FloatStatus::CannotFloat => {
-            GS[iv.entry_id].speed = Speed::reset();
+            GS[iv.entry_id].speed = Position2D::reset();
             if iv.is_start_of_float() {
                 StatusModule::change_status_request_from_script(
                     boma,
@@ -246,6 +253,6 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
                 adjust_float_velocity(boma, &iv);
             }
         }
-        _ => GS[iv.entry_id].speed = Speed::reset(),
+        _ => GS[iv.entry_id].speed = Position2D::reset(),
     }
 }
