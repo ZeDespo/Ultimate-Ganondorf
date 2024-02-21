@@ -1,5 +1,6 @@
 //! General utility scripts that will enable Ganondorf's core function hooking.
 use core::fmt;
+use std::fmt::Display;
 
 #[derive(Copy, Clone)]
 pub enum FloatStatus {
@@ -37,12 +38,19 @@ pub struct GanonState {
 }
 
 #[repr(i32)]
+#[derive(Debug)]
 pub enum TeleportStatus {
-    NotApplicable = 1,
+    NotApplicable = 0,
     Start,
     PreTransit,
     Transit,
     End,
+}
+
+impl fmt::Display for TeleportStatus {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{:?}", self)
+    }
 }
 
 impl TeleportStatus {

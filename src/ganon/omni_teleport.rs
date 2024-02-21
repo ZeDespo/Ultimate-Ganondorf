@@ -34,14 +34,6 @@ impl TeleportStatus {
     }
 }
 
-// If moving into the air, following changes need to be made for float logic:
-// 1. Set flag in handler to do special case float.
-// 2. Transition to float status kind.
-// 3. In float logic, check for flag.
-//  - If set
-//      - Make Ganondorf visible
-//      - Change Kinetic Type to fall
-//      - Instantly restore CanFloat status.
 pub unsafe extern "C" fn ganon_teleport_handler(fighter: &mut L2CFighterCommon) {
     let boma = fighter.module_accessor;
     let pre_ts_int = WorkModule::get_int(boma, GANON_TELEPORT_WORK_INT);
