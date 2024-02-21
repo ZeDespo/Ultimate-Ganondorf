@@ -2,7 +2,9 @@
 //!
 //! The only credit I can claim is converting the library to use Smashline 2 and for
 //! some Rust formatting.
-use crate::ganon::utils::{TeleportStatus, GANON_TELEPORT_WORK_INT};
+use crate::ganon::utils::{
+    TeleportStatus, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG, GANON_TELEPORT_WORK_INT,
+};
 use skyline_smash::app::*;
 use smash::app::lua_bind::*;
 use smash::app::sv_animcmd::*;
@@ -45,13 +47,7 @@ unsafe extern "C" fn ganon_teleport(fighter: &mut L2CAgentBase) {
         macros::WHOLE_HIT(fighter, *HIT_STATUS_XLU);
         VisibilityModule::set_whole(fighter.module_accessor, false);
         JostleModule::set_status(fighter.module_accessor, false);
-        // macros::SET_SPEED_EX(fighter, 7.2, 0, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN);
-        // Testing teleport in air
 
-        // PostureModule::set_pos_2d(
-        //     fighter.module_accessor,
-        //     &smash::phx::Vector2f { x: 40.0, y: 40.0 },
-        // );
         GroundModule::set_correct(
             fighter.module_accessor,
             GroundCorrectKind(*GROUND_CORRECT_KIND_AIR),
@@ -326,6 +322,96 @@ unsafe extern "C" fn ganon_teleport_expr(fighter: &mut L2CAgentBase) {
 // The following functions are to unload the default sounds / effects.
 unsafe extern "C" fn ganon_float(fighter: &mut L2CAgentBase) {
     let _lua_state = fighter.lua_state_agent;
+    frame(fighter.lua_state_agent, 41.0);
+    if macros::is_excute(fighter) {
+        if WorkModule::is_flag(
+            fighter.module_accessor,
+            GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG,
+        ) {
+            macros::ATTACK(
+                fighter,
+                0,
+                0,
+                Hash40::new("hip"),
+                24.0,
+                361,
+                100,
+                150,
+                0,
+                12.0,
+                0.0,
+                0.0,
+                0.0,
+                None,
+                None,
+                None,
+                1.0,
+                1.0,
+                *ATTACK_SETOFF_KIND_OFF,
+                *ATTACK_LR_CHECK_POS,
+                true,
+                -10,
+                0.0,
+                0,
+                false,
+                false,
+                false,
+                false,
+                true,
+                *COLLISION_SITUATION_MASK_G,
+                *COLLISION_CATEGORY_MASK_ALL,
+                *COLLISION_PART_MASK_ALL,
+                false,
+                Hash40::new("collision_attr_purple"),
+                *ATTACK_SOUND_LEVEL_L,
+                *COLLISION_SOUND_ATTR_FIRE,
+                *ATTACK_REGION_PUNCH,
+            );
+            macros::ATTACK(
+                fighter,
+                1,
+                0,
+                Hash40::new("hip"),
+                24.0,
+                361,
+                100,
+                120,
+                0,
+                8.0,
+                0.0,
+                0.0,
+                0.0,
+                None,
+                None,
+                None,
+                1.0,
+                1.0,
+                *ATTACK_SETOFF_KIND_OFF,
+                *ATTACK_LR_CHECK_POS,
+                true,
+                -10,
+                0.0,
+                0,
+                false,
+                false,
+                false,
+                false,
+                true,
+                *COLLISION_SITUATION_MASK_A,
+                *COLLISION_CATEGORY_MASK_ALL,
+                *COLLISION_PART_MASK_ALL,
+                false,
+                Hash40::new("collision_attr_purple"),
+                *ATTACK_SOUND_LEVEL_L,
+                *COLLISION_SOUND_ATTR_FIRE,
+                *ATTACK_REGION_PUNCH,
+            );
+        }
+    }
+    frame(fighter.lua_state_agent, 49.0);
+    if macros::is_excute(fighter) {
+        AttackModule::clear_all(fighter.module_accessor);
+    }
 }
 
 unsafe extern "C" fn ganon_floats(fighter: &mut L2CAgentBase) {
