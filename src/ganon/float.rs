@@ -210,7 +210,7 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
         entry_id: WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize,
         motion_module_frame: MotionModule::frame(boma),
         motion_kind: MotionModule::motion_kind(boma),
-        teleport_into_float: WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG),
+        teleport_into_float: in_teleport(boma),
     };
     println!("{:#?}", iv);
     println!("Original float state: {}", GS[iv.entry_id].fs);
@@ -248,6 +248,13 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
             }
         }
         FloatStatus::Floating(i) => {
+            if i == 29 && iv.teleport_into_float {
+                StatusModule::change_status_request_from_script(
+                    boma,
+                    FIGHTER_STATUS_KIND_ATTACK_AIR.into(),
+                    false.into(),
+                );
+            }
             println!("Current speed: {:#?}", GS[iv.entry_id].speed);
             if iv.is_start_of_float() {
                 macros::PLAY_SE(fighter, Hash40::new("se_ganon_special_l01"));

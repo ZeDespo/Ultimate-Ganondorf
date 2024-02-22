@@ -37,7 +37,7 @@ impl Position2D {
         } else {
             y = 0.0;
         }
-        Position2D { x: x, y: y }
+        Position2D { x: x, y: y + 0.1 }
     }
 
     unsafe extern "C" fn set_to_work_module(self: &Self, boma: *mut BattleObjectModuleAccessor) {

@@ -1,6 +1,8 @@
 //! General utility scripts that will enable Ganondorf's core function hooking.
 use core::fmt;
-use std::fmt::Display;
+
+use smash::app::lua_bind::WorkModule;
+use smash::app::BattleObjectModuleAccessor;
 
 #[derive(Copy, Clone)]
 pub enum FloatStatus {
@@ -74,3 +76,8 @@ pub const GANON_TELEPORT_INTO_FLOAT_INIT_FLAG: i32 = 0x69420;
 pub const GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG: i32 = 0x69421;
 pub const GANON_TELEPORT_NEW_X_POS: i32 = 0x42068;
 pub const GANON_TELEPORT_NEW_Y_POS: i32 = 0x42067;
+
+/// Convenience function for checking teleport status via a handler flag.
+pub unsafe extern "C" fn in_teleport(boma: *mut BattleObjectModuleAccessor) -> bool {
+    WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG)
+}
