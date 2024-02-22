@@ -23,19 +23,32 @@ impl Position2D {
     ) -> Position2D {
         let mut x = ControlModule::get_stick_x(boma);
         let mut y = ControlModule::get_stick_y(boma);
-        if x >= 0.3333333 {
-            x = 40.0;
-        } else if x <= -0.333333 {
-            x = -40.0;
-        } else {
-            x = 0.0;
-        }
         if y >= 0.3333333 {
             y = 40.0;
         } else if y <= -0.3333333 {
             y = -40.0;
         } else {
             y = 0.0;
+        }
+        if x >= 0.3333333 {
+            x = 40.0;
+            if y == 0.0 {
+                x = 60.0
+            }
+        } else if x <= -0.333333 {
+            x = -40.0;
+            if y == 0.0 {
+                x = -60.0
+            }
+        } else {
+            x = 0.0;
+        }
+        if x == 0.0 {
+            if y < 0.0 {
+                y = -60.0
+            } else if y > 0.0 {
+                y = 60.0
+            }
         }
         Position2D { x: x, y: y + 0.1 }
     }
