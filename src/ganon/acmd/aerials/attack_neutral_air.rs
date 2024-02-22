@@ -10,6 +10,9 @@ use smashline::*;
 pub fn install() {
     Agent::new("ganon")
         .game_acmd("game_attackairn", ganon_attackairn)
+        .effect_acmd("effect_attackairn", effect_attackairn)
+        .sound_acmd("sound_attackairn", sound_attackairn)
+        .expression_acmd("expression_attackairn", expression_attackairn)
         .install();
 }
 
@@ -754,6 +757,88 @@ unsafe extern "C" fn portal_hitbox(agent: &mut L2CAgentBase) {
         WorkModule::off_flag(
             agent.module_accessor,
             *FIGHTER_STATUS_ATTACK_AIR_FLAG_ENABLE_LANDING,
+        );
+    }
+}
+
+unsafe extern "C" fn effect_attackairn(agent: &mut L2CAgentBase) {
+    if !in_teleport(agent.module_accessor) {
+        frame(agent.lua_state_agent, 7.0);
+        if macros::is_excute(agent) {
+            macros::EFFECT_FOLLOW_ALPHA(
+                agent,
+                Hash40::new("sys_attack_impact"),
+                Hash40::new("top"),
+                0,
+                11,
+                17,
+                0,
+                0,
+                0,
+                1.5,
+                true,
+                0.8,
+            );
+            macros::LAST_EFFECT_SET_RATE(agent, 1.2);
+        }
+        frame(agent.lua_state_agent, 20.0);
+        if macros::is_excute(agent) {
+            macros::EFFECT_FOLLOW_ALPHA(
+                agent,
+                Hash40::new("sys_attack_impact"),
+                Hash40::new("top"),
+                0,
+                19.5,
+                12,
+                0,
+                0,
+                0,
+                1.7,
+                true,
+                0.8,
+            );
+            macros::LAST_EFFECT_SET_RATE(agent, 1.2);
+        }
+    }
+}
+
+unsafe extern "C" fn sound_attackairn(agent: &mut L2CAgentBase) {
+    if !in_teleport(agent.module_accessor) {
+        frame(agent.lua_state_agent, 7.0);
+        if macros::is_excute(agent) {
+            macros::PLAY_SEQUENCE(agent, Hash40::new("seq_ganon_rnd_attack"));
+            macros::PLAY_SE(agent, Hash40::new("se_ganon_swing_l"));
+        }
+        wait(agent.lua_state_agent, 13.0);
+        if macros::is_excute(agent) {
+            macros::PLAY_SE(agent, Hash40::new("se_ganon_swing_l"));
+        }
+    }
+}
+
+unsafe extern "C" fn expression_attackairn(agent: &mut L2CAgentBase) {
+    frame(agent.lua_state_agent, 5.0);
+    if macros::is_excute(agent) {
+        ControlModule::set_rumble(
+            agent.module_accessor,
+            Hash40::new("rbkind_nohitm"),
+            0,
+            false,
+            *BATTLE_OBJECT_ID_INVALID as u32,
+        );
+    }
+    frame(agent.lua_state_agent, 7.0);
+    if macros::is_excute(agent) {
+        macros::RUMBLE_HIT(agent, Hash40::new("rbkind_attackm"), 0);
+    }
+    frame(agent.lua_state_agent, 18.0);
+    if macros::is_excute(agent) {
+        ControlModule::set_rumble(
+            agent.module_accessor,
+            Hash40::new("rbkind_nohitm"),
+            0,
+            false,
+            *BATTLE_OBJECT_ID_INVALID as u32,
         );
     }
 }
