@@ -113,7 +113,7 @@ pub unsafe extern "C" fn ganon_teleport_handler(fighter: &mut L2CFighterCommon, 
         }
         _ => {}
     }
-    if iv.situation_kind == SITUATION_KIND_AIR
+    if StatusModule::situation_kind(boma) == *SITUATION_KIND_AIR
         && ts.suspend_kinetic_energy()
         && !WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG)
     {
