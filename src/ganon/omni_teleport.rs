@@ -8,6 +8,29 @@ use smash::{
 };
 use smash_script::*;
 
+const MIN_TELEPORT_STEP: f32 = 20.0;
+const MID_TELEPORT_STEP: f32 = 40.0;
+const MAX_TELEPORT_STEP: f32 = 60.0;
+
+fn calculate_base_teleport_distance(stick: f32) -> f32 {
+    if stick >= 0.3333333 {
+        return MID_TELEPORT_STEP;
+    }
+    if stick <= -0.3333333 {
+        return -MID_TELEPORT_STEP;
+    }
+    0.0
+}
+
+fn add_teleport_distance(direction: f32) -> f32 {
+    if direction < 0.0 {
+        return direction - 20.0;
+    } else if direction > 0.0 {
+        return direction + 20.0;
+    }
+    direction
+}
+
 impl Position2D {
     // If on the ground, there are five different positions to choose from:
     // Up Right vertex:   x: 0.9166667, y: 0.5
@@ -17,34 +40,12 @@ impl Position2D {
     unsafe extern "C" fn next_teleport_position(
         boma: *mut BattleObjectModuleAccessor,
     ) -> Position2D {
-        let mut x = ControlModule::get_stick_x(boma);
-        let mut y = ControlModule::get_stick_y(boma);
-        if y >= 0.3333333 {
-            y = 40.0;
-        } else if y <= -0.3333333 {
-            y = -40.0;
-        } else {
-            y = 0.0;
-        }
-        if x >= 0.3333333 {
-            x = 40.0;
-            if y == 0.0 {
-                x = 60.0
-            }
-        } else if x <= -0.333333 {
-            x = -40.0;
-            if y == 0.0 {
-                x = -60.0
-            }
-        } else {
-            x = 0.0;
-        }
-        if x == 0.0 {
-            if y < 0.0 {
-                y = -60.0
-            } else if y > 0.0 {
-                y = 60.0
-            }
+        let mut x = calculate_base_teleport_distance(ControlModule::get_stick_x(boma));
+        let mut y = calculate_base_teleport_distance(ControlModule::get_stick_y(boma));
+        if y == 0.0 {
+            x = add_teleport_distance(x);
+        } else if x == 0.0 {
+            y = add_teleport_distance(y);
         }
         Position2D { x: x, y: y + 0.1 }
     }
@@ -52,15 +53,6 @@ impl Position2D {
     unsafe extern "C" fn set_to_work_module(self: &Self, boma: *mut BattleObjectModuleAccessor) {
         WorkModule::set_float(boma, self.x, GANON_TELEPORT_NEW_X_POS);
         WorkModule::set_float(boma, self.y, GANON_TELEPORT_NEW_Y_POS);
-    }
-}
-
-impl TeleportStatus {
-    fn suspend_kinetic_energy(self: &Self) -> bool {
-        return match self {
-            TeleportStatus::PreTransit | TeleportStatus::Transit | TeleportStatus::End => true,
-            _ => false,
-        };
     }
 }
 
