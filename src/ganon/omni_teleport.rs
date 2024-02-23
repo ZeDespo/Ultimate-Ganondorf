@@ -65,14 +65,12 @@ impl TeleportStatus {
 }
 
 pub unsafe extern "C" fn ganon_teleport_handler(fighter: &mut L2CFighterCommon, iv: &InitValues) {
-    let boma = fighter.module_accessor;
-    let pre_ts_int = WorkModule::get_int(boma, GANON_TELEPORT_WORK_INT);
-    println!("Teleport Status {:#?}", pre_ts_int);
-    let ts = TeleportStatus::from_int(pre_ts_int);
     if iv.status_kind != FIGHTER_STATUS_KIND_SPECIAL_N && iv.situation_kind != SITUATION_KIND_GROUND
     {
         return;
     }
+    let boma = fighter.module_accessor;
+    let ts = TeleportStatus::from_int(WorkModule::get_int(boma, GANON_TELEPORT_WORK_INT));
     match ts {
         TeleportStatus::Start => {
             Position2D::next_teleport_position(boma).set_to_work_module(boma);
@@ -110,18 +108,15 @@ pub unsafe extern "C" fn ganon_teleport_handler(fighter: &mut L2CFighterCommon, 
                 TeleportStatus::Transit as i32,
                 GANON_TELEPORT_WORK_INT,
             );
+            if !WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG) {
+                WorkModule::set_flag(boma, true, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG);
+                WorkModule::set_int(
+                    boma,
+                    TeleportStatus::NotApplicable as i32,
+                    GANON_TELEPORT_WORK_INT,
+                );
+            }
         }
         _ => {}
-    }
-    if StatusModule::situation_kind(boma) == *SITUATION_KIND_AIR
-        && ts.suspend_kinetic_energy()
-        && !WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG)
-    {
-        WorkModule::set_flag(boma, true, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG);
-        WorkModule::set_int(
-            boma,
-            TeleportStatus::NotApplicable as i32,
-            GANON_TELEPORT_WORK_INT,
-        );
     }
 }
