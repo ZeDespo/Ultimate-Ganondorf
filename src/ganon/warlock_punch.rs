@@ -6,7 +6,7 @@ use smash::app::lua_bind::*;
 use smash::lib::lua_const::*;
 use smash::lua2cpp::*;
 
-use super::utils::{FloatStatus, GS};
+use super::utils::{FloatStatus, InitValues, GS};
 use skyline_smash::app::BattleObjectModuleAccessor;
 use smashline::*;
 
@@ -23,11 +23,7 @@ static mut WARLOCK_ENTRIES: [WarlockMutex; 8] = [WarlockMutex::Ready; 8];
 
 /// Position Ganondorf to perform the Warlock punch.
 unsafe extern "C" fn execute_punch(boma: *mut BattleObjectModuleAccessor, direction: f32) {
-    if direction != 0.0 {
-        PostureModule::set_lr(boma, -direction); // Reverse for true direction
-    } else {
-        PostureModule::set_lr(boma, -PostureModule::lr(boma))
-    }
+    PostureModule::set_lr(boma, -direction); // Reverse for true direction
     PostureModule::update_rot_y_lr(boma);
     StatusModule::change_status_request_from_script(
         boma,
@@ -56,13 +52,10 @@ unsafe extern "C" fn is_true_neutral_special(boma: *mut BattleObjectModuleAccess
 
 /// Do the Warlock punch if any of the following conditions are met:
 /// - The left taunt / right taunt button is pressed.
-/// - The special button is pressed when Ganondorf is floating.
-pub unsafe extern "C" fn warlock_punch(fighter: &mut L2CFighterCommon) {
+pub unsafe extern "C" fn warlock_punch(fighter: &mut L2CFighterCommon, iv: &InitValues) {
     let boma = fighter.module_accessor;
-    let entry_id = WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize;
-    match WARLOCK_ENTRIES[entry_id] {
+    match WARLOCK_ENTRIES[iv.entry_id] {
         WarlockMutex::Ready => {
-            let status_kind = StatusModule::status_kind(boma);
             let invalid_status_kinds = [
                 *FIGHTER_STATUS_KIND_ATTACK,
                 *FIGHTER_STATUS_KIND_ATTACK_AIR,
@@ -73,18 +66,15 @@ pub unsafe extern "C" fn warlock_punch(fighter: &mut L2CFighterCommon) {
                 *FIGHTER_STATUS_KIND_ESCAPE_AIR,
                 *FIGHTER_STATUS_KIND_ESCAPE_AIR_SLIDE,
             ];
-            if !invalid_status_kinds.contains(&status_kind) {
+            if !invalid_status_kinds.contains(&iv.status_kind) {
                 let direction = get_taunt_button_press(boma);
-                if direction != 0.0
-                    || (is_true_neutral_special(boma)
-                        && matches!(GS[entry_id].fs, FloatStatus::Floating(_)))
-                {
-                    WARLOCK_ENTRIES[entry_id] = WarlockMutex::Executing(WARLOCK_N_TURN_FRAMES);
+                if direction != 0.0 {
+                    WARLOCK_ENTRIES[iv.entry_id] = WarlockMutex::Executing(WARLOCK_N_TURN_FRAMES);
                     execute_punch(boma, direction);
                 }
             }
         }
-        WarlockMutex::Executing(0) => WARLOCK_ENTRIES[entry_id] = WarlockMutex::Ready,
-        WarlockMutex::Executing(i) => WARLOCK_ENTRIES[entry_id] = WarlockMutex::Executing(i - 1),
+        WarlockMutex::Executing(0) => WARLOCK_ENTRIES[iv.entry_id] = WarlockMutex::Ready,
+        WarlockMutex::Executing(i) => WARLOCK_ENTRIES[iv.entry_id] = WarlockMutex::Executing(i - 1),
     }
 }

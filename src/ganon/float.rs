@@ -172,19 +172,6 @@ impl Position2D {
     }
 }
 
-/// A convenience struct that holds necessary values. It beats having a function
-/// accept numerous parameters.
-#[derive(Debug)]
-struct InitValues {
-    prev_status_kind: i32,
-    status_kind: i32,
-    situation_kind: i32,
-    motion_kind: u64,
-    entry_id: usize,
-    motion_module_frame: f32,
-    teleport_into_float: bool,
-}
-
 impl InitValues {
     fn is_special_air_n(self: &Self) -> bool {
         self.motion_kind == hash40("special_air_n")
@@ -197,7 +184,7 @@ impl InitValues {
 
 /// The main driver logic for floating, given the current frame, this _main_ block will
 /// determine the current float status and handle each case.
-pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
+pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitValues) {
     let boma = fighter.module_accessor;
     if WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG) {
         println!("Teleport into float!");
@@ -205,16 +192,6 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
         WorkModule::set_flag(boma, true, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG);
         MotionModule::change_motion_kind(boma, Hash40::new("special_air_n"));
     }
-    let iv = InitValues {
-        prev_status_kind: StatusModule::prev_status_kind(boma, 0),
-        status_kind: StatusModule::status_kind(boma),
-        situation_kind: StatusModule::situation_kind(boma),
-        entry_id: WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize,
-        motion_module_frame: MotionModule::frame(boma),
-        motion_kind: MotionModule::motion_kind(boma),
-        teleport_into_float: in_teleport(boma),
-    };
-    println!("{:#?}", iv);
     println!("Original float state: {}", GS[iv.entry_id].fs);
     GS[iv.entry_id].fs = match GS[iv.entry_id].fs {
         FloatStatus::CanFloat => GS[iv.entry_id].fs.transition_to_floating_if_able(&iv),

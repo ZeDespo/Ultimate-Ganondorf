@@ -8,10 +8,6 @@ use smash::{
 };
 use smash_script::*;
 
-fn is_special_n(motion_kind: u64) -> bool {
-    motion_kind == hash40("special_n")
-}
-
 impl Position2D {
     // If on the ground, there are five different positions to choose from:
     // Up Right vertex:   x: 0.9166667, y: 0.5
@@ -68,16 +64,12 @@ impl TeleportStatus {
     }
 }
 
-pub unsafe extern "C" fn ganon_teleport_handler(fighter: &mut L2CFighterCommon) {
+pub unsafe extern "C" fn ganon_teleport_handler(fighter: &mut L2CFighterCommon, iv: &InitValues) {
     let boma = fighter.module_accessor;
     let pre_ts_int = WorkModule::get_int(boma, GANON_TELEPORT_WORK_INT);
     println!("Teleport Status {:#?}", pre_ts_int);
-    println!("X STICK {}", ControlModule::get_stick_x(boma));
-    println!("Y STICK {}", ControlModule::get_stick_y(boma));
     let ts = TeleportStatus::from_int(pre_ts_int);
-    let curr_situation_kind = StatusModule::situation_kind(boma);
-    if !StatusModule::status_kind(boma) == *FIGHTER_STATUS_KIND_SPECIAL_N
-        && !curr_situation_kind == SITUATION_KIND_GROUND
+    if iv.status_kind != FIGHTER_STATUS_KIND_SPECIAL_N && iv.situation_kind != SITUATION_KIND_GROUND
     {
         return;
     }
@@ -121,7 +113,7 @@ pub unsafe extern "C" fn ganon_teleport_handler(fighter: &mut L2CFighterCommon) 
         }
         _ => {}
     }
-    if StatusModule::situation_kind(boma) == *SITUATION_KIND_AIR
+    if iv.situation_kind == SITUATION_KIND_AIR
         && ts.suspend_kinetic_energy()
         && !WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG)
     {

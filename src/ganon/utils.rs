@@ -21,6 +21,19 @@ impl fmt::Display for FloatStatus {
     }
 }
 
+/// A convenience struct that holds necessary values. It beats having a function
+/// accept numerous parameters.
+#[derive(Debug)]
+pub struct InitValues {
+    pub prev_status_kind: i32,
+    pub status_kind: i32,
+    pub situation_kind: i32,
+    pub motion_kind: u64,
+    pub entry_id: usize,
+    pub motion_module_frame: f32,
+    pub teleport_into_float: bool,
+}
+
 #[derive(Copy, Clone, Debug)]
 pub struct Position2D {
     pub x: f32,
