@@ -112,7 +112,7 @@ pub unsafe extern "C" fn ganon_teleport_handler(fighter: &mut L2CFighterCommon) 
                 0,
                 true,
             );
-            macros::LAST_EFFECT_SET_RATE(fighter, 2.5);
+            macros::LAST_EFFECT_SET_RATE(fighter, 1.875); // 2.5 == 30 frames
             WorkModule::set_int(
                 boma,
                 TeleportStatus::Transit as i32,

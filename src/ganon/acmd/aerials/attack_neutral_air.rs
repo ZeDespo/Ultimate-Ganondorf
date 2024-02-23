@@ -619,7 +619,7 @@ unsafe extern "C" fn portal_hitbox(agent: &mut L2CAgentBase) {
         );
     }
     frame(agent.lua_state_agent, 1.0);
-    for _ in 0..2 {
+    for _ in 0..4 {
         if macros::is_excute(agent) {
             macros::ATTACK(
                 agent,
@@ -712,7 +712,7 @@ unsafe extern "C" fn portal_hitbox(agent: &mut L2CAgentBase) {
             0,
             0,
             Hash40::new("hip"),
-            12.0,
+            7.0,
             90,
             106,
             0,
@@ -752,7 +752,7 @@ unsafe extern "C" fn portal_hitbox(agent: &mut L2CAgentBase) {
     if macros::is_excute(agent) {
         AttackModule::clear_all(agent.module_accessor);
     }
-    frame(agent.lua_state_agent, 11.0);
+    frame(agent.lua_state_agent, 21.0);
     if macros::is_excute(agent) {
         WorkModule::off_flag(
             agent.module_accessor,

@@ -150,7 +150,7 @@ impl FloatStatus {
             return FloatStatus::Floating(MAX_FLOAT_FRAMES);
         }
         if init_values.teleport_into_float {
-            return FloatStatus::Floating(29);
+            return FloatStatus::Floating(40);
         }
         return self;
     }
@@ -252,7 +252,7 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon) {
             }
         }
         FloatStatus::Floating(i) => {
-            if i == 29 && iv.teleport_into_float {
+            if i == 40 && iv.teleport_into_float {
                 StatusModule::change_status_request_from_script(
                     boma,
                     FIGHTER_STATUS_KIND_ATTACK_AIR.into(),

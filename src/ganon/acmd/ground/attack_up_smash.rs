@@ -13,6 +13,7 @@ pub fn install() {
 
 /// - Startup reduced 20 -> 11
 /// - Damage reduced 24/21 -> 19*/16*
+
 unsafe extern "C" fn ganon_attackhi4(agent: &mut L2CAgentBase) {
     macros::FT_MOTION_RATE(agent, 0.5);
     if macros::is_excute(agent) {
@@ -82,7 +83,7 @@ unsafe extern "C" fn ganon_attackhi4(agent: &mut L2CAgentBase) {
             1,
             0,
             Hash40::new("haver"),
-            24.0,
+            19.0,
             78,
             71,
             0,
