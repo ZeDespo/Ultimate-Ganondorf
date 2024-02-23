@@ -14,9 +14,9 @@ const MID_TELEPORT_STEP: f32 = 40.0;
 fn calculate_base_teleport_distance(stick: f32) -> f32 {
     let stick_abs = stick.abs();
     let mut t_step = 0.0;
-    if stick_abs > 0.2 && stick_abs <= 0.7 {
+    if stick_abs > 0.2 && stick_abs <= 0.85 {
         t_step = MIN_TELEPORT_STEP;
-    } else if stick_abs > 0.7 {
+    } else if stick_abs > 0.85 {
         t_step = MID_TELEPORT_STEP;
     }
     if stick < 0.0 {
