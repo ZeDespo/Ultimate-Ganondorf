@@ -35,6 +35,7 @@ pub struct InitValues {
 }
 
 #[derive(Copy, Clone, Debug)]
+#[repr(C)]
 pub struct Position2D {
     pub x: f32,
     pub y: f32,

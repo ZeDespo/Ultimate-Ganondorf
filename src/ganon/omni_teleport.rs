@@ -10,16 +10,19 @@ use smash_script::*;
 
 const MIN_TELEPORT_STEP: f32 = 20.0;
 const MID_TELEPORT_STEP: f32 = 40.0;
-const MAX_TELEPORT_STEP: f32 = 60.0;
 
 fn calculate_base_teleport_distance(stick: f32) -> f32 {
-    if stick >= 0.3333333 {
-        return MID_TELEPORT_STEP;
+    let stick_abs = stick.abs();
+    let mut t_step = 0.0;
+    if stick_abs > 0.2 && stick_abs <= 0.7 {
+        t_step = MIN_TELEPORT_STEP;
+    } else if stick_abs > 0.7 {
+        t_step = MID_TELEPORT_STEP;
     }
-    if stick <= -0.3333333 {
-        return -MID_TELEPORT_STEP;
+    if stick < 0.0 {
+        return -t_step;
     }
-    0.0
+    t_step
 }
 
 fn add_teleport_distance(direction: f32) -> f32 {
@@ -39,6 +42,7 @@ impl Position2D {
     // Down Left vertex:  x: -0.9166667, y: -0.5
     unsafe extern "C" fn next_teleport_position(
         boma: *mut BattleObjectModuleAccessor,
+        iv: &InitValues,
     ) -> Position2D {
         let mut x = calculate_base_teleport_distance(ControlModule::get_stick_x(boma));
         let mut y = calculate_base_teleport_distance(ControlModule::get_stick_y(boma));
@@ -46,6 +50,9 @@ impl Position2D {
             x = add_teleport_distance(x);
         } else if x == 0.0 {
             y = add_teleport_distance(y);
+        }
+        if iv.situation_kind == SITUATION_KIND_GROUND && y < 0.0 {
+            y = 0.0;
         }
         Position2D { x: x, y: y + 0.1 }
     }
@@ -65,7 +72,7 @@ pub unsafe extern "C" fn ganon_teleport_handler(fighter: &mut L2CFighterCommon, 
     let ts = TeleportStatus::from_int(WorkModule::get_int(boma, GANON_TELEPORT_WORK_INT));
     match ts {
         TeleportStatus::Start => {
-            Position2D::next_teleport_position(boma).set_to_work_module(boma);
+            Position2D::next_teleport_position(boma, iv).set_to_work_module(boma);
         }
         TeleportStatus::PreTransit => {
             PostureModule::add_pos_2d(
