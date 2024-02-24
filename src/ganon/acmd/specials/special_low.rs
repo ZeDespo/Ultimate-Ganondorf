@@ -6,16 +6,21 @@ use {smash::lua2cpp::*, smashline::*};
 
 use crate::utils::shield::*;
 
-/// - Downb can now be cancelled early with a second B press. *Cancellable on frame 24.*
+/// - Hold special button to do the original Wizard's Kick. Tap the special button to do the
+/// shortened version.
 /// - Wizard Kick Hitbox size increased 3/4 -> 4/5 *on ground only*.
 /// - Grounded downb is faster. *Starts at frame 7*.
 /// - Grounded downb now crosses shields up.
 unsafe extern "C" fn ganon_speciallw(agent: &mut L2CAgentBase) {
+    let mut cancel_special = true;
     frame(agent.lua_state_agent, 1.0);
     macros::FT_MOTION_RATE(agent, 0.7);
     frame(agent.lua_state_agent, 10.0);
     if macros::is_excute(agent) {
         FighterAreaModuleImpl::enable_fix_jostle_area_xy(agent.module_accessor, 3.0, 6.0, 8.5, 9.5);
+        if ControlModule::check_button_on(agent.module_accessor, *CONTROL_PAD_BUTTON_SPECIAL) {
+            cancel_special = false;
+        }
     }
     frame(agent.lua_state_agent, 13.0);
     if macros::is_excute(agent) {
@@ -135,7 +140,7 @@ unsafe extern "C" fn ganon_speciallw(agent: &mut L2CAgentBase) {
     }
     frame(agent.lua_state_agent, 24.0);
     if macros::is_excute(agent) {
-        if ControlModule::check_button_on(agent.module_accessor, *CONTROL_PAD_BUTTON_SPECIAL) {
+        if cancel_special {
             disable_reflector(agent, 0);
             StatusModule::change_status_request_from_script(
                 agent.module_accessor,
@@ -345,6 +350,6 @@ unsafe extern "C" fn ganon_specialairlw(agent: &mut L2CAgentBase) {
 pub fn install() {
     Agent::new("ganon")
         .game_acmd("game_speciallw", ganon_speciallw)
-        .game_acmd("game_specialairlw", ganon_specialairlw)
+        // .game_acmd("game_specialairlw", ganon_specialairlw)
         .install();
 }
