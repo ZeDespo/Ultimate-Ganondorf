@@ -209,9 +209,7 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
     match GS[iv.entry_id].fs {
         FloatStatus::CannotFloat => {
             GS[iv.entry_id].speed = Position2D::reset();
-            if iv.is_start_of_float()
-                || (iv.teleport_into_float && iv.status_kind != FIGHTER_STATUS_KIND_DAMAGE_AIR)
-            {
+            if iv.is_start_of_float() {
                 StatusModule::change_status_request_from_script(
                     boma,
                     *FIGHTER_STATUS_KIND_FALL_AERIAL,
@@ -221,6 +219,7 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
                 KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_FALL);
             }
             if iv.teleport_into_float {
+                KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_FALL);
                 WorkModule::turn_off_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG);
                 CancelModule::enable_cancel(boma);
                 macros::WHOLE_HIT(fighter, *HIT_STATUS_NORMAL);
