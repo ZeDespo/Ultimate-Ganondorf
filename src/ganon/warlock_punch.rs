@@ -5,6 +5,7 @@
 use smash::app::lua_bind::*;
 use smash::lib::lua_const::*;
 use smash::lua2cpp::*;
+use smash_script::macros;
 
 use super::utils::{FloatStatus, InitValues, GS};
 use skyline_smash::app::BattleObjectModuleAccessor;
@@ -43,13 +44,6 @@ unsafe extern "C" fn get_taunt_button_press(boma: *mut BattleObjectModuleAccesso
     }
 }
 
-/// Check if we are pressing the special button, to perform a neutral special attack.
-unsafe extern "C" fn is_true_neutral_special(boma: *mut BattleObjectModuleAccessor) -> bool {
-    ControlModule::get_stick_x(boma).abs() < 0.2
-        && ControlModule::get_stick_y(boma).abs() < 0.2
-        && ControlModule::check_button_on_trriger(boma, *CONTROL_PAD_BUTTON_SPECIAL)
-}
-
 /// Do the Warlock punch if any of the following conditions are met:
 /// - The left taunt / right taunt button is pressed.
 pub unsafe extern "C" fn warlock_punch(fighter: &mut L2CFighterCommon, iv: &InitValues) {
@@ -75,6 +69,15 @@ pub unsafe extern "C" fn warlock_punch(fighter: &mut L2CFighterCommon, iv: &Init
             }
         }
         WarlockMutex::Executing(0) => WARLOCK_ENTRIES[iv.entry_id] = WarlockMutex::Ready,
-        WarlockMutex::Executing(i) => WARLOCK_ENTRIES[iv.entry_id] = WarlockMutex::Executing(i - 1),
+        WarlockMutex::Executing(i) => {
+            WARLOCK_ENTRIES[iv.entry_id] = WarlockMutex::Executing(i - 1);
+            if i == WARLOCK_N_TURN_FRAMES - 10 {
+                macros::PLAY_SE(fighter, Hash40::new("vc_ganon_special_n01"));
+            } else if i == WARLOCK_N_TURN_FRAMES - 12 {
+                macros::PLAY_SE(fighter, Hash40::new("se_ganon_special_n01"));
+            } else if i == WARLOCK_N_TURN_FRAMES - 68 {
+                macros::PLAY_SE(fighter, Hash40::new("se_ganon_special_n02"));
+            }
+        }
     }
 }
