@@ -34,7 +34,7 @@ unsafe extern "C" fn ganon_teleport(fighter: &mut L2CAgentBase) {
     if macros::is_excute(fighter) {
         WorkModule::set_int(
             fighter.module_accessor,
-            TeleportStatus::Start.to_int(),
+            TeleportStatus::PreTransit.to_int(),
             GANON_TELEPORT_WORK_INT,
         );
     }
@@ -42,7 +42,7 @@ unsafe extern "C" fn ganon_teleport(fighter: &mut L2CAgentBase) {
     if macros::is_excute(fighter) {
         WorkModule::set_int(
             fighter.module_accessor,
-            TeleportStatus::PreTransit.to_int(),
+            TeleportStatus::Transit.to_int(),
             GANON_TELEPORT_WORK_INT,
         );
         // macros::WHOLE_HIT(fighter, *HIT_STATUS_XLU);

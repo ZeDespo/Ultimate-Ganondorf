@@ -56,8 +56,7 @@ pub struct GanonState {
 #[repr(i32)]
 #[derive(Debug)]
 pub enum TeleportStatus {
-    NotApplicable = 0,
-    Start,
+    Ready = 0,
     PreTransit,
     Transit,
     End,

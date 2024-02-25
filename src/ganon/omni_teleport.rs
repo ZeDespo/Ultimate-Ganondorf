@@ -71,10 +71,10 @@ pub unsafe extern "C" fn ganon_teleport_handler(fighter: &mut L2CFighterCommon, 
     let boma = fighter.module_accessor;
     let ts = TeleportStatus::from_int(WorkModule::get_int(boma, GANON_TELEPORT_WORK_INT));
     match ts {
-        TeleportStatus::Start => {
+        TeleportStatus::PreTransit => {
             Position2D::next_teleport_position(boma, iv).set_to_work_module(boma);
         }
-        TeleportStatus::PreTransit => {
+        TeleportStatus::Transit => {
             PostureModule::add_pos_2d(
                 boma,
                 &Vector2f {
@@ -111,18 +111,10 @@ pub unsafe extern "C" fn ganon_teleport_handler(fighter: &mut L2CFighterCommon, 
                 true,
             );
             macros::LAST_EFFECT_SET_RATE(fighter, 1.875); // 2.5 == 30 frames
-            WorkModule::set_int(
-                boma,
-                TeleportStatus::Transit as i32,
-                GANON_TELEPORT_WORK_INT,
-            );
+            WorkModule::set_int(boma, TeleportStatus::End as i32, GANON_TELEPORT_WORK_INT);
             if !WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG) {
                 WorkModule::set_flag(boma, true, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG);
-                WorkModule::set_int(
-                    boma,
-                    TeleportStatus::NotApplicable as i32,
-                    GANON_TELEPORT_WORK_INT,
-                );
+                WorkModule::set_int(boma, TeleportStatus::Ready as i32, GANON_TELEPORT_WORK_INT);
             }
         }
         _ => {}
