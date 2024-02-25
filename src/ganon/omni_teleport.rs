@@ -111,6 +111,7 @@ pub unsafe extern "C" fn ganon_teleport_handler(fighter: &mut L2CFighterCommon, 
                 true,
             );
             macros::LAST_EFFECT_SET_RATE(fighter, 1.875); // 2.5 == 30 frames
+            macros::PLAY_SE(fighter, Hash40::new("se_ganon_special_l01"));
             WorkModule::set_int(boma, TeleportStatus::End as i32, GANON_TELEPORT_WORK_INT);
             if !WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG) {
                 WorkModule::set_flag(boma, true, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG);

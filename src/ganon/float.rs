@@ -13,6 +13,7 @@ use {
 };
 
 const MAX_FLOAT_FRAMES: i16 = 91; // Float by this amount
+const TELEPORT_TO_FLOAT_FRAMES: i16 = 40; // Teleport into float frames.
 const STARTING_FLOAT_FRAME: f32 = 2.0; // When the float frame will start.
 const X_MAX: f32 = 1.155; // Maximum velocity that can be achieved for X movements.
 const X_ACCEL_MULT: f32 = 0.12; // Multiplier for internal calculations
@@ -150,7 +151,7 @@ impl FloatStatus {
             return FloatStatus::Floating(MAX_FLOAT_FRAMES);
         }
         if init_values.teleport_into_float {
-            return FloatStatus::Floating(40);
+            return FloatStatus::Floating(TELEPORT_TO_FLOAT_FRAMES);
         }
         return self;
     }
@@ -225,7 +226,7 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
             }
         }
         FloatStatus::Floating(i) => {
-            if i == 40 && iv.teleport_into_float {
+            if i == TELEPORT_TO_FLOAT_FRAMES && iv.teleport_into_float {
                 StatusModule::change_status_request_from_script(
                     boma,
                     FIGHTER_STATUS_KIND_ATTACK_AIR.into(),
