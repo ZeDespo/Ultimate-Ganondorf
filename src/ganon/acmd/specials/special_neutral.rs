@@ -27,6 +27,7 @@ pub fn install() {
         .install();
 }
 
+/// Take that base teleport from Ultimate S, but only yake the
 unsafe extern "C" fn ganon_teleport(fighter: &mut L2CAgentBase) {
     macros::FT_MOTION_RATE(fighter, /*FSM*/ 0.75);
     frame(fighter.lua_state_agent, 1.0);
@@ -44,14 +45,14 @@ unsafe extern "C" fn ganon_teleport(fighter: &mut L2CAgentBase) {
             TeleportStatus::PreTransit.to_int(),
             GANON_TELEPORT_WORK_INT,
         );
-        macros::WHOLE_HIT(fighter, *HIT_STATUS_XLU);
-        VisibilityModule::set_whole(fighter.module_accessor, false);
-        JostleModule::set_status(fighter.module_accessor, false);
-
-        GroundModule::set_correct(
-            fighter.module_accessor,
-            GroundCorrectKind(*GROUND_CORRECT_KIND_AIR),
-        );
+        // macros::WHOLE_HIT(fighter, *HIT_STATUS_XLU);
+        // VisibilityModule::set_whole(fighter.module_accessor, false);
+        // JostleModule::set_status(fighter.module_accessor, false);
+        //
+        // GroundModule::set_correct(
+        //     fighter.module_accessor,
+        //     GroundCorrectKind(*GROUND_CORRECT_KIND_AIR),
+        // );
     }
     // frame(fighter.lua_state_agent, 35.0);
     // macros::FT_MOTION_RATE(fighter, /*FSM*/ 1);

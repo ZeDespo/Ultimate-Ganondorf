@@ -82,6 +82,15 @@ pub unsafe extern "C" fn ganon_teleport_handler(fighter: &mut L2CFighterCommon, 
                     y: WorkModule::get_float(boma, GANON_TELEPORT_NEW_Y_POS),
                 },
             );
+
+            macros::WHOLE_HIT(fighter, *HIT_STATUS_XLU);
+            VisibilityModule::set_whole(fighter.module_accessor, false);
+            JostleModule::set_status(fighter.module_accessor, false);
+
+            GroundModule::set_correct(
+                fighter.module_accessor,
+                GroundCorrectKind(*GROUND_CORRECT_KIND_AIR),
+            );
             macros::EFFECT(
                 fighter,
                 Hash40::new("ganon_entry"),
