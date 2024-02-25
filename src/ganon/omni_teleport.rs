@@ -86,7 +86,6 @@ pub unsafe extern "C" fn ganon_teleport_handler(fighter: &mut L2CFighterCommon, 
             macros::WHOLE_HIT(fighter, *HIT_STATUS_XLU);
             VisibilityModule::set_whole(fighter.module_accessor, false);
             JostleModule::set_status(fighter.module_accessor, false);
-
             GroundModule::set_correct(
                 fighter.module_accessor,
                 GroundCorrectKind(*GROUND_CORRECT_KIND_AIR),
