@@ -31,6 +31,7 @@ pub struct InitValues {
     pub motion_kind: u64,
     pub entry_id: usize,
     pub motion_module_frame: f32,
+    pub kinetic_kind: i32,
     pub teleport_into_float: bool,
 }
 

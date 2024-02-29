@@ -15,6 +15,7 @@ pub unsafe extern "C" fn ganon_frame(fighter: &mut L2CFighterCommon) {
         entry_id: WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize,
         motion_module_frame: MotionModule::frame(boma),
         motion_kind: MotionModule::motion_kind(boma),
+        kinetic_kind: KineticModule::get_kinetic_type(boma),
         teleport_into_float: in_teleport(boma),
     };
     println!("{:#?}", iv);
