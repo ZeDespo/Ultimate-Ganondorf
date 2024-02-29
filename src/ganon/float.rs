@@ -12,11 +12,6 @@ use {
     smashline::*,
 };
 
-// TODO: Status Kind 11, Frame 17, motion kind 26538418264  (full hop)
-// TODO: Status Kind 11, Frame 13, Motion kind 48197380936  (short hop)
-// TODO: Holding down and jump goes to float.
-// TODO: Attacks do not alter kinetic kinetic energy (down air won't move down).
-
 const MAX_FLOAT_FRAMES: i16 = 91; // Float by this amount
 const TELEPORT_TO_FLOAT_FRAMES: i16 = 40; // Teleport into float frames.
 const STARTING_FLOAT_FRAME: f32 = 2.0; // When the float frame will start.

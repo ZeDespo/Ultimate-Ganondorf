@@ -5,7 +5,6 @@
 use crate::ganon::utils::{TeleportStatus, GANON_TELEPORT_WORK_INT};
 use smash::app::lua_bind::*;
 use smash::app::sv_animcmd::*;
-use smash::lib::lua_const::*;
 use smash::lua2cpp::*;
 use smash::phx::Hash40;
 use smash_script::*;
@@ -19,7 +18,6 @@ pub fn install() {
         .effect_acmd("effect_specialairn", ganon_floate)
         .sound_acmd("sound_specialn", ganon_teleport_snd)
         .sound_acmd("sound_specialairn", ganon_floats)
-        .expression_acmd("expression_specialn", ganon_teleport_expr)
         .expression_acmd("expression_specialairn", ganon_float_expr)
         .install();
 }
@@ -184,23 +182,6 @@ unsafe extern "C" fn ganon_teleport_snd(fighter: &mut L2CAgentBase) {
     frame(fighter.lua_state_agent, 15.0);
     if macros::is_excute(fighter) {
         macros::PLAY_SE(fighter, Hash40::new("se_ganon_appeal_h01"));
-    }
-    frame(fighter.lua_state_agent, 35.0);
-    if macros::is_excute(fighter) {
-        macros::PLAY_SE(fighter, Hash40::new("se_common_spirits_critical_l_tail"));
-    }
-    frame(fighter.lua_state_agent, 39.0);
-    if macros::is_excute(fighter) {
-        macros::PLAY_SE(fighter, Hash40::new("vc_ganon_appeal_h01"));
-        macros::PLAY_SE(fighter, Hash40::new("se_ganon_special_l02"));
-    }
-}
-
-unsafe extern "C" fn ganon_teleport_expr(fighter: &mut L2CAgentBase) {
-    frame(fighter.lua_state_agent, 41.0);
-    if macros::is_excute(fighter) {
-        macros::QUAKE(fighter, *CAMERA_QUAKE_KIND_L);
-        macros::RUMBLE_HIT(fighter, Hash40::new("rbkind_attack_critical"), 0);
     }
 }
 
