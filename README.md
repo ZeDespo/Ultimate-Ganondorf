@@ -9,10 +9,6 @@ up to 11, pulling inspiration from other mods such as Legacy XP and Project M.
 Anything that's *italicized* is a copy and paste port from Ultimate-S. You can find 
 their changelog for Ganondorf [here](https://docs.google.com/document/d/1gys8XOEnWDPZlxPB0yOVv1fCWIXJwanWTrETpU23jp4/edit#heading=h.qsh70q)
 
-## What was ported from Ult-S 
-
-*Note: All entries in this section can be found in Ultimate S's change log [here](https://docs.google.com/document/d/1gys8XOEnWDPZlxPB0yOVv1fCWIXJwanWTrETpU23jp4/edit#heading=h.qsh70q). Anything in italics is something I added from the source / details a minor change.*
-
 ### Fighter parameters
 
 - *Runspeed increased 1.34 -> 1.45*
