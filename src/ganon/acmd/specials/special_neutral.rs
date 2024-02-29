@@ -22,7 +22,8 @@ pub fn install() {
         .install();
 }
 
-/// Take that base teleport from Ultimate S, but only yake the
+/// Take that base teleport from Ultimate S, but only handle the entry animation.
+/// Later handling is elsewhere.
 unsafe extern "C" fn ganon_teleport(fighter: &mut L2CAgentBase) {
     macros::FT_MOTION_RATE(fighter, /*FSM*/ 0.75);
     frame(fighter.lua_state_agent, 1.0);
