@@ -105,16 +105,16 @@ This move can also be angled vertically, slightly.
 
 ### Down Special 
 
-On frame 16 until frame 39, a reflector hitbox will spawn on Ganondorf's foot, eating
+- On frame 16 until frame 39, a reflector hitbox will spawn on Ganondorf's foot, eating
 MOST projectiles that come his way. Fast projectiles such as Byleth's fully charged 
 Failnaught arrow will be reflected back at the opponent. 
+- Tapping the special button will yield a shorter Wizard's Kick animation ending on frame 24.
+    - Reflector will only last until frame 24 as well.
+- Holding the special button past frame 10 will use the old Wizard's Kick animation.
 
 #### Grounded properties
 
 - *Hitbox active on frame 16.*
-- Tapping the special button will yield a shorter Wizard's Kick animation ending on frame 24.
-    - Reflector will only last until frame 24 as well.
-- Holding the special button past frame 10 will use the old Wizard's Kick animation.
 - Crosses up shields if used close enough.
 
 ### Warlock Punch 
