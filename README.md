@@ -25,10 +25,10 @@ their changelog for Ganondorf [here](https://docs.google.com/document/d/1gys8XOE
 ### Up-Tilt
 
 *Utilt is now a 2 hit move:*
-    - *No longer has armor*
-    - *Damage 24/13 (early/late) -> 3/13 (hit 1 / 2)*
-    - *Startup 60 -> 12/15*
-    - *Angle 361/70 (early/late) -> 270/361 (grounded/aerial)*
+- *No longer has armor*
+- *Damage 24/13 (early/late) -> 3/13 (hit 1 / 2)*
+- *Startup 60 -> 12/15*
+- *Angle 361/70 (early/late) -> 270/361 (grounded/aerial)*
 
 ### Up-Smash
 
