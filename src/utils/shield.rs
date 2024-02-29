@@ -1,8 +1,6 @@
 //! Shield generic helpers.
-use smash::app::lua_bind::*;
-use smash::app::sv_animcmd::*;
 use smash::lib::lua_const::*;
-use smash_script::{lua_args, macros, shield};
+use smash_script::{lua_args, shield};
 use {smash::lua2cpp::*, smashline::*};
 
 /// Activates a reflector for a defined hitbox. This hitbox will always

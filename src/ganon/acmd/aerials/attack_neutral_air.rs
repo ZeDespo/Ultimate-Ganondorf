@@ -831,10 +831,10 @@ unsafe extern "C" fn portal_hitbox(agent: &mut L2CAgentBase) {
             0,
             Hash40::new("hip"),
             7.0,
-            270,
-            106,
+            90,
+            80,
             0,
-            25,
+            20,
             12.0,
             0.0,
             0.0,
@@ -865,12 +865,12 @@ unsafe extern "C" fn portal_hitbox(agent: &mut L2CAgentBase) {
             *ATTACK_REGION_NONE,
         );
     }
-    // macros::FT_MOTION_RATE(agent, 0.4);
+    macros::FT_MOTION_RATE(agent, 0.4);
     wait(agent.lua_state_agent, 2.0);
     if macros::is_excute(agent) {
         AttackModule::clear_all(agent.module_accessor);
     }
-    frame(agent.lua_state_agent, 21.0);
+    frame(agent.lua_state_agent, 17.0);
     if macros::is_excute(agent) {
         WorkModule::off_flag(
             agent.module_accessor,

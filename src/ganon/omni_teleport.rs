@@ -1,7 +1,6 @@
 use super::utils::*;
 use smash::{
-    app::{lua_bind::*, sv_animcmd::*, *},
-    hash40,
+    app::{lua_bind::*, *},
     lib::lua_const::*,
     lua2cpp::*,
     phx::*,
@@ -14,9 +13,9 @@ const MID_TELEPORT_STEP: f32 = 40.0;
 fn calculate_base_teleport_distance(stick: f32) -> f32 {
     let stick_abs = stick.abs();
     let mut t_step = 0.0;
-    if stick_abs > 0.2 && stick_abs <= 0.85 {
+    if stick_abs > 0.2 && stick_abs <= 0.8 {
         t_step = MIN_TELEPORT_STEP;
-    } else if stick_abs > 0.85 {
+    } else if stick_abs > 0.8 {
         t_step = MID_TELEPORT_STEP;
     }
     if stick < 0.0 {
@@ -108,13 +107,13 @@ pub unsafe extern "C" fn ganon_teleport_handler(fighter: &mut L2CFighterCommon, 
             );
 
             macros::WHOLE_HIT(fighter, *HIT_STATUS_XLU);
-            // VisibilityModule::set_whole(fighter.module_accessor, false);
+            VisibilityModule::set_whole(fighter.module_accessor, false);
             JostleModule::set_status(fighter.module_accessor, false);
             GroundModule::set_correct(
                 fighter.module_accessor,
                 GroundCorrectKind(*GROUND_CORRECT_KIND_AIR),
             );
-            // teleport_fx(fighter);
+            teleport_fx(fighter);
             WorkModule::set_int(boma, TeleportStatus::End as i32, GANON_TELEPORT_WORK_INT);
             if !WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG) {
                 WorkModule::set_flag(boma, true, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG);

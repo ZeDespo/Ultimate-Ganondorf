@@ -7,7 +7,7 @@ use smash::lib::lua_const::*;
 use smash::lua2cpp::*;
 use smash_script::macros;
 
-use super::utils::{FloatStatus, InitValues, GS};
+use super::utils::InitValues;
 use skyline_smash::app::BattleObjectModuleAccessor;
 use smashline::*;
 

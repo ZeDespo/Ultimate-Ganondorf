@@ -1,4 +1,4 @@
-use super::utils::{in_teleport, InitValues, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG};
+use super::utils::{in_teleport, InitValues};
 use crate::ganon::float::ganon_float;
 use crate::ganon::omni_teleport::ganon_teleport_handler;
 use crate::ganon::warlock_punch::warlock_punch;
