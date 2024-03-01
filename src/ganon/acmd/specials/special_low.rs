@@ -163,7 +163,6 @@ unsafe extern "C" fn ganon_speciallw(agent: &mut L2CAgentBase) {
     }
 }
 
-/// - Downb can now be cancelled early with a second B press. *Cancellable on frame 24.*
 unsafe extern "C" fn ganon_specialairlw(agent: &mut L2CAgentBase) {
     let mut cancel_special = true;
     frame(agent.lua_state_agent, 10.0);

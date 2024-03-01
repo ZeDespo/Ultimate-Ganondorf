@@ -46,7 +46,6 @@ to teleport shorter distances.
     - Angle: 90
 - Total Frames: 67
 
-
 #### If Teleport misses opponent
 
 - Cancellable via jump (if telport misses opponent) on frame 57. Can be bufferred.

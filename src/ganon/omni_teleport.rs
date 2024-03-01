@@ -1,3 +1,5 @@
+//! Given some input, this file calculates the next position to teleport to and handles
+//! the starting logic.
 use super::utils::*;
 use smash::{
     app::{lua_bind::*, *},
@@ -10,6 +12,7 @@ use smash_script::*;
 const MIN_TELEPORT_STEP: f32 = 20.0;
 const MID_TELEPORT_STEP: f32 = 40.0;
 
+/// Distance is measured by mash ferocity and direction of the left analog stick
 fn calculate_base_teleport_distance(stick: f32) -> f32 {
     let stick_abs = stick.abs();
     let mut t_step = 0.0;
@@ -24,6 +27,7 @@ fn calculate_base_teleport_distance(stick: f32) -> f32 {
     t_step
 }
 
+/// Add teleport distance iff the
 fn add_teleport_distance(direction: f32) -> f32 {
     if direction < 0.0 {
         return direction - 20.0;
