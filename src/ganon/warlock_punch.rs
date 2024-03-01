@@ -59,6 +59,20 @@ pub unsafe extern "C" fn warlock_punch(fighter: &mut L2CFighterCommon, iv: &Init
                 *FIGHTER_STATUS_KIND_SPECIAL_LW,
                 *FIGHTER_STATUS_KIND_ESCAPE_AIR,
                 *FIGHTER_STATUS_KIND_ESCAPE_AIR_SLIDE,
+                *FIGHTER_STATUS_KIND_ATTACK_100,
+                *FIGHTER_STATUS_KIND_ATTACK_DASH,
+                *FIGHTER_STATUS_KIND_ATTACK_HI3,
+                *FIGHTER_STATUS_KIND_ATTACK_HI4,
+                *FIGHTER_STATUS_KIND_ATTACK_HI4_HOLD,
+                *FIGHTER_STATUS_KIND_ATTACK_HI4_START,
+                *FIGHTER_STATUS_KIND_ATTACK_LW3,
+                *FIGHTER_STATUS_KIND_ATTACK_LW4,
+                *FIGHTER_STATUS_KIND_ATTACK_LW4_HOLD,
+                *FIGHTER_STATUS_KIND_ATTACK_LW4_START,
+                *FIGHTER_STATUS_KIND_ATTACK_S3,
+                *FIGHTER_STATUS_KIND_ATTACK_S4,
+                *FIGHTER_STATUS_KIND_ATTACK_S4_HOLD,
+                *FIGHTER_STATUS_KIND_ATTACK_S4_START,
             ];
             if !invalid_status_kinds.contains(&iv.status_kind) {
                 let direction = get_taunt_button_press(boma);
