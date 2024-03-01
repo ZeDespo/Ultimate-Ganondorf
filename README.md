@@ -27,11 +27,15 @@ their changelog for Ganondorf [here](https://docs.google.com/document/d/1gys8XOE
 ### Neutral Special (Ground)
 
 Ganondorf is granted an omni-directional teleport, whose distance / position is based 
-on the direction of the left analog stick. If Ganondorf teleports into an opponent, 
+on the direction / axis of the left analog stick. If Ganondorf teleports into an opponent, 
 the portal acts as a multi-hit that launches the opponent upwards. If the portal does not hit 
 an opponent, Ganondorf will leave the portal after 40 frames. Despite his invisibility, 
 Ganondorf can be punished for missing a telport hitbox. Opponents beware, as soon as 
 Ganondorf appears from the portal, he can act immediately with a punish of his own.
+
+Range for the teleport can be anywhere between 5 and 60 units in direction. If you 
+slam the left analog stick you'll go farther. Barely move the analog stick in a direction 
+to teleport shorter distances.
 
 - Startup: 16 frames
 - Multihit damage: 1.1 units 
@@ -41,6 +45,7 @@ Ganondorf appears from the portal, he can act immediately with a punish of his o
     - Base knockback: 23 
     - Angle: 90
 - Total Frames: 67
+
 
 #### If Teleport misses opponent
 
@@ -117,16 +122,22 @@ Failnaught arrow will be reflected back at the opponent.
 - *Startup 60 -> 12/15*
 - *Angle 361/70 (early/late) -> 270/361 (grounded/aerial)*
 
+---
+
 ### Up-Smash
 
 - *Startup reduced 20 -> 11*
 - Damage reduced from 24/21 -> 19/16
 
+---
+
 ### Forward-Air
 
 - *Autocancels earlier (Frame 45 -> Frame 36)*
-- Base knockback increased from 20 -> 40 units.
-- Knockback growth reduced from 93 -> 85 units.
+- *Base knockback increased from 20 -> 40 units.*
+- *Knockback growth reduced from 93 -> 85 units.*
+
+---
 
 ### Up-Air 
 

@@ -48,4 +48,5 @@ tasks:
             - task: deploy-local-plugin
               vars: 
                 BUILD_DIR: target/aarch64-skyline-switch/release
+        desc: "Build production plugin and deploy assets."
 

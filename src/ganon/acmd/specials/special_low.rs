@@ -1,3 +1,10 @@
+//! - On frame 16 until frame 39, a reflector hitbox will spawn on Ganondorf's foot, eating
+//! MOST projectiles that come his way. Fast projectiles such as Byleth's fully charged
+//! Failnaught arrow will be reflected back at the opponent.
+//! - Tapping the special button will yield a shorter Wizard's Kick animation ending on frame 24.
+//!    - Reflector will only last until frame 24 as well.
+//! - Holding the special button past frame 10 will use the old Wizard's Kick animation.
+
 use smash::app::lua_bind::*;
 use smash::app::sv_animcmd::*;
 use smash::lib::lua_const::*;
@@ -6,11 +13,6 @@ use {smash::lua2cpp::*, smashline::*};
 
 use crate::utils::shield::*;
 
-/// - Hold special button to do the original Wizard's Kick. Tap the special button to do the
-/// shortened version.
-/// - Wizard Kick Hitbox size increased 3/4 -> 4/5 *on ground only*.
-/// - Grounded downb is faster. *Starts at frame 7*.
-/// - Grounded downb now crosses shields up.
 unsafe extern "C" fn ganon_speciallw(agent: &mut L2CAgentBase) {
     let mut cancel_special = true;
     frame(agent.lua_state_agent, 1.0);

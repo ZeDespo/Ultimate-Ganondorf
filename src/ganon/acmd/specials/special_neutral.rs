@@ -1,7 +1,5 @@
-//! *NOTE*: This file is solely the work of the Ultimate S team, headed by `@chrispo`.
-//!
-//! The only credit I can claim is converting the library to use Smashline 2 and for
-//! some Rust formatting.
+//! This function just deals with the ground special attack's startup. How the rest of
+//! the move is handled belongs to `crate::ganon::omni_teleport`.
 use crate::ganon::utils::{TeleportStatus, GANON_TELEPORT_WORK_INT};
 use smash::app::lua_bind::*;
 use smash::app::sv_animcmd::*;
