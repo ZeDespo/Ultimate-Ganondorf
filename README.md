@@ -22,28 +22,7 @@ their changelog for Ganondorf [here](https://docs.google.com/document/d/1gys8XOE
 - *Bair LL increased 11 > 12*
 - *Dair LL increased 16 > 20*
 
-### Up-Tilt
-
-*Utilt is now a 2 hit move:*
-- *No longer has armor*
-- *Damage 24/13 (early/late) -> 3/13 (hit 1 / 2)*
-- *Startup 60 -> 12/15*
-- *Angle 361/70 (early/late) -> 270/361 (grounded/aerial)*
-
-### Up-Smash
-
-- *Startup reduced 20 -> 11*
-- Damage reduced from 24/21 -> 19/16
-
-### Forward-Air
-
-- *Autocancels earlier (Frame 45 -> Frame 36)*
-- Base knockback increased from 20 -> 40 units.
-- Knockback growth reduced from 93 -> 85 units.
-
-### Up-Air 
-
-- *Late Uair active frames altered 14-16 -> 14-18*
+---
 
 ### Neutral Special (Ground)
 
@@ -73,6 +52,8 @@ wait for Ganondorf to reappear before inputting a move.
 
 - Any follow up action can be bufferred, including another teleport.
 
+---
+
 ### Neutral Special (Air)
 
 *Ganondorf enters a float state, allowing him non-linear movement in the air depending on 
@@ -90,14 +71,26 @@ Ganondorf will exit the float state if...
 - It is cancelled with a jump, air dodge, or special move.
 - Ganondorf gets launched by a significant attack.
 
+---
+
+### Warlock Punch 
+
+Ganondorf still has this ultra-powerful move; however, the move is tied to the left and 
+right taunt buttons. By default, these taunt buttons will activate the "turn" version 
+of this move, so it will hit HARD.
+
+---
+
 ### Side Special (Air)
 
 While in float, and using the correct inputs, Ganondorf can launch himself in a specific
 direction at blinding speeds. If facing right, press the following inputs: 
 ```
--> <- (-> + B)  // Where B is the special button.
+->, <-, (-> + B)  // Where B is the special button.
 ```
 This move can also be angled vertically, slightly. 
+
+---
 
 ### Down Special 
 
@@ -113,10 +106,30 @@ Failnaught arrow will be reflected back at the opponent.
 - *Hitbox active on frame 16.*
 - Crosses up shields if used close enough.
 
-### Warlock Punch 
+---
 
-Ganondorf still has this ultra-powerful move; however, the move is tied to the left and 
-right taunt buttons. By default, these taunt buttons will activate the "turn" version 
-of this move, so it will hit HARD.
+
+### Up-Tilt
+
+*Utilt is now a 2 hit move:*
+- *No longer has armor*
+- *Damage 24/13 (early/late) -> 3/13 (hit 1 / 2)*
+- *Startup 60 -> 12/15*
+- *Angle 361/70 (early/late) -> 270/361 (grounded/aerial)*
+
+### Up-Smash
+
+- *Startup reduced 20 -> 11*
+- Damage reduced from 24/21 -> 19/16
+
+### Forward-Air
+
+- *Autocancels earlier (Frame 45 -> Frame 36)*
+- Base knockback increased from 20 -> 40 units.
+- Knockback growth reduced from 93 -> 85 units.
+
+### Up-Air 
+
+- *Late Uair active frames altered 14-16 -> 14-18*
 
 
