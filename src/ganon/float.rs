@@ -27,10 +27,12 @@ unsafe extern "C" fn adjust_float_velocity(boma: *mut BattleObjectModuleAccessor
     //     ControlModule::get_stick_x(boma) * PostureModule::lr(boma),
     //     ControlModule::get_stick_y(boma),
     // );
+    println!("X AXIS");
     let new_speed_x = Position2D::calculate_new_speed_2(
         ControlModule::get_stick_x(boma) * PostureModule::lr(boma),
         KineticModule::get_sum_speed_x(boma, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN),
     );
+    println!("Y AXIS");
     let new_speed_y = Position2D::calculate_new_speed_2(
         ControlModule::get_stick_y(boma),
         KineticModule::get_sum_speed_y(boma, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN),
@@ -199,20 +201,34 @@ impl Position2D {
     /// Where -1 <= x <= 1
     fn calculate_new_speed_2(stick: f32, curr_speed: f32) -> f32 {
         let max_speed: f32 = 1.56; // Max speed of the float.
-        let max_additional_speed: f32 = max_speed / 2.0;
+        let max_additional_speed: f32 = max_speed / 6.0;
         let speed_loss: f32 = 25.0; // How many frames of idle stick to reach 0 velocity.
         let mut new_speed = 0.0;
-        if stick < 0.1 && stick > -0.1 && curr_speed != 0.0 {
-            new_speed = -curr_speed / speed_loss;
+        println!("Current speed: {}", curr_speed);
+        println!("Stick: {}", stick);
+        if stick < 0.1 && stick > -0.1 {
+            if curr_speed >= 0.08 || curr_speed <= -0.08 {
+                if stick.is_sign_negative() {
+                    new_speed = curr_speed / speed_loss;
+                } else {
+                    new_speed = -curr_speed / speed_loss;
+                }
+                println!("Slowing to neutral.");
+            } else {
+                println!("No change needed!");
+            }
         } else {
             let abs_curr_speed = curr_speed.abs();
+            println!("Absolute curr speed {}", abs_curr_speed);
             if abs_curr_speed != max_speed {
                 new_speed = max_additional_speed * (PI * stick / 2.0).sin().powi(2);
-                if abs_curr_speed + new_speed > max_speed {
-                    new_speed = max_speed - curr_speed;
+                if abs_curr_speed + new_speed >= max_speed {
+                    println!("Overflow, correcting.");
+                    new_speed = max_speed - abs_curr_speed;
                 }
             }
         }
+        println!("Raw new speed: {}", new_speed);
         if stick < 0.0 {
             return -new_speed;
         }
