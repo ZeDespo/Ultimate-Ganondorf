@@ -23,41 +23,21 @@ const Y_ACCEL_MULT: f32 = X_ACCEL_MULT; // Ditto
 
 /// Adjust speed to Ganondorf's float depending on the current control stick positions.
 unsafe extern "C" fn adjust_float_velocity(boma: *mut BattleObjectModuleAccessor, iv: &InitValues) {
-    // let new_speed = GS[iv.entry_id].speed.calculate_new_speed(
-    //     ControlModule::get_stick_x(boma) * PostureModule::lr(boma),
-    //     ControlModule::get_stick_y(boma),
-    // );
-    println!("X AXIS");
-    let new_speed_x = Position2D::calculate_new_speed_2(
+    let new_speed = Position2D::calculate_new_speed(
         ControlModule::get_stick_x(boma) * PostureModule::lr(boma),
-        KineticModule::get_sum_speed_x(boma, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN),
-    );
-    println!("Y AXIS");
-    let new_speed_y = Position2D::calculate_new_speed_2(
         ControlModule::get_stick_y(boma),
+        KineticModule::get_sum_speed_x(boma, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN),
         KineticModule::get_sum_speed_y(boma, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN),
     );
-    let new_speed = Position2D {
-        x: new_speed_x,
-        y: new_speed_y,
-    };
     println!("Calculated speed additions: {:#?}", new_speed);
     KineticModule::add_speed(
         boma,
         &smash::phx::Vector3f {
-            x: new_speed_x,
-            y: new_speed_y,
+            x: new_speed.x,
+            y: new_speed.y,
             z: 0.0,
         },
     );
-    // println!(
-    //     "X speed {}",
-    //     KineticModule::get_sum_speed_x(boma, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN)
-    // );
-    // println!(
-    //     "Y speed {}",
-    //     KineticModule::get_sum_speed_y(boma, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN)
-    // );
     GS[iv.entry_id].speed = Position2D {
         x: GS[iv.entry_id].speed.x + new_speed.x,
         y: GS[iv.entry_id].speed.y + new_speed.y,
@@ -73,17 +53,17 @@ unsafe extern "C" fn adjust_float_velocity(boma: *mut BattleObjectModuleAccessor
 unsafe extern "C" fn check_float_velocity(boma: *mut BattleObjectModuleAccessor, iv: &InitValues) {
     if KineticModule::get_kinetic_type(boma) != *FIGHTER_KINETIC_TYPE_MOTION_AIR {
         KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_AIR);
-        if iv.prev_status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR {
-            let speed = GS[iv.entry_id].speed;
-            KineticModule::add_speed(
-                boma,
-                &smash::phx::Vector3f {
-                    x: speed.x,
-                    y: speed.y,
-                    z: 0.0,
-                },
-            );
-        }
+        // if iv.prev_status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR {
+        //     let speed = GS[iv.entry_id].speed;
+        //     KineticModule::add_speed(
+        //         boma,
+        //         &smash::phx::Vector3f {
+        //             x: speed.x,
+        //             y: speed.y,
+        //             z: 0.0,
+        //         },
+        //     );
+        // }
     }
 }
 
@@ -182,26 +162,19 @@ impl FloatStatus {
 
 /// Controls air velocity when floating.
 impl Position2D {
-    /// Provides the new x / y speed.
-    /// Top speed in either direction: 1.26
-    fn calculate_new_speed(self: Self, stick_x: f32, stick_y: f32) -> Position2D {
-        let mut x_add = stick_x * X_ACCEL_MULT;
-        let mut y_add = stick_y * Y_ACCEL_MULT;
-        if (x_add > 0.0 && self.x > X_MAX) || (x_add < 0.0 && self.x < -X_MAX) {
-            x_add = 0.0;
+    fn calculate_new_speed(stick_x: f32, stick_y: f32, speed_x: f32, speed_y: f32) -> Position2D {
+        Position2D {
+            x: Position2D::calculate_new_speed_helper(stick_x, speed_x),
+            y: Position2D::calculate_new_speed_helper(stick_y, speed_y),
         }
-        if (y_add > 0.0 && self.y > Y_MAX) || (y_add < 0.0 && self.y < -Y_MAX) {
-            y_add = 0.0;
-        }
-        return Self { x: x_add, y: y_add };
     }
 
     /// Top speed in either direction: 1.26
     /// Formula: f(x) = 1.26 * sin^2 * (πx / 2)
     /// Where -1 <= x <= 1
-    fn calculate_new_speed_2(stick: f32, curr_speed: f32) -> f32 {
-        let max_speed: f32 = 1.56; // Max speed of the float.
-        let max_additional_speed: f32 = max_speed / 6.0;
+    fn calculate_new_speed_helper(stick: f32, curr_speed: f32) -> f32 {
+        let max_speed: f32 = 1.26; // Max speed of the float.
+        let max_additional_speed: f32 = max_speed / 4.0;
         let speed_loss: f32 = 25.0; // How many frames of idle stick to reach 0 velocity.
         let mut new_speed = 0.0;
         println!("Current speed: {}", curr_speed);
