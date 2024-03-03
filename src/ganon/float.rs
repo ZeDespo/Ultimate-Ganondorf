@@ -53,17 +53,12 @@ unsafe extern "C" fn adjust_float_velocity(boma: *mut BattleObjectModuleAccessor
 unsafe extern "C" fn check_float_velocity(boma: *mut BattleObjectModuleAccessor, iv: &InitValues) {
     if KineticModule::get_kinetic_type(boma) != *FIGHTER_KINETIC_TYPE_MOTION_AIR {
         KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_AIR);
-        // if iv.prev_status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR {
-        //     let speed = GS[iv.entry_id].speed;
-        //     KineticModule::add_speed(
-        //         boma,
-        //         &smash::phx::Vector3f {
-        //             x: speed.x,
-        //             y: speed.y,
-        //             z: 0.0,
-        //         },
-        //     );
-        // }
+        if iv.prev_status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR {
+            KineticModule::add_speed(
+                boma,
+                &KineticModule::get_sum_speed3f(boma, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN),
+            );
+        }
     }
 }
 
