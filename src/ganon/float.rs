@@ -16,10 +16,9 @@ use {
 const MAX_FLOAT_FRAMES: i16 = 91; // Float by this amount
 const TELEPORT_TO_FLOAT_FRAMES: i16 = 40; // Teleport into float frames.
 const STARTING_FLOAT_FRAME: f32 = 2.0; // When the float frame will start.
-const X_MAX: f32 = 1.155; // Maximum velocity that can be achieved for X movements.
-const X_ACCEL_MULT: f32 = 0.12; // Multiplier for internal calculations
-const Y_MAX: f32 = X_MAX; // Same as `X_MAX`, but for Y movement
-const Y_ACCEL_MULT: f32 = X_ACCEL_MULT; // Ditto
+const MAX_FLOAT_SPEED: f32 = 1.26; // Max speed in any direction for float
+const MAX_INCREMENTAL_SPEED: f32 = MAX_FLOAT_SPEED / 4.0; // How many frames until max speed achieved.
+const FLOAT_SPEED_LOSS: f32 = 25.0; // Number of frames that should pass until speed is 0.0
 
 /// Adjust speed to Ganondorf's float depending on the current control stick positions.
 unsafe extern "C" fn adjust_float_velocity(boma: *mut BattleObjectModuleAccessor, iv: &InitValues) {
@@ -168,18 +167,15 @@ impl Position2D {
     /// Formula: f(x) = 1.26 * sin^2 * (πx / 2)
     /// Where -1 <= x <= 1
     fn calculate_new_speed_helper(stick: f32, curr_speed: f32) -> f32 {
-        let max_speed: f32 = 1.26; // Max speed of the float.
-        let max_additional_speed: f32 = max_speed / 4.0;
-        let speed_loss: f32 = 25.0; // How many frames of idle stick to reach 0 velocity.
         let mut new_speed = 0.0;
         println!("Current speed: {}", curr_speed);
         println!("Stick: {}", stick);
         if stick < 0.1 && stick > -0.1 {
             if curr_speed >= 0.08 || curr_speed <= -0.08 {
                 if stick.is_sign_negative() {
-                    new_speed = curr_speed / speed_loss;
+                    new_speed = curr_speed / FLOAT_SPEED_LOSS;
                 } else {
-                    new_speed = -curr_speed / speed_loss;
+                    new_speed = -curr_speed / FLOAT_SPEED_LOSS;
                 }
                 println!("Slowing to neutral.");
             } else {
@@ -188,11 +184,11 @@ impl Position2D {
         } else {
             let abs_curr_speed = curr_speed.abs();
             println!("Absolute curr speed {}", abs_curr_speed);
-            if abs_curr_speed != max_speed {
-                new_speed = max_additional_speed * (PI * stick / 2.0).sin().powi(2);
-                if abs_curr_speed + new_speed >= max_speed {
+            if abs_curr_speed != MAX_FLOAT_SPEED {
+                new_speed = MAX_INCREMENTAL_SPEED * (PI * stick / 2.0).sin().powi(2);
+                if abs_curr_speed + new_speed >= MAX_FLOAT_SPEED {
                     println!("Overflow, correcting.");
-                    new_speed = max_speed - abs_curr_speed;
+                    new_speed = MAX_FLOAT_SPEED - abs_curr_speed;
                 }
             }
         }
