@@ -22,6 +22,9 @@ const FLOAT_SPEED_LOSS: f32 = 25.0; // Number of frames that should pass until s
 
 /// Adjust speed to Ganondorf's float depending on the current control stick positions.
 unsafe extern "C" fn adjust_float_velocity(boma: *mut BattleObjectModuleAccessor, iv: &InitValues) {
+    if iv.status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR && iv.motion_module_frame < 2.0 {
+        return;
+    }
     let new_speed = Position2D::calculate_new_speed(
         ControlModule::get_stick_x(boma) * PostureModule::lr(boma),
         ControlModule::get_stick_y(boma),
