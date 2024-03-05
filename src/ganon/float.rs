@@ -29,14 +29,7 @@ unsafe extern "C" fn adjust_float_velocity(boma: *mut BattleObjectModuleAccessor
         KineticModule::get_sum_speed_y(boma, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN),
     );
     println!("Calculated speed additions: {:#?}", new_speed);
-    KineticModule::add_speed(
-        boma,
-        &smash::phx::Vector3f {
-            x: new_speed.x,
-            y: new_speed.y,
-            z: 0.0,
-        },
-    );
+    KineticModule::add_speed(boma, &new_speed.to_vector3f());
     GS[iv.entry_id].speed = Position2D {
         x: GS[iv.entry_id].speed.x + new_speed.x,
         y: GS[iv.entry_id].speed.y + new_speed.y,
@@ -49,14 +42,22 @@ unsafe extern "C" fn adjust_float_velocity(boma: *mut BattleObjectModuleAccessor
 /// consistent after he performs an attack.
 ///
 /// - [x] Address bug where after Ganondorf performs an attack, his float velocity stops.
+/// If prev status kind was attack and previous velocity not None:
+/// - Apply velocity
+/// - Change value to None.
+///
+/// If Curr attack status is attack air
+/// - Change value to Some current velocity opposite direction of move,
+/// - Do same stuff with speed.
 unsafe extern "C" fn check_float_velocity(boma: *mut BattleObjectModuleAccessor, iv: &InitValues) {
     if KineticModule::get_kinetic_type(boma) != *FIGHTER_KINETIC_TYPE_MOTION_AIR {
         KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_AIR);
         if iv.prev_status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR {
-            KineticModule::add_speed(
-                boma,
-                &KineticModule::get_sum_speed3f(boma, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN),
-            );
+            let speed = GS[iv.entry_id].speed;
+            if speed.x != 0.0 && speed.y != 0.0 {
+                KineticModule::add_speed(boma, &GS[iv.entry_id].speed.to_vector3f());
+                GS[iv.entry_id].speed = Position2D::reset();
+            }
         }
     }
 }

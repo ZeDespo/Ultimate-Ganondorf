@@ -3,6 +3,7 @@ use core::fmt;
 
 use smash::app::lua_bind::WorkModule;
 use smash::app::BattleObjectModuleAccessor;
+use smash::phx::Vector3f;
 
 #[derive(Copy, Clone)]
 pub enum FloatStatus {
@@ -43,6 +44,14 @@ pub struct Position2D {
 }
 
 impl Position2D {
+    pub fn to_vector3f(self: Self) -> Vector3f {
+        Vector3f {
+            x: self.x,
+            y: self.y,
+            z: 0.0,
+        }
+    }
+
     pub fn reset() -> Position2D {
         Position2D { x: 0.0, y: 0.0 }
     }
