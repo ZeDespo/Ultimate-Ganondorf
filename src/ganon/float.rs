@@ -58,7 +58,14 @@ unsafe extern "C" fn check_float_velocity(boma: *mut BattleObjectModuleAccessor,
         if iv.prev_status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR {
             let speed = GS[iv.entry_id].speed;
             if speed.x != 0.0 && speed.y != 0.0 {
-                KineticModule::add_speed(boma, &GS[iv.entry_id].speed.to_vector3f());
+                let new_speed = Position2D::calculate_new_speed(
+                    ControlModule::get_stick_x(boma) * PostureModule::lr(boma),
+                    ControlModule::get_stick_y(boma),
+                    speed.x,
+                    speed.y,
+                );
+
+                KineticModule::add_speed(boma, &new_speed.to_vector3f());
                 GS[iv.entry_id].speed = Position2D::reset();
             }
         }
@@ -191,7 +198,7 @@ impl Position2D {
             println!("Absolute curr speed {}", abs_curr_speed);
             if abs_curr_speed != MAX_FLOAT_SPEED {
                 new_speed = MAX_INCREMENTAL_SPEED * (PI * stick / 2.0).sin().powi(2);
-                if abs_curr_speed + new_speed >= MAX_FLOAT_SPEED {
+                if abs_curr_speed + new_speed > MAX_FLOAT_SPEED {
                     println!("Overflow, correcting.");
                     new_speed = MAX_FLOAT_SPEED - abs_curr_speed;
                 }
