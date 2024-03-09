@@ -397,7 +397,7 @@ unsafe extern "C" fn effect_attackairn(agent: &mut L2CAgentBase) {
             );
             macros::EFFECT_FLW_POS(
                 agent,
-                Hash40::new("ganon_majinken_flash"),
+                Hash40::new("ganon_raijin_bomb"),
                 Hash40::new("top"),
                 0,
                 10,
