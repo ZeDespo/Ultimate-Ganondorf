@@ -52,16 +52,15 @@ impl Position2D {
         }
     }
 
-    pub fn reset() -> Position2D {
+    pub fn neutral() -> Position2D {
         Position2D { x: 0.0, y: 0.0 }
     }
 }
 
 #[derive(Copy, Clone)]
 pub struct GanonState {
-    pub fs: FloatStatus,
-    pub speed: Position2D,
-    pub direction: Position2D,
+    pub float_status: FloatStatus,
+    pub float_speed: Position2D,
 }
 
 #[repr(i32)]
@@ -80,20 +79,20 @@ impl fmt::Display for TeleportStatus {
 }
 
 impl TeleportStatus {
+    /// Note: Not using `transmute` becuse we can get values outside of bounds.
     pub fn from_int(value: i32) -> TeleportStatus {
-        let tp: TeleportStatus = unsafe { ::std::mem::transmute(value) };
-        return tp;
-    }
-
-    pub fn to_int(self: Self) -> i32 {
-        self as i32
+        match value {
+            1 => TeleportStatus::PreTransit,
+            2 => TeleportStatus::Transit,
+            3 => TeleportStatus::End,
+            _ => TeleportStatus::Ready,
+        }
     }
 }
 
 pub static mut GS: [GanonState; 8] = [GanonState {
-    fs: FloatStatus::CanFloat,
-    speed: Position2D { x: 0.0, y: 0.0 },
-    direction: Position2D { x: 0.0, y: 0.0 },
+    float_status: FloatStatus::CanFloat,
+    float_speed: Position2D { x: 0.0, y: 0.0 },
 }; 8];
 
 pub const GANON_TELEPORT_WORK_INT: i32 = 0x42069;
