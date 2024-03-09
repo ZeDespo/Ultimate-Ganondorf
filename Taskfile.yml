@@ -16,6 +16,14 @@ tasks:
             - rm -r {{.SSBU_MOD_DIR}}/* || echo "No mod assets to delete!"
         desc: "Remove all traces of the mod."
         silent: true
+    copy-romfs-to-slots: 
+      cmds: 
+        - for: { var: FOLDERS }
+          cmd: cp motion/body/c00/* motion/body/{{ .ITEM }}
+      desc: Copy fighter files from c00 to others.
+      dir: romfs/fighter/{{.CLI_ARGS}}
+      vars: 
+          FOLDERS: c01 c02 c03 c04 c05 c06 c07
     deploy-global-plugin:
         cmd: find {{.BUILD_DIR}} -name "*.nro" -exec cp {} {{.NRO_GLOBAL_PLUGINS_DIR}}/{{.GLOBAL_NRO_MOD_NAME}} xargs cp -t {{.NRO_GLOBAL_PLUGINS_DIR}}
         desc: "Deploy `.nro` plugin to the skyline plugins directory."
