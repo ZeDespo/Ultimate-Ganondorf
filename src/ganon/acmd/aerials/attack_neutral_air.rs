@@ -384,7 +384,7 @@ unsafe extern "C" fn effect_attackairn(agent: &mut L2CAgentBase) {
             macros::EFFECT_OFF_KIND(agent, Hash40::new("ganon_final_hand_triforce"), false, true);
             macros::EFFECT_FOLLOW_NO_STOP(
                 agent,
-                Hash40::new("ganon_entry_aura"),
+                Hash40::new("ganon_appeal_aura"),
                 Hash40::new("top"),
                 0,
                 10,
