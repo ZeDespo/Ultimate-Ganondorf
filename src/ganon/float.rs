@@ -22,54 +22,33 @@ const FLOAT_SPEED_LOSS: f32 = 25.0; // Number of frames that should pass until s
 
 /// Adjust speed to Ganondorf's float depending on the current control stick positions.
 unsafe extern "C" fn adjust_float_velocity(boma: *mut BattleObjectModuleAccessor, iv: &InitValues) {
-    if iv.status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR && iv.motion_module_frame < 2.0 {
+    let attacking = iv.status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR;
+    if attacking && iv.motion_module_frame < 2.0 {
         return;
     }
-    let new_speed = Position2D::calculate_new_speed(
-        ControlModule::get_stick_x(boma) * PostureModule::lr(boma),
-        ControlModule::get_stick_y(boma),
-        KineticModule::get_sum_speed_x(boma, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN),
-        KineticModule::get_sum_speed_y(boma, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN),
-    );
-    println!("Calculated speed additions: {:#?}", new_speed);
-    KineticModule::add_speed(boma, &new_speed.to_vector3f());
-    GS[iv.entry_id].speed = Position2D {
-        x: GS[iv.entry_id].speed.x + new_speed.x,
-        y: GS[iv.entry_id].speed.y + new_speed.y,
-    };
-    println!("New speed: {:#?}", GS[iv.entry_id].speed);
-}
-
-/// This function will keep Ganondorf's float consistent. He will remain in the air
-/// by constantly changing his `KineticType`, and will ensure that his speed remains
-/// consistent after he performs an attack.
-///
-/// - [x] Address bug where after Ganondorf performs an attack, his float velocity stops.
-/// If prev status kind was attack and previous velocity not None:
-/// - Apply velocity
-/// - Change value to None.
-///
-/// If Curr attack status is attack air
-/// - Change value to Some current velocity opposite direction of move,
-/// - Do same stuff with speed.
-unsafe extern "C" fn check_float_velocity(boma: *mut BattleObjectModuleAccessor, iv: &InitValues) {
-    if KineticModule::get_kinetic_type(boma) != *FIGHTER_KINETIC_TYPE_MOTION_AIR {
-        KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_AIR);
-        if iv.prev_status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR {
-            let speed = GS[iv.entry_id].speed;
-            if speed.x != 0.0 && speed.y != 0.0 {
-                let new_speed = Position2D::calculate_new_speed(
-                    ControlModule::get_stick_x(boma) * PostureModule::lr(boma),
-                    ControlModule::get_stick_y(boma),
-                    speed.x,
-                    speed.y,
-                );
-
-                KineticModule::add_speed(boma, &new_speed.to_vector3f());
-                GS[iv.entry_id].speed = Position2D::reset();
-            }
-        }
+    let curr_x_speed = KineticModule::get_sum_speed_x(boma, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN);
+    let curr_y_speed = KineticModule::get_sum_speed_y(boma, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN);
+    let was_attacking = iv.prev_status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR
+        && curr_x_speed.abs() == 0.0
+        && curr_y_speed == 0.0;
+    if was_attacking {
+        KineticModule::add_speed(boma, &GS[iv.entry_id].speed.to_vector3f());
+    } else {
+        let new_speed = Position2D::calculate_new_speed(
+            ControlModule::get_stick_x(boma) * PostureModule::lr(boma),
+            ControlModule::get_stick_y(boma),
+            curr_x_speed,
+            curr_y_speed,
+            attacking,
+        );
+        println!("Calculated speed additions: {:#?}", new_speed);
+        KineticModule::add_speed(boma, &new_speed.to_vector3f());
+        GS[iv.entry_id].speed = Position2D {
+            x: curr_x_speed + new_speed.x,
+            y: curr_y_speed + new_speed.y,
+        };
     }
+    println!("New speed: {:#?}", GS[iv.entry_id].speed);
 }
 
 /// Cosmetic effect that will further show Ganondorf's float status.
@@ -168,28 +147,34 @@ impl FloatStatus {
 
 /// Controls air velocity when floating.
 impl Position2D {
-    fn calculate_new_speed(stick_x: f32, stick_y: f32, speed_x: f32, speed_y: f32) -> Position2D {
+    fn calculate_new_speed(
+        stick_x: f32,
+        stick_y: f32,
+        speed_x: f32,
+        speed_y: f32,
+        is_attacking: bool,
+    ) -> Position2D {
         Position2D {
-            x: Position2D::calculate_new_speed_helper(stick_x, speed_x),
-            y: Position2D::calculate_new_speed_helper(stick_y, speed_y),
+            x: Position2D::calculate_new_speed_helper(stick_x, speed_x, is_attacking),
+            y: Position2D::calculate_new_speed_helper(stick_y, speed_y, is_attacking),
         }
     }
 
     /// Top speed in either direction: 1.26
     /// Formula: f(x) = 1.26 * sin^2 * (πx / 2)
     /// Where -1 <= x <= 1
-    fn calculate_new_speed_helper(stick: f32, curr_speed: f32) -> f32 {
+    fn calculate_new_speed_helper(stick: f32, curr_speed: f32, is_attacking: bool) -> f32 {
         let mut new_speed = 0.0;
         println!("Current speed: {}", curr_speed);
         println!("Stick: {}", stick);
-        if stick < 0.1 && stick > -0.1 {
-            if curr_speed >= 0.08 || curr_speed <= -0.08 {
+        if (stick < 0.1 && stick > -0.1) || (is_attacking && curr_speed.abs() > MAX_FLOAT_SPEED) {
+            if curr_speed >= 0.08 || curr_speed <= -0.08 || is_attacking {
                 if stick.is_sign_negative() {
                     new_speed = curr_speed / FLOAT_SPEED_LOSS;
                 } else {
                     new_speed = -curr_speed / FLOAT_SPEED_LOSS;
                 }
-                println!("Slowing to neutral.");
+                println!("Slowing down.");
             } else {
                 println!("No change needed!");
             }
@@ -281,7 +266,9 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
                 float_effect(fighter);
             }
             GS[iv.entry_id].fs = FloatStatus::Floating(i - 1);
-            check_float_velocity(boma, &iv);
+            if KineticModule::get_kinetic_type(boma) != *FIGHTER_KINETIC_TYPE_MOTION_AIR {
+                KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_AIR);
+            }
             if i - 1 == 0 {
                 KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_FALL);
             } else if !iv.teleport_into_float {

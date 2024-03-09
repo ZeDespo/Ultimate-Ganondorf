@@ -61,6 +61,7 @@ impl Position2D {
 pub struct GanonState {
     pub fs: FloatStatus,
     pub speed: Position2D,
+    pub direction: Position2D,
 }
 
 #[repr(i32)]
@@ -92,6 +93,7 @@ impl TeleportStatus {
 pub static mut GS: [GanonState; 8] = [GanonState {
     fs: FloatStatus::CanFloat,
     speed: Position2D { x: 0.0, y: 0.0 },
+    direction: Position2D { x: 0.0, y: 0.0 },
 }; 8];
 
 pub const GANON_TELEPORT_WORK_INT: i32 = 0x42069;
