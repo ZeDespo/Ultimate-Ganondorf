@@ -111,13 +111,13 @@ pub unsafe extern "C" fn ganon_teleport_handler(fighter: &mut L2CFighterCommon, 
             );
 
             macros::WHOLE_HIT(fighter, *HIT_STATUS_XLU);
-            VisibilityModule::set_whole(fighter.module_accessor, false);
+            // VisibilityModule::set_whole(fighter.module_accessor, false);
             JostleModule::set_status(fighter.module_accessor, false);
             GroundModule::set_correct(
                 fighter.module_accessor,
                 GroundCorrectKind(*GROUND_CORRECT_KIND_AIR),
             );
-            teleport_fx(fighter);
+            // teleport_fx(fighter);
             WorkModule::set_int(boma, TeleportStatus::End as i32, GANON_TELEPORT_WORK_INT);
             if !WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG) {
                 WorkModule::set_flag(boma, true, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG);
