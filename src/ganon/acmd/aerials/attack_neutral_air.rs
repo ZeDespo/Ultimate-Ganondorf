@@ -395,7 +395,7 @@ unsafe extern "C" fn effect_attackairn(agent: &mut L2CAgentBase) {
                 1,
                 true,
             );
-            macros::EFFECT_FLW_POS(
+            macros::EFFECT_FOLLOW(
                 agent,
                 Hash40::new("ganon_raijin_bomb"),
                 Hash40::new("top"),
@@ -405,9 +405,10 @@ unsafe extern "C" fn effect_attackairn(agent: &mut L2CAgentBase) {
                 0,
                 0,
                 0,
-                1,
+                0.8,
                 true,
             );
+            macros::LAST_EFFECT_SET_RATE(agent, 4.0);
             EffectModule::enable_sync_init_pos_last(agent.module_accessor);
         }
         frame(agent.lua_state_agent, 17.0);
