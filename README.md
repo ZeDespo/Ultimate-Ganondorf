@@ -11,6 +11,25 @@ their changelog for Ganondorf [here](https://docs.google.com/document/d/1gys8XOE
 
 ### Fighter parameters
 
+#### Summary
+
+Buffed movement speed at the cost of nerfed weight. Essentially copy paste of most of 
+Sephiroth's air statistics.
+
+- Walk speed buffed (0.76 -> 0.875)
+- Run speed buffed (1.34 -> 1.76)
+- Dash speed buffed (1.87 -> 1.92)
+
+- Initial jump buffed (14.02 -> 16.02)
+- Base jump height buffed (25.49 -> 30.5)
+- Double jump buffed (26 -> 32)
+- X-axis jump multiplier buffed (0.75 -> 0.8)
+
+- Air mobility buffed all around
+- Nair landing lag reduced (10 -> 9)
+
+- Weight nerfed (118 -> 99)
+
 - *Runspeed increased 1.34 -> 1.45*
 - *Walkspeed increased 0.767 -> 0.875*
 - *DJ height increased 26 -> 29*
