@@ -266,7 +266,7 @@ unsafe extern "C" fn portal_hitbox(agent: &mut L2CAgentBase) {
                 0,
                 Hash40::new("hip"),
                 1.1,
-                360,
+                45,
                 100,
                 18,
                 0,
