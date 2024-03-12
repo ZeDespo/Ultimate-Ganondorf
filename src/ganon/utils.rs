@@ -61,6 +61,7 @@ impl Position2D {
 pub struct GanonState {
     pub float_status: FloatStatus,
     pub float_speed: Position2D,
+    pub teleport_direction: Position2D,
 }
 
 #[repr(i32)]
@@ -93,13 +94,12 @@ impl TeleportStatus {
 pub static mut GS: [GanonState; 8] = [GanonState {
     float_status: FloatStatus::CanFloat,
     float_speed: Position2D { x: 0.0, y: 0.0 },
+    teleport_direction: Position2D { x: 0.0, y: 0.0 },
 }; 8];
 
 pub const GANON_TELEPORT_WORK_INT: i32 = 0x42069;
 pub const GANON_TELEPORT_INTO_FLOAT_INIT_FLAG: i32 = 0x69420;
 pub const GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG: i32 = 0x69421;
-pub const GANON_TELEPORT_NEW_X_POS: i32 = 0x42068;
-pub const GANON_TELEPORT_NEW_Y_POS: i32 = 0x42067;
 
 /// Convenience function for checking teleport status via a handler flag.
 pub unsafe extern "C" fn in_teleport(boma: *mut BattleObjectModuleAccessor) -> bool {

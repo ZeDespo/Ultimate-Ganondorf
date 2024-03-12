@@ -84,9 +84,8 @@ impl Position2D {
         Position2D { x: x, y: y + 0.1 }
     }
 
-    unsafe extern "C" fn set_to_work_module(self: &Self, boma: *mut BattleObjectModuleAccessor) {
-        WorkModule::set_float(boma, self.x, GANON_TELEPORT_NEW_X_POS);
-        WorkModule::set_float(boma, self.y, GANON_TELEPORT_NEW_Y_POS);
+    unsafe extern "C" fn set_to_array(self: Self, iv: &InitValues) {
+        GS[iv.entry_id].teleport_direction = self;
     }
 }
 
@@ -99,25 +98,26 @@ pub unsafe extern "C" fn ganon_teleport_handler(fighter: &mut L2CFighterCommon, 
     let ts = TeleportStatus::from_int(WorkModule::get_int(boma, GANON_TELEPORT_WORK_INT));
     match ts {
         TeleportStatus::PreTransit => {
-            Position2D::next_teleport_position(boma, iv).set_to_work_module(boma);
+            Position2D::next_teleport_position(boma, iv).set_to_array(iv);
         }
         TeleportStatus::Transit => {
+            let teleport_position = GS[iv.entry_id].teleport_direction;
             PostureModule::add_pos_2d(
                 boma,
                 &Vector2f {
-                    x: WorkModule::get_float(boma, GANON_TELEPORT_NEW_X_POS),
-                    y: WorkModule::get_float(boma, GANON_TELEPORT_NEW_Y_POS),
+                    x: teleport_position.x,
+                    y: teleport_position.y,
                 },
             );
 
             macros::WHOLE_HIT(fighter, *HIT_STATUS_XLU);
-            // VisibilityModule::set_whole(fighter.module_accessor, false);
+            VisibilityModule::set_whole(fighter.module_accessor, false);
             JostleModule::set_status(fighter.module_accessor, false);
             GroundModule::set_correct(
                 fighter.module_accessor,
                 GroundCorrectKind(*GROUND_CORRECT_KIND_AIR),
             );
-            // teleport_fx(fighter);
+            teleport_fx(fighter);
             WorkModule::set_int(boma, TeleportStatus::End as i32, GANON_TELEPORT_WORK_INT);
             if !WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG) {
                 WorkModule::set_flag(boma, true, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG);
