@@ -11,6 +11,8 @@ use smash::lib::lua_const::*;
 use smash_script::macros;
 use {smash::lua2cpp::*, smashline::*};
 
+use crate::ganon::utils::FloatStatus;
+use crate::ganon::utils::GS;
 use crate::utils::shield::*;
 
 unsafe extern "C" fn ganon_speciallw(agent: &mut L2CAgentBase) {
@@ -164,6 +166,12 @@ unsafe extern "C" fn ganon_speciallw(agent: &mut L2CAgentBase) {
 }
 
 unsafe extern "C" fn ganon_specialairlw(agent: &mut L2CAgentBase) {
+    // StatusModule::change_status_request_from_script(
+    //     agent.module_accessor,
+    //     *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_FALL,
+    //     false.into(),
+    // );
+    // return;
     let mut cancel_special = true;
     frame(agent.lua_state_agent, 10.0);
     if macros::is_excute(agent) {

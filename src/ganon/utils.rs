@@ -100,6 +100,8 @@ pub static mut GS: [GanonState; 8] = [GanonState {
 pub const GANON_TELEPORT_WORK_INT: i32 = 0x42069;
 pub const GANON_TELEPORT_INTO_FLOAT_INIT_FLAG: i32 = 0x69420;
 pub const GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG: i32 = 0x69421;
+pub const GANON_FLOAT_INTO_DIVE: i32 = 0x69422;
+pub const GANON_FLOAT_INTO_SIDE_SPECIAL: i32 = 0x69423;
 
 /// Convenience function for checking teleport status via a handler flag.
 pub unsafe extern "C" fn in_teleport(boma: *mut BattleObjectModuleAccessor) -> bool {

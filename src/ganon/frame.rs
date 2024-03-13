@@ -1,7 +1,8 @@
 use super::utils::{in_teleport, InitValues};
-use crate::ganon::float::ganon_float;
+use crate::ganon::new_down_special;
 use crate::ganon::omni_teleport::ganon_teleport_handler;
 use crate::ganon::warlock_punch::warlock_punch;
+use crate::ganon::{float::ganon_float, new_down_special::new_down_special};
 use skyline_smash::lib::lua_const::FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID;
 use smash::app::lua_bind::*;
 use {smash::lua2cpp::*, smashline::*};
@@ -22,6 +23,7 @@ pub unsafe extern "C" fn ganon_frame(fighter: &mut L2CFighterCommon) {
     ganon_teleport_handler(fighter, &iv); //
     ganon_float(fighter, &iv);
     warlock_punch(fighter, &iv);
+    new_down_special(fighter, &iv);
 }
 
 pub fn install() {

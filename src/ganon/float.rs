@@ -90,8 +90,7 @@ impl FloatStatus {
     /// - he catches an oppoent with side-special or up-special
     fn transition_to_can_float_if_able(self: Self, init_values: &InitValues) -> FloatStatus {
         if [
-            *FIGHTER_STATUS_KIND_SPECIAL_LW,
-            *FIGHTER_STATUS_KIND_SPECIAL_HI,
+            *FIGHTER_GANON_STATUS_KIND_SPECIAL_HI_CLING,
             *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_CATCH,
             *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_END,
             *FIGHTER_STATUS_KIND_WIN,
@@ -123,6 +122,7 @@ impl FloatStatus {
                     *FIGHTER_STATUS_KIND_ESCAPE_AIR,
                     *FIGHTER_STATUS_KIND_ESCAPE_AIR_SLIDE,
                     *FIGHTER_STATUS_KIND_SPECIAL_S,
+                    *FIGHTER_STATUS_KIND_SPECIAL_HI,
                     *FIGHTER_GANON_STATUS_KIND_SPECIAL_N_TURN,
                 ]
                 .contains(&init_values.status_kind)
