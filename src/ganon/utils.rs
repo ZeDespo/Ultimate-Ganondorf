@@ -103,6 +103,10 @@ pub const GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG: i32 = 0x69421;
 pub const GANON_FLOAT_INTO_DIVE: i32 = 0x69422;
 pub const GANON_FLOAT_INTO_SIDE_SPECIAL: i32 = 0x69423;
 
+pub unsafe extern "C" fn in_dive(boma: *mut BattleObjectModuleAccessor) -> bool {
+    WorkModule::is_flag(boma, GANON_FLOAT_INTO_DIVE)
+}
+
 /// Convenience function for checking teleport status via a handler flag.
 pub unsafe extern "C" fn in_teleport(boma: *mut BattleObjectModuleAccessor) -> bool {
     WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG)

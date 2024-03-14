@@ -5,4 +5,5 @@ mod special_side;
 pub fn install() {
     special_neutral::install();
     special_low::install();
+    special_side::install();
 }
