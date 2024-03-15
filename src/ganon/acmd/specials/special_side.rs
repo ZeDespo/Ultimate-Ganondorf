@@ -1,15 +1,105 @@
 use crate::ganon::utils::in_dive;
 use smash::app::lua_bind::*;
 use smash::app::sv_animcmd::*;
+use smash::app::sv_battle_object::notify_event_msc_cmd;
 use smash::lib::lua_const::*;
 use smash_script::{damage, lua_args, macros, slope};
-use {smash::lua2cpp::*, smashline::*};
+use {
+    smash::{hash40, lua2cpp::*},
+    smashline::*,
+};
 
+// .game_acmd("game_catchedairendganon", game_catchedairendganon)
 pub fn install() {
     Agent::new("ganon")
         .game_acmd("game_specialairsfall", ganon_specialairsfall)
+        .status(
+            Init,
+            *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_END,
+            ganon_specialairsend_init,
+        )
+        .status(
+            Exit,
+            *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_END,
+            ganon_specialairsend_exit,
+        )
         .install();
 }
+
+unsafe extern "C" fn fun_7100006ef0(
+    agent: &mut L2CFighterCommon,
+    param_2: L2CValue,
+    param_3: L2CValue,
+) {
+    let al_stack80: u64 = 0x32e468d950;
+    agent.clear_lua_stack();
+    agent.push_lua_stack(&mut L2CValue::new_int(al_stack80));
+    agent.push_lua_stack(&mut L2CValue::new_int(param_2.get_u64()));
+    agent.push_lua_stack(&mut L2CValue::new_int(param_3.get_u64()));
+    notify_event_msc_cmd(agent.lua_state_agent);
+    agent.pop_lua_stack(1);
+}
+
+unsafe extern "C" fn ganon_specialairsend_init(agent: &mut L2CFighterCommon) -> L2CValue {
+    fun_7100006ef0(
+        agent,
+        hash40("catched_ganon").into(),
+        hash40("catched_air_end_ganon").into(),
+    );
+    0.into()
+}
+
+unsafe extern "C" fn ganon_specialairsend_exit(agent: &mut L2CFighterCommon) -> L2CValue {
+    CatchModule::catch_cut(agent.module_accessor, false, false);
+    0.into()
+}
+
+// /// End of Ganon Air Side B
+// unsafe extern "C" fn game_catchedairendganon(agent: &mut L2CAgentBase) {
+//     frame(agent.lua_state_agent, 10.0);
+//     if macros::is_excute(agent) {
+//         panic!(""); // frame 10
+//         macros::ATTACK(
+//             agent,
+//             1,
+//             0,
+//             Hash40::new("handl"),
+//             14.0,
+//             80,
+//             100,
+//             0,
+//             50,
+//             23.5,
+//             0.0,
+//             0.0,
+//             0.0,
+//             None,
+//             None,
+//             None,
+//             1.0,
+//             1.0,
+//             *ATTACK_SETOFF_KIND_ON,
+//             *ATTACK_LR_CHECK_POS,
+//             false,
+//             10,
+//             0.0,
+//             0,
+//             false,
+//             false,
+//             false,
+//             false,
+//             true,
+//             *COLLISION_SITUATION_MASK_GA,
+//             *COLLISION_CATEGORY_MASK_ALL,
+//             *COLLISION_PART_MASK_ALL,
+//             false,
+//             Hash40::new("collision_attr_purple"),
+//             *ATTACK_SOUND_LEVEL_L,
+//             *COLLISION_SOUND_ATTR_KICK,
+//             *ATTACK_REGION_KICK,
+//         );
+//     }
+// }
 
 unsafe extern "C" fn ganon_specialairsfall(agent: &mut L2CAgentBase) {
     if macros::is_excute(agent) {
