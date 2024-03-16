@@ -53,7 +53,7 @@ pub unsafe extern "C" fn new_down_special(fighter: &mut L2CFighterCommon, iv: &I
     } else if iv.status_kind == FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_FALL {
     } else if iv.status_kind == FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_CATCH {
     } else if iv.status_kind == FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_END {
-        if iv.motion_module_frame < 4.0 {
+        if iv.motion_module_frame == 4.0 {
             macros::ATTACK(
                 fighter,
                 0,
