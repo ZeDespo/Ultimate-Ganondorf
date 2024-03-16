@@ -13,45 +13,7 @@ use {
 pub fn install() {
     Agent::new("ganon")
         .game_acmd("game_specialairsfall", ganon_specialairsfall)
-        .status(
-            Init,
-            *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_END,
-            ganon_specialairsend_init,
-        )
-        .status(
-            Exit,
-            *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_END,
-            ganon_specialairsend_exit,
-        )
         .install();
-}
-
-unsafe extern "C" fn fun_7100006ef0(
-    agent: &mut L2CFighterCommon,
-    param_2: L2CValue,
-    param_3: L2CValue,
-) {
-    let al_stack80: u64 = 0x32e468d950;
-    agent.clear_lua_stack();
-    agent.push_lua_stack(&mut L2CValue::new_int(al_stack80));
-    agent.push_lua_stack(&mut L2CValue::new_int(param_2.get_u64()));
-    agent.push_lua_stack(&mut L2CValue::new_int(param_3.get_u64()));
-    notify_event_msc_cmd(agent.lua_state_agent);
-    agent.pop_lua_stack(1);
-}
-
-unsafe extern "C" fn ganon_specialairsend_init(agent: &mut L2CFighterCommon) -> L2CValue {
-    fun_7100006ef0(
-        agent,
-        hash40("catched_ganon").into(),
-        hash40("catched_air_end_ganon").into(),
-    );
-    0.into()
-}
-
-unsafe extern "C" fn ganon_specialairsend_exit(agent: &mut L2CFighterCommon) -> L2CValue {
-    CatchModule::catch_cut(agent.module_accessor, false, false);
-    0.into()
 }
 
 // /// End of Ganon Air Side B
