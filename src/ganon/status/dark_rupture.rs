@@ -36,7 +36,7 @@ impl DarkRuptureStats {
                 angle: 361,
                 kbg: 100,
                 bkb: 40,
-                size: 4.5,
+                size: 5.5,
             }),
             3..=6 => Some(DarkRuptureStats {
                 id: 1,
@@ -44,7 +44,7 @@ impl DarkRuptureStats {
                 angle: 73,
                 kbg: 80,
                 bkb: 20,
-                size: 8.0,
+                size: 10.0,
             }),
             7..=13 => Some(DarkRuptureStats {
                 id: 2,
@@ -52,7 +52,7 @@ impl DarkRuptureStats {
                 angle: 45,
                 kbg: 60,
                 bkb: 20,
-                size: 14.0,
+                size: 18.0,
             }),
             _ => None,
         }
@@ -131,6 +131,7 @@ unsafe extern "C" fn fun_7100006ef0(
 }
 
 unsafe extern "C" fn ganon_specialairsend_init(agent: &mut L2CFighterCommon) -> L2CValue {
+    AttackModule::clear_all(agent.module_accessor);
     fun_7100006ef0(
         agent,
         hash40("catched_ganon").into(),
