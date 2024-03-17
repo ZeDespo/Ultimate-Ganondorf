@@ -9,59 +9,11 @@ use {
     smashline::*,
 };
 
-// .game_acmd("game_catchedairendganon", game_catchedairendganon)
 pub fn install() {
     Agent::new("ganon")
         .game_acmd("game_specialairsfall", ganon_specialairsfall)
         .install();
 }
-
-// /// End of Ganon Air Side B
-// unsafe extern "C" fn game_catchedairendganon(agent: &mut L2CAgentBase) {
-//     frame(agent.lua_state_agent, 10.0);
-//     if macros::is_excute(agent) {
-//         panic!(""); // frame 10
-//         macros::ATTACK(
-//             agent,
-//             1,
-//             0,
-//             Hash40::new("handl"),
-//             14.0,
-//             80,
-//             100,
-//             0,
-//          50,
-//             23.5,
-//             0.0,
-//             0.0,
-//             0.0,
-//             None,
-//             None,
-//             None,
-//             1.0,
-//             1.0,
-//             *ATTACK_SETOFF_KIND_ON,
-//             *ATTACK_LR_CHECK_POS,
-//             false,
-//             10,
-//             0.0,
-//             0,
-//             false,
-//             false,
-//             false,
-//             false,
-//             true,
-//             *COLLISION_SITUATION_MASK_GA,
-//             *COLLISION_CATEGORY_MASK_ALL,
-//             *COLLISION_PART_MASK_ALL,
-//             false,
-//             Hash40::new("collision_attr_purple"),
-//             *ATTACK_SOUND_LEVEL_L,
-//             *COLLISION_SOUND_ATTR_KICK,
-//             *ATTACK_REGION_KICK,
-//         );
-//     }
-// }
 
 unsafe extern "C" fn ganon_specialairsfall(agent: &mut L2CAgentBase) {
     if macros::is_excute(agent) {

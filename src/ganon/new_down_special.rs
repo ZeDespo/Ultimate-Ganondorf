@@ -11,12 +11,7 @@ use super::utils::*;
 use skyline_smash::app::BattleObjectModuleAccessor;
 use smash::app::lua_bind::*;
 use smash::lib::lua_const::*;
-use smash_script::macros;
-use std::f32::consts::PI;
-use {
-    smash::{hash40, lua2cpp::*},
-    smashline::*,
-};
+use {smash::lua2cpp::*, smashline::*};
 
 //
 unsafe extern "C" fn precondition_check(
@@ -50,51 +45,5 @@ pub unsafe extern "C" fn new_down_special(fighter: &mut L2CFighterCommon, iv: &I
             *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_CATCH,
             false.into(),
         );
-    } else if iv.status_kind == FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_FALL {
-    } else if iv.status_kind == FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_CATCH {
-    } else if iv.status_kind == FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_END {
-        // if iv.motion_module_frame == 4.0 {
-        //     macros::ATTACK(
-        //         fighter,
-        //         0,
-        //         0,
-        //         Hash40::new("haver"),
-        //         19.0,
-        //         85,
-        //         71,
-        //         0,
-        //         40,
-        //         18.0,
-        //         0.0,
-        //         6.5,
-        //         0.0,
-        //         None,
-        //         None,
-        //         None,
-        //         1.0,
-        //         1.0,
-        //         *ATTACK_SETOFF_KIND_ON,
-        //         *ATTACK_LR_CHECK_POS,
-        //         false,
-        //         0,
-        //         0.0,
-        //         0,
-        //         false,
-        //         false,
-        //         false,
-        //         false,
-        //         true,
-        //         *COLLISION_SITUATION_MASK_GA,
-        //         *COLLISION_CATEGORY_MASK_ALL,
-        //         *COLLISION_PART_MASK_ALL,
-        //         false,
-        //         Hash40::new("collision_attr_cutup"),
-        //         *ATTACK_SOUND_LEVEL_L,
-        //         *COLLISION_SOUND_ATTR_FIRE,
-        //         *ATTACK_REGION_MAGIC,
-        //     );
-        // }
-    } else {
-        WorkModule::off_flag(boma, GANON_FLOAT_INTO_DIVE);
     }
 }

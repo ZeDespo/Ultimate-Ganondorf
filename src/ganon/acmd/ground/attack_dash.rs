@@ -184,6 +184,12 @@ unsafe extern "C" fn ganon_attackdash(agent: &mut L2CAgentBase) {
     if macros::is_excute(agent) {
         AttackModule::clear_all(agent.module_accessor);
     }
+    frame(agent.lua_state_agent, 40.0);
+    StatusModule::change_status_request_from_script(
+        agent.module_accessor,
+        *FIGHTER_STATUS_KIND_WAIT,
+        false.into(),
+    );
 }
 
 unsafe extern "C" fn ganon_effect_attackdash(agent: &mut L2CAgentBase) {
