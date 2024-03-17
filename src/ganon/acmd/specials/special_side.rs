@@ -130,8 +130,8 @@ unsafe extern "C" fn ganon_specialairsfall(agent: &mut L2CAgentBase) {
                 false,
                 Hash40::new("collision_attr_purple"),
                 *ATTACK_SOUND_LEVEL_L,
-                *COLLISION_SOUND_ATTR_KICK,
-                *ATTACK_REGION_KICK,
+                *COLLISION_SOUND_ATTR_PUNCH,
+                *ATTACK_REGION_PUNCH,
             );
         }
     }

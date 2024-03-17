@@ -3,6 +3,8 @@
 //! Ganondorf plunges into the ground, causing an explosion.
 //!
 use crate::ganon::utils::in_dive;
+use crate::ganon::utils::GANON_FLOAT_INTO_DIVE;
+use skyline_smash::app::BattleObjectModuleAccessor;
 use skyline_smash::app::GroundCorrectKind;
 use smash::app::lua_bind::*;
 use smash::app::sv_animcmd::*;
@@ -15,6 +17,96 @@ use {
 };
 
 const SITUATION_KIND: i32 = 0x16;
+
+struct DarkRuptureStats {
+    id: u64,
+    damage: f32,
+    angle: u64,
+    kbg: i32,
+    bkb: i32,
+    size: f32,
+}
+
+impl DarkRuptureStats {
+    fn new(frame: f32) -> Option<DarkRuptureStats> {
+        match frame as i8 {
+            1 | 2 => Some(DarkRuptureStats {
+                id: 0,
+                damage: 20.0,
+                angle: 361,
+                kbg: 100,
+                bkb: 40,
+                size: 4.5,
+            }),
+            3..=6 => Some(DarkRuptureStats {
+                id: 1,
+                damage: 12.0,
+                angle: 73,
+                kbg: 80,
+                bkb: 20,
+                size: 8.0,
+            }),
+            7..=13 => Some(DarkRuptureStats {
+                id: 2,
+                damage: 8.0,
+                angle: 45,
+                kbg: 60,
+                bkb: 20,
+                size: 14.0,
+            }),
+            _ => None,
+        }
+    }
+}
+
+/// There is no ACMD entry that I can find for Ganondorf's end status for special air,
+/// so imma do this myself.
+unsafe extern "C" fn dark_rupture_hitboxes(fighter: &mut L2CFighterCommon) {
+    let drs = DarkRuptureStats::new(MotionModule::frame(fighter.module_accessor));
+    if let Some(dr) = drs {
+        macros::ATTACK(
+            fighter,
+            dr.id,
+            0,
+            Hash40::new("handl"),
+            dr.damage,
+            dr.angle,
+            dr.kbg,
+            0,
+            dr.bkb,
+            dr.size,
+            0.0,
+            0.0,
+            0.0,
+            None,
+            None,
+            None,
+            1.0,
+            1.0,
+            *ATTACK_SETOFF_KIND_ON,
+            *ATTACK_LR_CHECK_POS,
+            false,
+            0,
+            0.0,
+            0,
+            false,
+            false,
+            false,
+            false,
+            true,
+            *COLLISION_SITUATION_MASK_GA,
+            *COLLISION_CATEGORY_MASK_ALL,
+            *COLLISION_PART_MASK_ALL,
+            false,
+            Hash40::new("collision_attr_cutup"),
+            *ATTACK_SOUND_LEVEL_L,
+            *COLLISION_SOUND_ATTR_FIRE,
+            *ATTACK_REGION_MAGIC,
+        );
+    } else {
+        AttackModule::clear_all(fighter.module_accessor);
+    }
+}
 
 unsafe extern "C" fn fun_7100010b20(agent: &mut L2CFighterCommon) {
     agent.set_situation(SITUATION_KIND_GROUND.into());
@@ -80,6 +172,9 @@ unsafe extern "C" fn ganon_specialarsend_main_loop(fighter: &mut L2CFighterCommo
             fighter.change_status(FIGHTER_STATUS_KIND_FALL.into(), false.into());
         } else {
             if !MotionModule::is_end(boma) {
+                if in_dive(boma) {
+                    dark_rupture_hitboxes(fighter);
+                }
                 return 0.into();
             }
             fighter.change_status(FIGHTER_STATUS_KIND_WAIT.into(), false.into());
@@ -96,8 +191,9 @@ unsafe extern "C" fn ganon_specialarsend_main_loop(fighter: &mut L2CFighterCommo
     0.into()
 }
 
-unsafe extern "C" fn ganon_specialairsend_exit(agent: &mut L2CFighterCommon) -> L2CValue {
-    CatchModule::catch_cut(agent.module_accessor, false, false);
+unsafe extern "C" fn ganon_specialairsend_exit(fighter: &mut L2CFighterCommon) -> L2CValue {
+    WorkModule::off_flag(fighter.module_accessor, GANON_FLOAT_INTO_DIVE);
+    CatchModule::catch_cut(fighter.module_accessor, false, false);
     0.into()
 }
 
