@@ -162,3 +162,7 @@ Failnaught arrow will be reflected back at the opponent.
 - *Late Uair active frames altered 14-16 -> 14-18*
 
 
+
+## Credits
+
+1) [ZMARTH for the Ganondorf OoT Voice mod](https://gamebanana.com/sounds/59751)
