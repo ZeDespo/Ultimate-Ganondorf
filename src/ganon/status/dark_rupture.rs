@@ -3,6 +3,7 @@
 //! Ganondorf plunges into the ground, causing an explosion.
 //!
 use crate::ganon::utils::in_dive;
+use crate::ganon::utils::GANON_DARK_RUPTURE_ACTIVE;
 use crate::ganon::utils::GANON_FLOAT_INTO_DIVE;
 use skyline_smash::app::BattleObjectModuleAccessor;
 use skyline_smash::app::GroundCorrectKind;
@@ -131,9 +132,11 @@ unsafe extern "C" fn fun_7100006ef0(
 }
 
 unsafe extern "C" fn ganon_specialairsend_init(agent: &mut L2CFighterCommon) -> L2CValue {
-    WorkModule::off_flag(agent.module_accessor, GANON_FLOAT_INTO_DIVE);
-    AttackModule::clear_all(agent.module_accessor);
-
+    if in_dive(agent.module_accessor) {
+        WorkModule::off_flag(agent.module_accessor, GANON_FLOAT_INTO_DIVE);
+        WorkModule::on_flag(agent.module_accessor, GANON_DARK_RUPTURE_ACTIVE);
+        AttackModule::clear_all(agent.module_accessor);
+    }
     fun_7100006ef0(
         agent,
         hash40("catched_ganon").into(),
@@ -175,7 +178,7 @@ unsafe extern "C" fn ganon_specialarsend_main_loop(fighter: &mut L2CFighterCommo
             fighter.change_status(FIGHTER_STATUS_KIND_FALL.into(), false.into());
         } else {
             if !MotionModule::is_end(boma) {
-                if in_dive(boma) {
+                if WorkModule::is_flag(fighter.module_accessor, GANON_DARK_RUPTURE_ACTIVE) {
                     dark_rupture_hitboxes(fighter);
                 }
                 return 0.into();
@@ -196,6 +199,7 @@ unsafe extern "C" fn ganon_specialarsend_main_loop(fighter: &mut L2CFighterCommo
 
 unsafe extern "C" fn ganon_specialairsend_exit(fighter: &mut L2CFighterCommon) -> L2CValue {
     WorkModule::off_flag(fighter.module_accessor, GANON_FLOAT_INTO_DIVE);
+    WorkModule::off_flag(fighter.module_accessor, GANON_DARK_RUPTURE_ACTIVE);
     CatchModule::catch_cut(fighter.module_accessor, false, false);
     0.into()
 }

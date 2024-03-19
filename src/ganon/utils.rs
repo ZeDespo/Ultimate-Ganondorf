@@ -101,7 +101,8 @@ pub const GANON_TELEPORT_WORK_INT: i32 = 0x42069;
 pub const GANON_TELEPORT_INTO_FLOAT_INIT_FLAG: i32 = 0x69420;
 pub const GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG: i32 = 0x69421;
 pub const GANON_FLOAT_INTO_DIVE: i32 = 0x69422;
-pub const GANON_FLOAT_INTO_SIDE_SPECIAL: i32 = 0x69423;
+pub const GANON_DARK_RUPTURE_ACTIVE: i32 = 0x69423;
+pub const GANON_FLOAT_INTO_SIDE_SPECIAL: i32 = 0x69424;
 
 pub unsafe extern "C" fn in_dive(boma: *mut BattleObjectModuleAccessor) -> bool {
     WorkModule::is_flag(boma, GANON_FLOAT_INTO_DIVE)
