@@ -8,16 +8,17 @@ use smash_script::*;
 use smashline::*;
 
 unsafe extern "C" fn ganon_attackairlw(agent: &mut L2CAgentBase) {
-    frame(agent.lua_state_agent, 1.0);
-    if macros::is_excute(agent) {
-        FighterAreaModuleImpl::enable_fix_jostle_area_xy(
-            agent.module_accessor,
-            4.5,
-            4.5,
-            12.5,
-            0.0,
-        );
-    }
+    macros::FT_MOTION_RATE(agent, 0.65);
+    // frame(agent.lua_state_agent, 1.0);
+    // if macros::is_excute(agent) {
+    //     FighterAreaModuleImpl::enable_fix_jostle_area_xy(
+    //         agent.module_accessor,
+    //         4.5,
+    //         4.5,
+    //         12.5,
+    //         0.0,
+    //     );
+    // }
     frame(agent.lua_state_agent, 4.0);
     if macros::is_excute(agent) {
         WorkModule::on_flag(
@@ -26,6 +27,7 @@ unsafe extern "C" fn ganon_attackairlw(agent: &mut L2CAgentBase) {
         );
     }
     frame(agent.lua_state_agent, 22.0);
+    macros::FT_MOTION_RATE(agent, 1.0);
     if macros::is_excute(agent) {
         // macros::ATTACK(
         //     agent,
@@ -232,12 +234,12 @@ unsafe extern "C" fn ganon_attackairlw(agent: &mut L2CAgentBase) {
             78,
             0,
             97,
-            4.5,
+            2.5,
             0.0,
             0.0,
             0.0,
             Some(0.0),
-            Some(13.5),
+            Some(25.0),
             Some(0.0),
             1.5,
             1.0,
