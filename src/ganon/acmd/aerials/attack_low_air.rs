@@ -7,6 +7,9 @@ use smash::phx::Hash40;
 use smash_script::*;
 use smashline::*;
 
+const DAIR_LENGTH: f32 = 25.0;
+const DAIR_FRAME: f32 = 22.0;
+
 unsafe extern "C" fn ganon_attackairlw(agent: &mut L2CAgentBase) {
     macros::FT_MOTION_RATE(agent, 0.65);
     // frame(agent.lua_state_agent, 1.0);
@@ -26,7 +29,7 @@ unsafe extern "C" fn ganon_attackairlw(agent: &mut L2CAgentBase) {
             *FIGHTER_STATUS_ATTACK_AIR_FLAG_ENABLE_LANDING,
         );
     }
-    frame(agent.lua_state_agent, 22.0);
+    frame(agent.lua_state_agent, DAIR_FRAME);
     macros::FT_MOTION_RATE(agent, 1.0);
     if macros::is_excute(agent) {
         // macros::ATTACK(
@@ -277,8 +280,45 @@ unsafe extern "C" fn ganon_attackairlw(agent: &mut L2CAgentBase) {
     }
 }
 
+unsafe extern "C" fn effect_attackairlw(agent: &mut L2CAgentBase) {
+    frame(agent.lua_state_agent, DAIR_FRAME);
+    if macros::is_excute(agent) {
+        let mut i: f32 = 0.0;
+        while i <= DAIR_LENGTH {
+            macros::EFFECT_FOLLOW(
+                agent,
+                Hash40::new("ganon_attack_elec"),
+                Hash40::new("haver"),
+                0,
+                i as i32,
+                0,
+                0,
+                0,
+                0,
+                1.0,
+                true,
+            );
+            i = i + 5.0;
+        }
+    }
+}
+
+unsafe extern "C" fn sound_attackairlw(agent: &mut L2CAgentBase) {
+    frame(agent.lua_state_agent, 16.0);
+    if macros::is_excute(agent) {
+        macros::PLAY_SEQUENCE(agent, Hash40::new("seq_ganon_rnd_attack"));
+        macros::PLAY_SE(agent, Hash40::new("se_ganon_swing_ll"));
+    }
+    frame(agent.lua_state_agent, DAIR_FRAME);
+    if macros::is_excute(agent) {
+        macros::PLAY_SE(agent, Hash40::new("se_common_electric_hit_l"));
+    }
+}
+
 pub fn install() {
     Agent::new("ganon")
         .game_acmd("game_attackairlw", ganon_attackairlw)
+        .effect_acmd("effect_attackairlw", effect_attackairlw)
+        .sound_acmd("sound_attackairlw", sound_attackairlw)
         .install();
 }
