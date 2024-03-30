@@ -1,4 +1,6 @@
 //! D-Air can be cancelled on frame 30 instead of frame 32.
+use std::convert::TryInto;
+
 use smash::app::lua_bind::*;
 use smash::app::sv_animcmd::*;
 use smash::lib::lua_const::*;
@@ -11,7 +13,7 @@ const DAIR_LENGTH: f32 = 25.0;
 const DAIR_FRAME: f32 = 22.0;
 
 unsafe extern "C" fn ganon_attackairlw(agent: &mut L2CAgentBase) {
-    macros::FT_MOTION_RATE(agent, 0.45);
+    macros::FT_MOTION_RATE(agent, 0.51);
     // frame(agent.lua_state_agent, 1.0);
     // if macros::is_excute(agent) {
     //     FighterAreaModuleImpl::enable_fix_jostle_area_xy(
@@ -31,8 +33,9 @@ unsafe extern "C" fn ganon_attackairlw(agent: &mut L2CAgentBase) {
     }
     frame(agent.lua_state_agent, DAIR_FRAME);
     macros::FT_MOTION_RATE(agent, 1.0);
+    let step: u64 = 5;
     if macros::is_excute(agent) {
-        for i in (5..26).step_by(5) {
+        for i in (5..(DAIR_LENGTH as u64) + 1).step_by(step as usize) {
             let y_dist = i as f32;
             let damage: f32;
             let angle: u64;
@@ -40,11 +43,11 @@ unsafe extern "C" fn ganon_attackairlw(agent: &mut L2CAgentBase) {
             let bkb: i32;
             let hitlag: f32;
             if y_dist < DAIR_LENGTH {
-                (damage, angle, kbg, bkb, hitlag) = (8.2, 90, 60, 60, 0.7);
+                (damage, angle, kbg, bkb, hitlag) = (8.2, 90, 60, 60, 0.9);
             } else {
                 (damage, angle, kbg, bkb, hitlag) = (17.0, 270, 78, 97, 1.5);
             }
-            let id: u64 = (i / 5) - 1;
+            let id: u64 = (i / step) - 1;
             macros::ATTACK(
                 agent,
                 id,
