@@ -72,7 +72,7 @@ unsafe extern "C" fn ganon_attackhi4(agent: &mut L2CAgentBase) {
             agent.module_accessor,
             2,
             Hash40::new("top"),
-            &Vector2f { x: 0.0, y: 24.0 },
+            &Vector2f { x: 0.0, y: 20.0 },
             7,
             false,
         );
