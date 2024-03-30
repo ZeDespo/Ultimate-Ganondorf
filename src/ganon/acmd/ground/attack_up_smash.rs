@@ -77,7 +77,7 @@ unsafe extern "C" fn ganon_attackhi4(agent: &mut L2CAgentBase) {
             false,
         );
     }
-    frame(agent.lua_state_agent, 10.0);
+    frame(agent.lua_state_agent, 15.0);
     for _ in 0..3 {
         if macros::is_excute(agent) {
             macros::ATTACK(
