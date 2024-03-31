@@ -1,9 +1,11 @@
 //! General utility scripts that will enable Ganondorf's core function hooking.
 use core::fmt;
 
-use smash::app::lua_bind::WorkModule;
+use smash::app::lua_bind::{EffectModule, WorkModule};
 use smash::app::BattleObjectModuleAccessor;
 use smash::phx::Vector3f;
+use smash_script::macros;
+use smashline::{Hash40, L2CAgentBase};
 
 #[derive(Copy, Clone)]
 pub enum FloatStatus {
@@ -111,4 +113,24 @@ pub unsafe extern "C" fn in_dive(boma: *mut BattleObjectModuleAccessor) -> bool 
 /// Convenience function for checking teleport status via a handler flag.
 pub unsafe extern "C" fn in_teleport(boma: *mut BattleObjectModuleAccessor) -> bool {
     WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG)
+}
+
+pub unsafe extern "C" fn triforce_hand_fx(agent: &mut L2CAgentBase, rate: f32) {
+    if macros::is_excute(agent) {
+        macros::EFFECT_FOLLOW(
+            agent,
+            Hash40::new("ganon_final_hand_triforce"),
+            Hash40::new("handr"),
+            2.5,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            true,
+        );
+        macros::LAST_EFFECT_SET_RATE(agent, rate);
+        EffectModule::enable_sync_init_pos_last(agent.module_accessor);
+    }
 }

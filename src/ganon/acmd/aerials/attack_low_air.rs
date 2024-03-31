@@ -89,7 +89,7 @@ unsafe extern "C" fn ganon_attackairlw(agent: &mut L2CAgentBase) {
             );
         }
     }
-    wait(agent.lua_state_agent, 3.0);
+    wait(agent.lua_state_agent, 7.0);
     if macros::is_excute(agent) {
         AttackModule::clear_all(agent.module_accessor);
     }

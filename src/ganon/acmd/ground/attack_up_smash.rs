@@ -4,11 +4,15 @@ use smash::app::sv_animcmd::*;
 use smash::lib::lua_const::*;
 use smash::phx::Vector2f;
 use smash_script::macros;
+
+use crate::ganon::utils::triforce_hand_fx;
 use {smash::lua2cpp::*, smashline::*};
 
 pub fn install() {
     Agent::new("ganon")
         .game_acmd("game_attackhi4", ganon_attackhi4)
+        .effect_acmd("effect_attackhi4charge", effect_attackhi4charge)
+        .effect_acmd("effect_attackhi4", effect_attackhi4)
         .install();
 }
 
@@ -42,10 +46,10 @@ unsafe extern "C" fn ganon_attackhi4(agent: &mut L2CAgentBase) {
             3.0,
             0.0,
             11.7,
-            -6.0,
+            -8.0,
             Some(0.0),
             Some(11.7),
-            Some(7.5),
+            Some(9.5),
             1.0,
             1.0,
             *ATTACK_SETOFF_KIND_THRU,
@@ -65,7 +69,7 @@ unsafe extern "C" fn ganon_attackhi4(agent: &mut L2CAgentBase) {
             false,
             Hash40::new("collision_attr_purple"),
             *ATTACK_SOUND_LEVEL_S,
-            *COLLISION_SOUND_ATTR_FIRE,
+            *COLLISION_SOUND_ATTR_MAGIC,
             *ATTACK_REGION_NONE,
         );
         AttackModule::set_vec_target_pos(
@@ -116,7 +120,7 @@ unsafe extern "C" fn ganon_attackhi4(agent: &mut L2CAgentBase) {
                 false,
                 Hash40::new("collision_attr_purple"),
                 *ATTACK_SOUND_LEVEL_S,
-                *COLLISION_SOUND_ATTR_FIRE,
+                *COLLISION_SOUND_ATTR_MAGIC,
                 *ATTACK_REGION_NONE,
             );
             macros::ATTACK(
@@ -155,7 +159,7 @@ unsafe extern "C" fn ganon_attackhi4(agent: &mut L2CAgentBase) {
                 false,
                 Hash40::new("collision_attr_purple"),
                 *ATTACK_SOUND_LEVEL_S,
-                *COLLISION_SOUND_ATTR_FIRE,
+                *COLLISION_SOUND_ATTR_MAGIC,
                 *ATTACK_REGION_NONE,
             );
             macros::ATTACK(
@@ -194,7 +198,7 @@ unsafe extern "C" fn ganon_attackhi4(agent: &mut L2CAgentBase) {
                 false,
                 Hash40::new("collision_attr_purple"),
                 *ATTACK_SOUND_LEVEL_S,
-                *COLLISION_SOUND_ATTR_FIRE,
+                *COLLISION_SOUND_ATTR_MAGIC,
                 *ATTACK_REGION_NONE,
             );
             macros::ATTACK(
@@ -233,7 +237,7 @@ unsafe extern "C" fn ganon_attackhi4(agent: &mut L2CAgentBase) {
                 false,
                 Hash40::new("collision_attr_purple"),
                 *ATTACK_SOUND_LEVEL_S,
-                *COLLISION_SOUND_ATTR_FIRE,
+                *COLLISION_SOUND_ATTR_MAGIC,
                 *ATTACK_REGION_NONE,
             );
         }
@@ -280,7 +284,7 @@ unsafe extern "C" fn ganon_attackhi4(agent: &mut L2CAgentBase) {
             false,
             Hash40::new("collision_attr_purple"),
             *ATTACK_SOUND_LEVEL_L,
-            *COLLISION_SOUND_ATTR_FIRE,
+            *COLLISION_SOUND_ATTR_MAGIC,
             *ATTACK_REGION_NONE,
         );
         macros::ATTACK(
@@ -319,7 +323,7 @@ unsafe extern "C" fn ganon_attackhi4(agent: &mut L2CAgentBase) {
             false,
             Hash40::new("collision_attr_purple"),
             *ATTACK_SOUND_LEVEL_L,
-            *COLLISION_SOUND_ATTR_FIRE,
+            *COLLISION_SOUND_ATTR_MAGIC,
             *ATTACK_REGION_NONE,
         );
         macros::ATTACK(
@@ -358,7 +362,7 @@ unsafe extern "C" fn ganon_attackhi4(agent: &mut L2CAgentBase) {
             false,
             Hash40::new("collision_attr_purple"),
             *ATTACK_SOUND_LEVEL_L,
-            *COLLISION_SOUND_ATTR_FIRE,
+            *COLLISION_SOUND_ATTR_MAGIC,
             *ATTACK_REGION_NONE,
         );
         macros::ATTACK(
@@ -397,12 +401,91 @@ unsafe extern "C" fn ganon_attackhi4(agent: &mut L2CAgentBase) {
             false,
             Hash40::new("collision_attr_purple"),
             *ATTACK_SOUND_LEVEL_L,
-            *COLLISION_SOUND_ATTR_FIRE,
+            *COLLISION_SOUND_ATTR_MAGIC,
             *ATTACK_REGION_NONE,
         );
     }
     wait(agent.lua_state_agent, 4.0);
     if macros::is_excute(agent) {
         AttackModule::clear_all(agent.module_accessor);
+    }
+}
+
+unsafe extern "C" fn effect_attackhi4charge(agent: &mut L2CAgentBase) {
+    frame(agent.lua_state_agent, 5.0);
+    if macros::is_excute(agent) {
+        macros::FOOT_EFFECT(
+            agent,
+            Hash40::new("sys_run_smoke"),
+            Hash40::new("top"),
+            -4,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            15,
+            0,
+            10,
+            0,
+            0,
+            0,
+            false,
+        );
+    }
+    wait(agent.lua_state_agent, 5.0);
+    macros::EFFECT(
+        agent,
+        Hash40::new("sys_smash_flash_s"),
+        Hash40::new("haver"),
+        0,
+        16,
+        0,
+        0,
+        0,
+        0,
+        1,
+        4,
+        4,
+        4,
+        0,
+        0,
+        0,
+        true,
+    );
+}
+
+unsafe extern "C" fn effect_attackhi4(agent: &mut L2CAgentBase) {
+    frame(agent.lua_state_agent, 10.0);
+    triforce_hand_fx(agent, 3.0);
+    frame(agent.lua_state_agent, 13.0);
+    if macros::is_excute(agent) {
+        // macros::EFFECT_FOLLOW(
+        //     agent,
+        //     Hash40::new("ganon_entry_aura"),
+        //     Hash40::new("top"),
+        //     0,
+        //     12,
+        //     0,
+        //     0,
+        //     0,
+        //     0,
+        //     3,
+        //     true,
+        // );
+        macros::EFFECT_FOLLOW(
+            agent,
+            Hash40::new("ganon_final_hand_triforce"),
+            Hash40::new("top"),
+            0,
+            0,
+            0,
+            0,
+            0,
+            90,
+            6,
+            true,
+        );
     }
 }
