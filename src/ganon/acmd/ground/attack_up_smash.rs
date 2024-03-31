@@ -67,9 +67,9 @@ unsafe extern "C" fn ganon_attackhi4(agent: &mut L2CAgentBase) {
             *COLLISION_CATEGORY_MASK_ALL,
             *COLLISION_PART_MASK_ALL,
             false,
-            Hash40::new("collision_attr_purple"),
+            Hash40::new("collision_attr_elec"),
             *ATTACK_SOUND_LEVEL_S,
-            *COLLISION_SOUND_ATTR_MAGIC,
+            *COLLISION_SOUND_ATTR_FIRE,
             *ATTACK_REGION_NONE,
         );
         AttackModule::set_vec_target_pos(
@@ -118,9 +118,9 @@ unsafe extern "C" fn ganon_attackhi4(agent: &mut L2CAgentBase) {
                 *COLLISION_CATEGORY_MASK_ALL,
                 *COLLISION_PART_MASK_ALL,
                 false,
-                Hash40::new("collision_attr_purple"),
+                Hash40::new("collision_attr_elec"),
                 *ATTACK_SOUND_LEVEL_S,
-                *COLLISION_SOUND_ATTR_MAGIC,
+                *COLLISION_SOUND_ATTR_FIRE,
                 *ATTACK_REGION_NONE,
             );
             macros::ATTACK(
@@ -157,9 +157,9 @@ unsafe extern "C" fn ganon_attackhi4(agent: &mut L2CAgentBase) {
                 *COLLISION_CATEGORY_MASK_ALL,
                 *COLLISION_PART_MASK_ALL,
                 false,
-                Hash40::new("collision_attr_purple"),
+                Hash40::new("collision_attr_elec"),
                 *ATTACK_SOUND_LEVEL_S,
-                *COLLISION_SOUND_ATTR_MAGIC,
+                *COLLISION_SOUND_ATTR_FIRE,
                 *ATTACK_REGION_NONE,
             );
             macros::ATTACK(
@@ -196,9 +196,9 @@ unsafe extern "C" fn ganon_attackhi4(agent: &mut L2CAgentBase) {
                 *COLLISION_CATEGORY_MASK_ALL,
                 *COLLISION_PART_MASK_ALL,
                 false,
-                Hash40::new("collision_attr_purple"),
+                Hash40::new("collision_attr_elec"),
                 *ATTACK_SOUND_LEVEL_S,
-                *COLLISION_SOUND_ATTR_MAGIC,
+                *COLLISION_SOUND_ATTR_FIRE,
                 *ATTACK_REGION_NONE,
             );
             macros::ATTACK(
@@ -235,9 +235,9 @@ unsafe extern "C" fn ganon_attackhi4(agent: &mut L2CAgentBase) {
                 *COLLISION_CATEGORY_MASK_ALL,
                 *COLLISION_PART_MASK_ALL,
                 false,
-                Hash40::new("collision_attr_purple"),
+                Hash40::new("collision_attr_elec"),
                 *ATTACK_SOUND_LEVEL_S,
-                *COLLISION_SOUND_ATTR_MAGIC,
+                *COLLISION_SOUND_ATTR_FIRE,
                 *ATTACK_REGION_NONE,
             );
         }
@@ -282,9 +282,9 @@ unsafe extern "C" fn ganon_attackhi4(agent: &mut L2CAgentBase) {
             *COLLISION_CATEGORY_MASK_ALL,
             *COLLISION_PART_MASK_ALL,
             false,
-            Hash40::new("collision_attr_purple"),
+            Hash40::new("collision_attr_elec"),
             *ATTACK_SOUND_LEVEL_L,
-            *COLLISION_SOUND_ATTR_MAGIC,
+            *COLLISION_SOUND_ATTR_FIRE,
             *ATTACK_REGION_NONE,
         );
         macros::ATTACK(
@@ -321,9 +321,9 @@ unsafe extern "C" fn ganon_attackhi4(agent: &mut L2CAgentBase) {
             *COLLISION_CATEGORY_MASK_ALL,
             *COLLISION_PART_MASK_ALL,
             false,
-            Hash40::new("collision_attr_purple"),
+            Hash40::new("collision_attr_elec"),
             *ATTACK_SOUND_LEVEL_L,
-            *COLLISION_SOUND_ATTR_MAGIC,
+            *COLLISION_SOUND_ATTR_FIRE,
             *ATTACK_REGION_NONE,
         );
         macros::ATTACK(
@@ -360,9 +360,9 @@ unsafe extern "C" fn ganon_attackhi4(agent: &mut L2CAgentBase) {
             *COLLISION_CATEGORY_MASK_ALL,
             *COLLISION_PART_MASK_ALL,
             false,
-            Hash40::new("collision_attr_purple"),
+            Hash40::new("collision_attr_elec"),
             *ATTACK_SOUND_LEVEL_L,
-            *COLLISION_SOUND_ATTR_MAGIC,
+            *COLLISION_SOUND_ATTR_FIRE,
             *ATTACK_REGION_NONE,
         );
         macros::ATTACK(
@@ -399,9 +399,9 @@ unsafe extern "C" fn ganon_attackhi4(agent: &mut L2CAgentBase) {
             *COLLISION_CATEGORY_MASK_ALL,
             *COLLISION_PART_MASK_ALL,
             false,
-            Hash40::new("collision_attr_purple"),
+            Hash40::new("collision_attr_elec"),
             *ATTACK_SOUND_LEVEL_L,
-            *COLLISION_SOUND_ATTR_MAGIC,
+            *COLLISION_SOUND_ATTR_FIRE,
             *ATTACK_REGION_NONE,
         );
     }
@@ -479,12 +479,12 @@ unsafe extern "C" fn effect_attackhi4(agent: &mut L2CAgentBase) {
             Hash40::new("ganon_final_hand_triforce"),
             Hash40::new("top"),
             0,
+            2,
             0,
             0,
             0,
-            0,
-            90,
-            6,
+            75,
+            7,
             true,
         );
     }
