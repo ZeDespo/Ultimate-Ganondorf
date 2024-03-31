@@ -35,7 +35,7 @@ unsafe extern "C" fn ganon_attackairlw(agent: &mut L2CAgentBase) {
     macros::FT_MOTION_RATE(agent, 1.0);
     let step: u64 = 5;
     if macros::is_excute(agent) {
-        for i in (5..(DAIR_LENGTH as u64) + 1).step_by(step as usize) {
+        for i in (0..(DAIR_LENGTH as u64) + 1).step_by(step as usize) {
             let y_dist = i as f32;
             let damage: f32;
             let angle: u64;
@@ -47,7 +47,12 @@ unsafe extern "C" fn ganon_attackairlw(agent: &mut L2CAgentBase) {
             } else {
                 (damage, angle, kbg, bkb, hitlag) = (17.0, 270, 78, 97, 1.5);
             }
-            let id: u64 = (i / step) - 1;
+            let id: u64;
+            if i == 0 {
+                id = 0
+            } else {
+                id = (i / step);
+            }
             macros::ATTACK(
                 agent,
                 id,

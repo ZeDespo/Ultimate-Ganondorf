@@ -461,19 +461,19 @@ unsafe extern "C" fn effect_attackhi4(agent: &mut L2CAgentBase) {
     triforce_hand_fx(agent, 3.0);
     frame(agent.lua_state_agent, 13.0);
     if macros::is_excute(agent) {
-        // macros::EFFECT_FOLLOW(
-        //     agent,
-        //     Hash40::new("ganon_entry_aura"),
-        //     Hash40::new("top"),
-        //     0,
-        //     12,
-        //     0,
-        //     0,
-        //     0,
-        //     0,
-        //     3,
-        //     true,
-        // );
+        macros::EFFECT_FOLLOW(
+            agent,
+            Hash40::new("ganon_appeal_aura"),
+            Hash40::new("handr"),
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            true,
+        );
         macros::EFFECT_FOLLOW(
             agent,
             Hash40::new("ganon_final_hand_triforce"),
