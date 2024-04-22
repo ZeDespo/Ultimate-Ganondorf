@@ -256,6 +256,7 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
                 WorkModule::turn_off_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG);
                 macros::WHOLE_HIT(fighter, *HIT_STATUS_NORMAL);
                 VisibilityModule::set_whole(boma, true);
+                WorkModule::set_flag(boma, true, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG);
                 GS[iv.entry_id].float_status = FloatStatus::CanFloat;
             }
         }
