@@ -150,6 +150,11 @@ unsafe extern "C" fn teleport_calculator_main_loop(fighter: &mut L2CFighterCommo
     let ts = TeleportStatus::from_int(WorkModule::get_int(boma, GANON_TELEPORT_WORK_INT));
     let entry_id = WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize;
     match ts {
+        TeleportStatus::Ready => WorkModule::set_int(
+            boma,
+            TeleportStatus::PreTransit as i32,
+            GANON_TELEPORT_WORK_INT,
+        ),
         TeleportStatus::PreTransit => {
             Position2D::next_teleport_position(boma).set_to_array(entry_id);
             if frame == 16.0 {
@@ -185,8 +190,11 @@ unsafe extern "C" fn teleport_calculator_main_loop(fighter: &mut L2CFighterCommo
                 WorkModule::set_flag(boma, true, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG);
                 WorkModule::set_int(boma, TeleportStatus::Ready as i32, GANON_TELEPORT_WORK_INT);
             }
+            return 0.into();
         }
-        _ => {}
+        TeleportStatus::End => {
+            return 0.into();
+        }
     }
     0.into()
 }
