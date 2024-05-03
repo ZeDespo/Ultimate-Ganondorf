@@ -149,6 +149,7 @@ unsafe extern "C" fn teleport_calculator_main_loop(fighter: &mut L2CFighterCommo
     let frame = MotionModule::frame(boma);
     let ts = TeleportStatus::from_int(WorkModule::get_int(boma, GANON_TELEPORT_WORK_INT));
     let entry_id = WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize;
+    println!("Teleport Status: {}", ts);
     match ts {
         TeleportStatus::Ready => WorkModule::set_int(
             boma,

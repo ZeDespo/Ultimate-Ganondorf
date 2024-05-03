@@ -217,11 +217,6 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
         println!("Teleport into float!");
         WorkModule::set_flag(boma, false, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG);
         WorkModule::set_flag(boma, true, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG);
-        StatusModule::change_status_request_from_script(
-            boma,
-            *FIGHTER_STATUS_KIND_SPECIAL_N,
-            false,
-        );
         return;
         // MotionModule::change_motion_kind(boma, Hash40::new("special_air_n"));
     }
@@ -262,7 +257,6 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
                 WorkModule::turn_off_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG);
                 macros::WHOLE_HIT(fighter, *HIT_STATUS_NORMAL);
                 VisibilityModule::set_whole(boma, true);
-                WorkModule::set_flag(boma, true, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG);
                 GS[iv.entry_id].float_status = FloatStatus::CanFloat;
             }
         }
