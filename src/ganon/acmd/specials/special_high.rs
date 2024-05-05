@@ -11,8 +11,11 @@ use smashline::*;
 pub fn install() {
     Agent::new("ganon")
         .game_acmd("game_specialhi", ganon_teleport)
+        .game_acmd("game_specialairhi", ganon_teleport)
         .effect_acmd("effect_specialhi", ganon_teleport_eff)
+        .effect_acmd("effect_specialairhi", ganon_teleport_eff)
         .sound_acmd("sound_specialhi", ganon_teleport_snd)
+        .sound_acmd("sound_specialairhi", ganon_teleport_snd)
         .install();
 }
 

@@ -159,6 +159,7 @@ unsafe extern "C" fn teleport_calculator_main_loop(fighter: &mut L2CFighterCommo
         TeleportStatus::PreTransit => {
             Position2D::next_teleport_position(boma).set_to_array(entry_id);
             if frame == 16.0 {
+                KineticModule::clear_speed_all(boma);
                 WorkModule::set_int(
                     boma,
                     TeleportStatus::Transit as i32,
