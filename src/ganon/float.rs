@@ -225,9 +225,17 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
         FloatStatus::CanFloat => GS[iv.entry_id]
             .float_status
             .transition_to_floating_if_able(&iv),
-        FloatStatus::CannotFloat => GS[iv.entry_id]
-            .float_status
-            .transition_to_can_float_if_able(&iv),
+        FloatStatus::CannotFloat => {
+            if iv.teleport_into_float {
+                GS[iv.entry_id]
+                    .float_status
+                    .transition_to_floating_if_able(&iv)
+            } else {
+                GS[iv.entry_id]
+                    .float_status
+                    .transition_to_can_float_if_able(&iv)
+            }
+        }
         FloatStatus::Floating(_) => {
             let fs = GS[iv.entry_id]
                 .float_status

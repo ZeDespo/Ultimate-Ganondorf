@@ -3,7 +3,7 @@ use crate::ganon::utils::InitValues;
 use crate::ganon::utils::Position2D;
 use crate::ganon::utils::TeleportStatus;
 use crate::ganon::utils::FIGHTER_GANON_STATUS_KIND_PRE_TELEPORT;
-use crate::ganon::utils::GANON_DARK_RUPTURE_ACTIVE;
+use crate::ganon::utils::GANON_CAN_TELEPORT_FLAG;
 use crate::ganon::utils::GANON_FLOAT_INTO_DIVE;
 use crate::ganon::utils::GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG;
 use crate::ganon::utils::GANON_TELEPORT_INTO_FLOAT_INIT_FLAG;
@@ -121,12 +121,17 @@ impl Position2D {
 }
 
 unsafe extern "C" fn teleport_init(fighter: &mut L2CFighterCommon) -> L2CValue {
-    StatusModule::change_status_request_from_script(
-        fighter.module_accessor,
-        FIGHTER_GANON_STATUS_KIND_PRE_TELEPORT,
-        false.into(),
-    );
-    0.into()
+    let boma = fighter.module_accessor;
+    if WorkModule::is_flag(boma, GANON_CAN_TELEPORT_FLAG) {
+        StatusModule::change_status_request_from_script(
+            boma,
+            FIGHTER_GANON_STATUS_KIND_PRE_TELEPORT,
+            false.into(),
+        );
+        return 0.into();
+    } else {
+        return 1.into();
+    }
 }
 
 unsafe extern "C" fn teleport_calculator_init(fighter: &mut L2CFighterCommon) -> L2CValue {
