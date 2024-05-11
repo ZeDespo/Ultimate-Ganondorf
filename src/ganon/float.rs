@@ -227,6 +227,7 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
             .transition_to_floating_if_able(&iv),
         FloatStatus::CannotFloat => {
             if iv.teleport_into_float {
+                WorkModule::on_flag(boma, GANON_TELEPORT_INTO_FLOAT_WAS_CANNOT_FLOAT_FLAG);
                 GS[iv.entry_id]
                     .float_status
                     .transition_to_floating_if_able(&iv)
@@ -265,7 +266,12 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
                 WorkModule::turn_off_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG);
                 macros::WHOLE_HIT(fighter, *HIT_STATUS_NORMAL);
                 VisibilityModule::set_whole(boma, true);
-                GS[iv.entry_id].float_status = FloatStatus::CanFloat;
+                if WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_WAS_CANNOT_FLOAT_FLAG) {
+                    GS[iv.entry_id].float_status = FloatStatus::CannotFloat;
+                    WorkModule::off_flag(boma, GANON_TELEPORT_INTO_FLOAT_WAS_CANNOT_FLOAT_FLAG)
+                } else {
+                    GS[iv.entry_id].float_status = FloatStatus::CanFloat;
+                }
             }
         }
         FloatStatus::Floating(i) => {
