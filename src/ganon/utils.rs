@@ -72,6 +72,7 @@ pub enum TeleportStatus {
     Ready = 0,
     PreTransit,
     Transit,
+    EndTransit,
     End,
 }
 
@@ -87,7 +88,8 @@ impl TeleportStatus {
         match value {
             1 => TeleportStatus::PreTransit,
             2 => TeleportStatus::Transit,
-            3 => TeleportStatus::End,
+            3 => TeleportStatus::EndTransit,
+            4 => TeleportStatus::End,
             _ => TeleportStatus::Ready,
         }
     }

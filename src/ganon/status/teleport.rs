@@ -188,6 +188,13 @@ unsafe extern "C" fn teleport_calculator_main_loop(fighter: &mut L2CFighterCommo
                 fighter.module_accessor,
                 GroundCorrectKind(*GROUND_CORRECT_KIND_AIR),
             );
+            WorkModule::set_int(
+                boma,
+                TeleportStatus::EndTransit as i32,
+                GANON_TELEPORT_WORK_INT,
+            );
+        }
+        TeleportStatus::EndTransit => {
             teleport_fx(fighter);
             WorkModule::set_int(boma, TeleportStatus::End as i32, GANON_TELEPORT_WORK_INT);
             if !WorkModule::is_flag(
