@@ -6,7 +6,7 @@ use {smash::lua2cpp::*, smashline::*};
 
 pub fn install() {
     Agent::new("ganon")
-        .game_acmd("game_attackairf", ganon_attackairf)
+        .game_acmd("game_attackairf", ganon_attackairf, Priority::Default)
         .install();
 }
 

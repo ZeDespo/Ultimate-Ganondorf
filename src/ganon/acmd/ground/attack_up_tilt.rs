@@ -504,106 +504,216 @@ unsafe extern "C" fn ganon_utilt(fighter: &mut L2CAgentBase) {
     }
 }
 
-unsafe extern "C" fn ganon_utilt_eff(fighter: &mut L2CAgentBase) {
-    frame(fighter.lua_state_agent, 13.0);
-    if macros::is_excute(fighter) {
-        macros::EFFECT_FOLLOW(
-            fighter,
-            Hash40::new("sys_attack_arc_d"),
-            Hash40::new("top"),
+unsafe extern "C" fn ganon_utilt_eff(agent: &mut L2CAgentBase) {
+    frame(agent.lua_state_agent, 8.0);
+    for _ in 0..6 {
+        if macros::is_excute(agent) {
+            macros::EFFECT(
+                agent,
+                Hash40::new("sys_damage_purple"),
+                Hash40::new("havel"),
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0.7,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                true,
+            );
+            macros::EFFECT(
+                agent,
+                Hash40::new("ganon_rekkikyaku"),
+                Hash40::new("top"),
+                0,
+                4,
+                20,
+                0,
+                0,
+                -90,
+                0.7,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                true,
+            );
+            macros::LAST_EFFECT_SET_RATE(agent, 1.2);
+            macros::LAST_EFFECT_SET_SCALE_W(agent, 0.8, 1.6, 0.5);
+            macros::EFFECT(
+                agent,
+                Hash40::new("ganon_entry"),
+                Hash40::new("top"),
+                4,
+                0,
+                14,
+                0,
+                0,
+                0,
+                0.3,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                true,
+            );
+            macros::LAST_EFFECT_SET_RATE(agent, 1.9);
+            macros::EFFECT(
+                agent,
+                Hash40::new("ganon_entry"),
+                Hash40::new("top"),
+                -4,
+                0,
+                14,
+                0,
+                0,
+                0,
+                0.3,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                true,
+            );
+            macros::LAST_EFFECT_SET_RATE(agent, 1.9);
+            macros::EFFECT(
+                agent,
+                Hash40::new("ganon_entry"),
+                Hash40::new("top"),
+                6,
+                0,
+                20,
+                0,
+                0,
+                0,
+                0.3,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                true,
+            );
+            macros::LAST_EFFECT_SET_RATE(agent, 1.9);
+            macros::EFFECT(
+                agent,
+                Hash40::new("ganon_entry"),
+                Hash40::new("top"),
+                -6,
+                0,
+                20,
+                0,
+                0,
+                0,
+                0.3,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                true,
+            );
+            macros::LAST_EFFECT_SET_RATE(agent, 1.9);
+            macros::EFFECT(
+                agent,
+                Hash40::new("ganon_entry"),
+                Hash40::new("top"),
+                4,
+                0,
+                26,
+                0,
+                0,
+                0,
+                0.3,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                true,
+            );
+            macros::LAST_EFFECT_SET_RATE(agent, 1.9);
+            macros::EFFECT(
+                agent,
+                Hash40::new("ganon_entry"),
+                Hash40::new("top"),
+                -4,
+                0,
+                26,
+                0,
+                0,
+                0,
+                0.3,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                true,
+            );
+            macros::LAST_EFFECT_SET_RATE(agent, 1.9);
+        }
+        wait(agent.lua_state_agent, 3.0);
+        macros::EFFECT_OFF_KIND(agent, Hash40::new("ganon_rekkikyaku"), false, false);
+        // macros::EFFECT_OFF_KIND(agent, Hash40::new("ganon_entry"), false, false);
+        macros::EFFECT(
+            agent,
+            Hash40::new("sys_damage_purple"),
+            Hash40::new("havel"),
             0,
-            16,
-            -0.5,
+            1,
             0,
             0,
-            -90,
-            1.4,
+            0,
+            0,
+            0.7,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
             true,
         );
-        macros::LAST_EFFECT_SET_RATE(fighter, 1.4);
     }
-    frame(fighter.lua_state_agent, 15.0);
-    if macros::is_excute(fighter) {
-        macros::EFFECT(
-            fighter,
-            Hash40::new("sys_bomb_b"),
-            Hash40::new("top"),
-            16,
-            1,
-            0,
-            0,
-            0,
-            0,
-            1,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            false,
-        );
-    }
-    frame(fighter.lua_state_agent, 16.0);
-    if macros::is_excute(fighter) {
-        macros::EFFECT(
-            fighter,
-            Hash40::new("sys_crown"),
-            Hash40::new("top"),
-            16,
-            0,
-            0,
-            0,
-            0,
-            0,
-            1,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            false,
-        );
-        macros::LANDING_EFFECT(
-            fighter,
-            Hash40::new("null"),
-            Hash40::new("top"),
-            16,
-            0,
-            0,
-            0,
-            0,
-            0,
-            1,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            false,
-        );
-        macros::LANDING_EFFECT(
-            fighter,
-            Hash40::new("sys_h_smoke_b"),
-            Hash40::new("top"),
-            -6,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0.8,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            false,
-        );
-    }
+    wait(agent.lua_state_agent, 3.0);
+    macros::EFFECT(
+        agent,
+        Hash40::new("ganon_rekkikyaku"),
+        Hash40::new("top"),
+        0,
+        4,
+        20,
+        0,
+        0,
+        -90,
+        0.7,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        true,
+    );
+    macros::LAST_EFFECT_SET_RATE(agent, 1.5);
+    macros::LAST_EFFECT_SET_SCALE_W(agent, 0.8, 1.6, 0.5);
 }
 
 unsafe extern "C" fn ganon_utilt_expr(fighter: &mut L2CAgentBase) {
@@ -627,9 +737,9 @@ unsafe extern "C" fn ganon_utilt_snd(fighter: &mut L2CAgentBase) {
 
 pub fn install() {
     Agent::new("ganon")
-        .game_acmd("game_attackhi3", ganon_utilt)
-        .effect_acmd("effect_attackhi3", ganon_utilt_eff)
-        .sound_acmd("sound_attackhi3", ganon_utilt_snd)
-        .expression_acmd("expression_attackhi3", ganon_utilt_expr)
+        .game_acmd("game_attackhi3", ganon_utilt, Priority::Default)
+        .effect_acmd("effect_attackhi3", ganon_utilt_eff, Priority::Default)
+        .sound_acmd("sound_attackhi3", ganon_utilt_snd, Priority::Default)
+        .expression_acmd("expression_attackhi3", ganon_utilt_expr, Priority::Default)
         .install();
 }

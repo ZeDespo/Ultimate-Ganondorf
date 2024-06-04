@@ -11,7 +11,11 @@ use {
 
 pub fn install() {
     Agent::new("ganon")
-        .game_acmd("game_specialairsfall", ganon_specialairsfall)
+        .game_acmd(
+            "game_specialairsfall",
+            ganon_specialairsfall,
+            Priority::Default,
+        )
         .install();
 }
 

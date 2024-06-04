@@ -9,10 +9,14 @@ use smashline::*;
 
 pub fn install() {
     Agent::new("ganon")
-        .game_acmd("game_attackairn", ganon_attackairn)
-        .effect_acmd("effect_attackairn", effect_attackairn)
-        .sound_acmd("sound_attackairn", sound_attackairn)
-        .expression_acmd("expression_attackairn", expression_attackairn)
+        .game_acmd("game_attackairn", ganon_attackairn, Priority::Default)
+        .effect_acmd("effect_attackairn", effect_attackairn, Priority::Default)
+        .sound_acmd("sound_attackairn", sound_attackairn, Priority::Default)
+        .expression_acmd(
+            "expression_attackairn",
+            expression_attackairn,
+            Priority::Default,
+        )
         .install();
 }
 

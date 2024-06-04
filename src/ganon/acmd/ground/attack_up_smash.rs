@@ -10,9 +10,13 @@ use {smash::lua2cpp::*, smashline::*};
 
 pub fn install() {
     Agent::new("ganon")
-        .game_acmd("game_attackhi4", ganon_attackhi4)
-        .effect_acmd("effect_attackhi4charge", effect_attackhi4charge)
-        .effect_acmd("effect_attackhi4", effect_attackhi4)
+        .game_acmd("game_attackhi4", ganon_attackhi4, Priority::Default)
+        .effect_acmd(
+            "effect_attackhi4charge",
+            effect_attackhi4charge,
+            Priority::Default,
+        )
+        .effect_acmd("effect_attackhi4", effect_attackhi4, Priority::Default)
         .install();
 }
 

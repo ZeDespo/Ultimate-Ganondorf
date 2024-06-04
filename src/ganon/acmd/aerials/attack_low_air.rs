@@ -108,25 +108,75 @@ unsafe extern "C" fn ganon_attackairlw(agent: &mut L2CAgentBase) {
 }
 
 unsafe extern "C" fn effect_attackairlw(agent: &mut L2CAgentBase) {
-    frame(agent.lua_state_agent, DAIR_FRAME);
-    if macros::is_excute(agent) {
-        let mut i: f32 = 0.0;
-        while i <= DAIR_LENGTH {
-            macros::EFFECT_FOLLOW(
+    for _ in 0..5 {
+        if macros::is_excute(agent) {
+            macros::EFFECT(
                 agent,
-                Hash40::new("ganon_attack_elec"),
-                Hash40::new("haver"),
+                Hash40::new("sys_damage_elec"),
+                Hash40::new("havel"),
                 0,
-                i as i32,
-                0,
-                0,
+                1,
                 0,
                 0,
-                1.0,
+                0,
+                0,
+                0.7,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
                 true,
             );
-            i = i + 5.0;
         }
+        wait(agent.lua_state_agent, 3.0);
+    }
+    frame(agent.lua_state_agent, 17.0);
+    if macros::is_excute(agent) {
+        macros::EFFECT(
+            agent,
+            Hash40::new("trail_thunder_bullet"),
+            Hash40::new("top"),
+            0,
+            -35,
+            4,
+            0,
+            0,
+            0,
+            0.8,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            true,
+        );
+        macros::EFFECT(
+            agent,
+            Hash40::new("trail_thunder_shot"),
+            Hash40::new("top"),
+            0,
+            -35,
+            4,
+            0,
+            0,
+            0,
+            0.8,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            true,
+        );
+    }
+    wait(agent.lua_state_agent, 8.0);
+    if macros::is_excute(agent) {
+        macros::EFFECT_OFF_KIND(agent, Hash40::new("trail_thunder_bullet"), false, false);
+        macros::EFFECT_OFF_KIND(agent, Hash40::new("trail_thunder_shot"), false, false);
     }
 }
 
@@ -144,8 +194,8 @@ unsafe extern "C" fn sound_attackairlw(agent: &mut L2CAgentBase) {
 
 pub fn install() {
     Agent::new("ganon")
-        .game_acmd("game_attackairlw", ganon_attackairlw)
-        .effect_acmd("effect_attackairlw", effect_attackairlw)
-        .sound_acmd("sound_attackairlw", sound_attackairlw)
+        .game_acmd("game_attackairlw", ganon_attackairlw, Priority::Default)
+        .effect_acmd("effect_attackairlw", effect_attackairlw, Priority::Default)
+        .sound_acmd("sound_attackairlw", sound_attackairlw, Priority::Default)
         .install();
 }

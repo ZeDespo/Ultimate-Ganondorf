@@ -10,13 +10,17 @@ use smashline::*;
 
 pub fn install() {
     Agent::new("ganon")
-        .game_acmd("game_specialn", ganon_teleport)
-        .game_acmd("game_specialairn", ganon_float)
-        .effect_acmd("effect_specialn", ganon_teleport_eff)
-        .effect_acmd("effect_specialairn", ganon_floate)
-        .sound_acmd("sound_specialn", ganon_teleport_snd)
-        .sound_acmd("sound_specialairn", ganon_floats)
-        .expression_acmd("expression_specialairn", ganon_float_expr)
+        .game_acmd("game_specialn", ganon_teleport, Priority::Default)
+        .game_acmd("game_specialairn", ganon_float, Priority::Default)
+        .effect_acmd("effect_specialn", ganon_teleport_eff, Priority::Default)
+        .effect_acmd("effect_specialairn", ganon_floate, Priority::Default)
+        .sound_acmd("sound_specialn", ganon_teleport_snd, Priority::Default)
+        .sound_acmd("sound_specialairn", ganon_floats, Priority::Default)
+        .expression_acmd(
+            "expression_specialairn",
+            ganon_float_expr,
+            Priority::Default,
+        )
         .install();
 }
 

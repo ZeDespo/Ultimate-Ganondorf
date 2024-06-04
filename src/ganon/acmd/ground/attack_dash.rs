@@ -8,8 +8,12 @@ use smashline::*;
 
 pub fn install() {
     Agent::new("ganon")
-        .game_acmd("game_attackdash", ganon_attackdash)
-        .effect_acmd("effect_attackdash", ganon_effect_attackdash)
+        .game_acmd("game_attackdash", ganon_attackdash, Priority::Default)
+        .effect_acmd(
+            "effect_attackdash",
+            ganon_effect_attackdash,
+            Priority::Default,
+        )
         .install();
 }
 

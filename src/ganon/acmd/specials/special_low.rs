@@ -383,7 +383,7 @@ unsafe extern "C" fn ganon_specialairlw(agent: &mut L2CAgentBase) {
 
 pub fn install() {
     Agent::new("ganon")
-        .game_acmd("game_speciallw", ganon_speciallw)
-        .game_acmd("game_specialairlw", ganon_specialairlw)
+        .game_acmd("game_speciallw", ganon_speciallw, Priority::Default)
+        .game_acmd("game_specialairlw", ganon_specialairlw, Priority::Default)
         .install();
 }
