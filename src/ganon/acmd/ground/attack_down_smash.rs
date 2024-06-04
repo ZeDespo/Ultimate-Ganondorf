@@ -1,3 +1,5 @@
+use skyline_smash::app::ArticleOperationTarget;
+
 use {
     smash::{
         app::{lua_bind::*, sv_animcmd::*},
@@ -527,12 +529,84 @@ unsafe extern "C" fn effect_attacklw4(agent: &mut L2CAgentBase) {
     }
 }
 
+unsafe extern "C" fn expression_attacklw4(agent: &mut L2CAgentBase) {
+    if macros::is_excute(agent) {
+        slope!(agent, *MA_MSC_CMD_SLOPE_SLOPE, *SLOPE_STATUS_LR);
+        ItemModule::set_have_item_visibility(agent.module_accessor, false, 0);
+        ArticleModule::set_visibility_whole(
+            agent.module_accessor,
+            *FIGHTER_GANON_GENERATE_ARTICLE_SWORD,
+            false,
+            ArticleOperationTarget(*ARTICLE_OPE_TARGET_ALL),
+        );
+    }
+    frame(agent.lua_state_agent, 2.0);
+    if macros::is_excute(agent) {
+        slope!(agent, *MA_MSC_CMD_SLOPE_SLOPE_INTP, *SLOPE_STATUS_TOP, 2);
+    }
+    frame(agent.lua_state_agent, 5.0);
+    execute(agent.lua_state_agent, 5.0);
+    if macros::is_excute(agent) {
+        ItemModule::set_have_item_visibility(agent.module_accessor, false, 0);
+        ArticleModule::set_visibility_whole(
+            agent.module_accessor,
+            *FIGHTER_GANON_GENERATE_ARTICLE_SWORD,
+            false,
+            ArticleOperationTarget(*ARTICLE_OPE_TARGET_ALL),
+        );
+        slope!(
+            agent,
+            *MA_MSC_CMD_SLOPE_SLOPE_INTP,
+            *SLOPE_STATUS_TOP,
+            2,
+            true
+        );
+    }
+    frame(agent.lua_state_agent, 13.0);
+    if macros::is_excute(agent) {
+        ControlModule::set_rumble(
+            agent.module_accessor,
+            Hash40::new("rbkind_nohitm"),
+            0,
+            false,
+            *BATTLE_OBJECT_ID_INVALID as u32,
+        );
+    }
+    frame(agent.lua_state_agent, 15.0);
+    if macros::is_excute(agent) {
+        macros::RUMBLE_HIT(agent, Hash40::new("rbkind_attackm"), 0);
+    }
+    frame(agent.lua_state_agent, 33.0);
+    if macros::is_excute(agent) {
+        ControlModule::set_rumble(
+            agent.module_accessor,
+            Hash40::new("rbkind_nohitl"),
+            0,
+            false,
+            *BATTLE_OBJECT_ID_INVALID as u32,
+        );
+    }
+    frame(agent.lua_state_agent, 35.0);
+    if macros::is_excute(agent) {
+        macros::RUMBLE_HIT(agent, Hash40::new("rbkind_slashl"), 0);
+    }
+    frame(agent.lua_state_agent, 56.0);
+    if macros::is_excute(agent) {
+        slope!(agent, *MA_MSC_CMD_SLOPE_SLOPE_INTP, *SLOPE_STATUS_LR, 8);
+    }
+}
+
 pub fn install() {
     Agent::new("ganon")
         .effect_acmd("effect_attacklw4", effect_attacklw4, Priority::Default)
         .effect_acmd(
             "effect_attacklw4charge",
             effect_attacklw4charge,
+            Priority::Default,
+        )
+        .expression_acmd(
+            "expression_attacklw4",
+            expression_attacklw4,
             Priority::Default,
         )
         .install();
