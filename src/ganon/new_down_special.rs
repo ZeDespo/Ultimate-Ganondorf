@@ -18,12 +18,16 @@ unsafe extern "C" fn precondition_check(
     boma: *mut BattleObjectModuleAccessor,
     iv: &InitValues,
 ) -> bool {
-    if let FloatStatus::Floating(_) = GS[iv.entry_id].float_status {
-        if !in_teleport(boma) && iv.status_kind == FIGHTER_STATUS_KIND_SPECIAL_LW {
-            return true;
-        }
+    if !in_teleport(boma) && iv.status_kind == FIGHTER_STATUS_KIND_SPECIAL_LW {
+        return true;
     }
     false
+    // if let FloatStatus::Floating(_) = GS[iv.entry_id].float_status {
+    //     if !in_teleport(boma) && iv.status_kind == FIGHTER_STATUS_KIND_SPECIAL_LW {
+    //         return true;
+    //     }
+    // }
+    // false
 }
 
 pub unsafe extern "C" fn new_down_special(fighter: &mut L2CFighterCommon, iv: &InitValues) {
