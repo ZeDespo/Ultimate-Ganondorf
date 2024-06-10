@@ -289,7 +289,7 @@ unsafe extern "C" fn effect_attackairhi(agent: &mut L2CAgentBase) {
         0,
         0,
         0,
-        0.2,
+        1.0,
         true,
     );
     macros::LAST_EFFECT_SET_RATE(agent, 2.0);
