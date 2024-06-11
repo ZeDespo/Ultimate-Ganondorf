@@ -173,12 +173,12 @@ unsafe extern "C" fn ganon_utilt(fighter: &mut L2CAgentBase) {
                 *ATTACK_REGION_MAGIC,
             );
         }
-        wait(fighter.lua_state_agent, 2.0);
+        wait(fighter.lua_state_agent, 1.0);
         if macros::is_excute(fighter) {
             // AttackModule::clear(fighter.module_accessor, 3, false);
             AttackModule::clear_all(fighter.module_accessor);
         }
-        wait(fighter.lua_state_agent, 2.0);
+        wait(fighter.lua_state_agent, 3.0);
     }
     frame(fighter.lua_state_agent, 21.0);
     if macros::is_excute(fighter) {
@@ -226,7 +226,7 @@ unsafe extern "C" fn ganon_utilt(fighter: &mut L2CAgentBase) {
     if macros::is_excute(fighter) {
         AttackModule::clear_all(fighter.module_accessor);
     }
-    frame(fighter.lua_state_agent, 37.0);
+    frame(fighter.lua_state_agent, 26.0);
     macros::FT_MOTION_RATE(fighter, /*FSM*/ 0.75);
     if macros::is_excute(fighter) {
         CancelModule::enable_cancel(fighter.module_accessor);
