@@ -18,9 +18,9 @@ unsafe extern "C" fn ganon_utilt(fighter: &mut L2CAgentBase) {
             0,
             Hash40::new("toel"),
             0.8,
-            90,
+            135,
             100,
-            18,
+            28,
             35,
             5.0,
             12.0,
@@ -59,7 +59,7 @@ unsafe extern "C" fn ganon_utilt(fighter: &mut L2CAgentBase) {
             0.8,
             90,
             100,
-            18,
+            28,
             35,
             5.0,
             22.0,
@@ -96,9 +96,9 @@ unsafe extern "C" fn ganon_utilt(fighter: &mut L2CAgentBase) {
             0,
             Hash40::new("toel"),
             0.8,
-            90,
+            45,
             100,
-            18,
+            28,
             35,
             5.0,
             2.0,
@@ -129,17 +129,70 @@ unsafe extern "C" fn ganon_utilt(fighter: &mut L2CAgentBase) {
             *COLLISION_SOUND_ATTR_FIRE,
             *ATTACK_REGION_MAGIC,
         );
+    }
+    frame(fighter.lua_state_agent, 11.0);
+    for _ in 0..2 {
+        if macros::is_excute(fighter) {
+            macros::ATTACK(
+                fighter,
+                3,
+                0,
+                Hash40::new("handl"),
+                0.8,
+                90,
+                100,
+                18,
+                35,
+                6.0,
+                0.0,
+                0.0,
+                0.0,
+                None,
+                None,
+                None,
+                1.0,
+                1.0,
+                *ATTACK_SETOFF_KIND_OFF,
+                *ATTACK_LR_CHECK_F,
+                false,
+                0,
+                0.0,
+                1,
+                false,
+                false,
+                false,
+                false,
+                true,
+                *COLLISION_SITUATION_MASK_GA,
+                *COLLISION_CATEGORY_MASK_ALL,
+                *COLLISION_PART_MASK_ALL,
+                false,
+                Hash40::new("collision_attr_normal"),
+                *ATTACK_SOUND_LEVEL_M,
+                *COLLISION_SOUND_ATTR_FIRE,
+                *ATTACK_REGION_MAGIC,
+            );
+        }
+        wait(fighter.lua_state_agent, 2.0);
+        if macros::is_excute(fighter) {
+            // AttackModule::clear(fighter.module_accessor, 3, false);
+            AttackModule::clear_all(fighter.module_accessor);
+        }
+        wait(fighter.lua_state_agent, 2.0);
+    }
+    frame(fighter.lua_state_agent, 21.0);
+    if macros::is_excute(fighter) {
         macros::ATTACK(
             fighter,
-            3,
+            0,
             0,
             Hash40::new("handl"),
-            0.8,
-            90,
+            10.0,
+            75,
             100,
-            18,
-            35,
-            6.0,
+            0,
+            45,
+            8.0,
             0.0,
             0.0,
             0.0,
@@ -169,7 +222,7 @@ unsafe extern "C" fn ganon_utilt(fighter: &mut L2CAgentBase) {
             *ATTACK_REGION_MAGIC,
         );
     }
-    frame(fighter.lua_state_agent, 18.0);
+    frame(fighter.lua_state_agent, 22.0);
     if macros::is_excute(fighter) {
         AttackModule::clear_all(fighter.module_accessor);
     }

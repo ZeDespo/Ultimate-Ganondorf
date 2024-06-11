@@ -18,7 +18,10 @@ unsafe extern "C" fn precondition_check(
     boma: *mut BattleObjectModuleAccessor,
     iv: &InitValues,
 ) -> bool {
-    if !in_teleport(boma) && iv.status_kind == FIGHTER_STATUS_KIND_SPECIAL_LW {
+    if !in_teleport(boma)
+        && iv.status_kind == FIGHTER_STATUS_KIND_SPECIAL_LW
+        && iv.situation_kind == *SITUATION_KIND_AIR
+    {
         return true;
     }
     false
