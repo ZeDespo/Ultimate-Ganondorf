@@ -7,13 +7,13 @@ use smash::phx::Hash40;
 use smash_script::*;
 use smashline::*;
 
-unsafe extern "C" fn portal_hitbox(agent: &mut L2CAgentBase, angle: u64) {
+unsafe extern "C" fn portal_hitbox(agent: &mut L2CAgentBase, angle: u64, damage: f32) {
     macros::ATTACK(
         agent,
         0,
         0,
         Hash40::new("throw"),
-        0.8,
+        damage,
         angle,
         100,
         35,
@@ -57,16 +57,57 @@ unsafe extern "C" fn ganon_attackairhi(agent: &mut L2CAgentBase) {
         );
     }
     frame(agent.lua_state_agent, 8.0);
-    for _ in 0..4 {
+    for i in 0..4 {
         if macros::is_excute(agent) {
-            portal_hitbox(agent, 367);
+            if i <= 1 {
+                macros::ATTACK(
+                    agent,
+                    1,
+                    0,
+                    Hash40::new("handr"),
+                    0.8,
+                    100,
+                    100,
+                    140,
+                    0,
+                    7.0,
+                    8.0,
+                    0.0,
+                    0.0,
+                    None,
+                    None,
+                    None,
+                    1.0,
+                    1.0,
+                    *ATTACK_SETOFF_KIND_OFF,
+                    *ATTACK_LR_CHECK_F,
+                    false,
+                    0,
+                    0.0,
+                    0,
+                    false,
+                    false,
+                    false,
+                    false,
+                    true,
+                    *COLLISION_SITUATION_MASK_GA,
+                    *COLLISION_CATEGORY_MASK_ALL,
+                    *COLLISION_PART_MASK_ALL,
+                    false,
+                    Hash40::new("collision_attr_purple"),
+                    *ATTACK_SOUND_LEVEL_M,
+                    *COLLISION_SOUND_ATTR_PUNCH,
+                    *ATTACK_REGION_MAGIC,
+                );
+            }
+            portal_hitbox(agent, 367, 1.6);
         }
         wait(agent.lua_state_agent, 4.0);
-        AttackModule::clear(agent.module_accessor, 0, false);
+        AttackModule::clear_all(agent.module_accessor);
     }
     wait(agent.lua_state_agent, 4.0);
     if macros::is_excute(agent) {
-        portal_hitbox(agent, 270);
+        portal_hitbox(agent, 270, 9.0);
     }
     frame(agent.lua_state_agent, 29.0);
     if macros::is_excute(agent) {
@@ -79,7 +120,7 @@ unsafe extern "C" fn ganon_attackairhi(agent: &mut L2CAgentBase) {
             *FIGHTER_STATUS_ATTACK_AIR_FLAG_ENABLE_LANDING,
         );
     }
-    frame(agent.lua_state_agent, 57.0);
+    frame(agent.lua_state_agent, 42.0);
     if macros::is_excute(agent) {
         notify_event_msc_cmd!(
             agent,
