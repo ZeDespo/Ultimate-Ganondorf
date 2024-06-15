@@ -3,11 +3,17 @@ use smash::app::lua_bind::*;
 use smash::app::sv_animcmd::*;
 use smash::lib::lua_const::*;
 use smash::lua2cpp::*;
-use smash::phx::Hash40;
+use smash::phx::{Hash40, Vector2f};
 use smash_script::*;
 use smashline::*;
 
-unsafe extern "C" fn portal_hitbox(agent: &mut L2CAgentBase, angle: u64, damage: f32) {
+unsafe extern "C" fn portal_hitbox(
+    agent: &mut L2CAgentBase,
+    angle: u64,
+    damage: f32,
+    fixed_knockback: i32,
+    base_knockback: i32,
+) {
     macros::ATTACK(
         agent,
         0,
@@ -16,8 +22,8 @@ unsafe extern "C" fn portal_hitbox(agent: &mut L2CAgentBase, angle: u64, damage:
         damage,
         angle,
         100,
-        35,
-        0,
+        fixed_knockback,
+        base_knockback,
         12.0,
         3.2,
         0.0,
@@ -59,18 +65,18 @@ unsafe extern "C" fn ganon_attackairhi(agent: &mut L2CAgentBase) {
     frame(agent.lua_state_agent, 8.0);
     for i in 0..4 {
         if macros::is_excute(agent) {
-            if i <= 1 {
+            if i == 0 {
                 macros::ATTACK(
                     agent,
                     1,
                     0,
                     Hash40::new("handr"),
                     0.8,
+                    368,
                     100,
-                    100,
-                    140,
+                    120,
                     0,
-                    7.0,
+                    5.0,
                     8.0,
                     0.0,
                     0.0,
@@ -99,15 +105,23 @@ unsafe extern "C" fn ganon_attackairhi(agent: &mut L2CAgentBase) {
                     *COLLISION_SOUND_ATTR_PUNCH,
                     *ATTACK_REGION_MAGIC,
                 );
+                AttackModule::set_vec_target_pos(
+                    agent.module_accessor,
+                    1,
+                    Hash40::new("top"),
+                    &Vector2f { x: 10.0, y: 25.0 },
+                    7,
+                    false,
+                );
             }
-            portal_hitbox(agent, 367, 1.6);
+            portal_hitbox(agent, 367, 1.6, 35, 0);
         }
         wait(agent.lua_state_agent, 4.0);
         AttackModule::clear_all(agent.module_accessor);
     }
     wait(agent.lua_state_agent, 4.0);
     if macros::is_excute(agent) {
-        portal_hitbox(agent, 270, 9.0);
+        portal_hitbox(agent, 270, 12.0, 0, 25);
     }
     frame(agent.lua_state_agent, 29.0);
     if macros::is_excute(agent) {

@@ -5,7 +5,7 @@ use smash::app::lua_bind::*;
 use smash::app::sv_animcmd::*;
 use smash::lib::lua_const::*;
 use smash::lua2cpp::*;
-use smash::phx::Hash40;
+use smash::phx::{Hash40, Vector2f};
 use smash_script::*;
 use smashline::*;
 
@@ -89,6 +89,14 @@ unsafe extern "C" fn ganon_utilt(fighter: &mut L2CAgentBase) {
             *ATTACK_SOUND_LEVEL_M,
             *COLLISION_SOUND_ATTR_FIRE,
             *ATTACK_REGION_MAGIC,
+        );
+        AttackModule::set_vec_target_pos(
+            fighter.module_accessor,
+            1,
+            Hash40::new("top"),
+            &Vector2f { x: -3.0, y: 15.0 },
+            5,
+            false,
         );
         macros::ATTACK(
             fighter,

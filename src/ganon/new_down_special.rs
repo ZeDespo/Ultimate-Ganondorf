@@ -46,7 +46,6 @@ pub unsafe extern "C" fn new_down_special(fighter: &mut L2CFighterCommon, iv: &I
         return;
     }
     if iv.status_kind == FIGHTER_STATUS_KIND_SPECIAL_LW {
-        GS[iv.entry_id].float_status = FloatStatus::CannotFloat;
         StatusModule::change_status_request_from_script(
             boma,
             *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_CATCH,

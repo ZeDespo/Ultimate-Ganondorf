@@ -16,7 +16,56 @@ pub fn install() {
             ganon_specialairsfall,
             Priority::Default,
         )
+        .effect_acmd("effect_specials", effect_attacks3, Priority::Default)
+        .effect_acmd("effect_specialairs", effect_attacks3, Priority::Default)
         .install();
+}
+
+// Backhand movements.
+unsafe extern "C" fn effect_attacks3(agent: &mut L2CAgentBase) {
+    frame(agent.lua_state_agent, 12.0);
+    if macros::is_excute(agent) {
+        macros::EFFECT_FOLLOW_FLIP(
+            agent,
+            Hash40::new("mario_supermant_wind_r"),
+            Hash40::new("mario_supermant_wind_l"),
+            Hash40::new("top"),
+            2.5,
+            4,
+            5,
+            0,
+            0,
+            0,
+            2.5,
+            true,
+            *EF_FLIP_NONE,
+        );
+        // macros::EFFECT(agent, Hash40::new("mario_supermant_flash"), Hash40::new("top"), 0, 5.5, 9, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, true);
+    }
+    frame(agent.lua_state_agent, 13.0);
+    if macros::is_excute(agent) {
+        macros::LANDING_EFFECT_FLIP(
+            agent,
+            Hash40::new("sys_whirlwind_r"),
+            Hash40::new("sys_whirlwind_l"),
+            Hash40::new("top"),
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            true,
+            *EF_FLIP_NONE,
+        );
+    }
 }
 
 unsafe extern "C" fn ganon_specialairsfall(agent: &mut L2CAgentBase) {
