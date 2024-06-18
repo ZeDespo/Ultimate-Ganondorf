@@ -3,6 +3,8 @@ use skyline_smash::app::GroundCorrectKind;
 use skyline_smash::app::SituationKind;
 use smash::app::lua_bind::*;
 use smash::lib::lua_const::*;
+
+use crate::ganon::utils::FIGHTER_GANON_STATUS_KIND_BACKHAND;
 use {
     smash::{hash40, lua2cpp::*},
     smashline::*,
@@ -10,14 +12,23 @@ use {
 
 pub fn install() {
     Agent::new("ganon")
-        .status(Pre, *FIGHTER_STATUS_KIND_SPECIAL_S, specials_pre)
-        .status(Init, *FIGHTER_STATUS_KIND_SPECIAL_S, stub)
-        .status(Exec, *FIGHTER_STATUS_KIND_SPECIAL_S, stub)
-        .status(Main, *FIGHTER_STATUS_KIND_SPECIAL_S, special_s_main)
+        .status(Pre, *FIGHTER_STATUS_KIND_SPECIAL_S, transition_to_backhand)
+        .status(Init, FIGHTER_GANON_STATUS_KIND_BACKHAND, specials_pre)
+        .status(Exit, FIGHTER_GANON_STATUS_KIND_BACKHAND, specials_end)
+        .status(Main, FIGHTER_GANON_STATUS_KIND_BACKHAND, special_s_main)
         .install();
 }
 
-unsafe extern "C" fn stub(fighter: &mut L2CFighterCommon) -> L2CValue {
+unsafe extern "C" fn transition_to_backhand(fighter: &mut L2CFighterCommon) -> L2CValue {
+    StatusModule::change_status_request_from_script(
+        fighter.module_accessor,
+        FIGHTER_GANON_STATUS_KIND_BACKHAND,
+        false,
+    );
+    0.into()
+}
+
+unsafe extern "C" fn specials_end(fighter: &mut L2CFighterCommon) -> L2CValue {
     0.into()
 }
 
@@ -50,7 +61,6 @@ unsafe extern "C" fn specials_pre(fighter: &mut L2CFighterCommon) -> L2CValue {
         0,
         0,
     );
-
     return L2CValue::I32(1);
 }
 
@@ -92,6 +102,7 @@ unsafe extern "C" fn special_s_main_loop(fighter: &mut L2CFighterCommon) -> L2CV
         true.into(),
     );
     if fighter.global_table[0x16].get_i32() != *SITUATION_KIND_GROUND {
+        KineticModule::change_kinetic(fighter.module_accessor, *FIGHTER_KINETIC_TYPE_UNIQ);
         GroundModule::correct(
             fighter.module_accessor,
             GroundCorrectKind(*GROUND_CORRECT_KIND_AIR),

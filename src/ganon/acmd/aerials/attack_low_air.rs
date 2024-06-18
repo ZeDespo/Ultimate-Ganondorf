@@ -9,11 +9,10 @@ use smash::phx::Hash40;
 use smash_script::*;
 use smashline::*;
 
-const DAIR_LENGTH: f32 = 25.0;
-const DAIR_FRAME: f32 = 22.0;
+const DAIR_LENGTH: f32 = 30.0;
+const DAIR_FRAME: f32 = 17.0;
 
 unsafe extern "C" fn ganon_attackairlw(agent: &mut L2CAgentBase) {
-    macros::FT_MOTION_RATE(agent, 0.51);
     // frame(agent.lua_state_agent, 1.0);
     // if macros::is_excute(agent) {
     //     FighterAreaModuleImpl::enable_fix_jostle_area_xy(
@@ -32,7 +31,6 @@ unsafe extern "C" fn ganon_attackairlw(agent: &mut L2CAgentBase) {
         );
     }
     frame(agent.lua_state_agent, DAIR_FRAME);
-    macros::FT_MOTION_RATE(agent, 1.0);
     let step: u64 = 5;
     if macros::is_excute(agent) {
         for i in (0..(DAIR_LENGTH as u64) + 1).step_by(step as usize) {
@@ -57,16 +55,16 @@ unsafe extern "C" fn ganon_attackairlw(agent: &mut L2CAgentBase) {
                 agent,
                 id,
                 0,
-                Hash40::new("haver"),
+                Hash40::new("top"),
                 damage,
                 angle,
                 kbg,
                 0,
                 bkb,
                 2.5,
-                0.0,
-                y_dist,
-                0.0,
+                17.0,
+                -y_dist,
+                10.0,
                 None,
                 None,
                 None,
