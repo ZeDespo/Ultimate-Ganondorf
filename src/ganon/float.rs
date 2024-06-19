@@ -28,29 +28,32 @@ unsafe extern "C" fn adjust_float_velocity(boma: *mut BattleObjectModuleAccessor
     if attacking && iv.motion_module_frame < 2.0 {
         return;
     }
+    let dir = PostureModule::lr(boma);
     let curr_x_speed = KineticModule::get_sum_speed_x(boma, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN);
     let curr_y_speed = KineticModule::get_sum_speed_y(boma, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN);
     let was_attacking = iv.prev_status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR
         && curr_x_speed.abs() == 0.0
         && curr_y_speed == 0.0;
+    println!("Current speed: {:#?}", GS[iv.entry_id].float_speed);
     if was_attacking {
+        println!("Adding current speed due to previous attack.");
         KineticModule::add_speed(boma, &GS[iv.entry_id].float_speed.to_vector3f());
     } else {
         let new_speed = Position2D::calculate_new_speed(
-            ControlModule::get_stick_x(boma) * PostureModule::lr(boma),
+            ControlModule::get_stick_x(boma) * dir,
             ControlModule::get_stick_y(boma),
             curr_x_speed,
             curr_y_speed,
             attacking,
         );
-        println!("Calculated speed additions: {:#?}", new_speed);
+        println!("To add: {:#?}", new_speed);
         KineticModule::add_speed(boma, &new_speed.to_vector3f());
         GS[iv.entry_id].float_speed = Position2D {
             x: curr_x_speed + new_speed.x,
             y: curr_y_speed + new_speed.y,
         };
     }
-    println!("New speed: {:#?}", GS[iv.entry_id].float_speed);
+    println!("New overall speed: {:#?}", GS[iv.entry_id].float_speed);
 }
 
 /// Cosmetic effect that will further show Ganondorf's float status.
@@ -156,32 +159,48 @@ impl Position2D {
         speed_y: f32,
         is_attacking: bool,
     ) -> Position2D {
-        Position2D {
-            x: Position2D::calculate_new_speed_helper(stick_x, speed_x, is_attacking),
-            y: Position2D::calculate_new_speed_helper(stick_y, speed_y, is_attacking),
-        }
+        println!("Calculating additional speed with following stats:");
+        println!("Stick x: {}", stick_x);
+        println!("Stick y: {}", stick_y);
+        println!("Sum speed x: {}", speed_x);
+        println!("Sum speed y: {}", speed_y);
+        println!("In attack state: {}", is_attacking);
+        let new_speed = Position2D {
+            x: Position2D::calculate_new_speed_helper(
+                stick_x,
+                speed_x,
+                current_speed.x,
+                is_attacking,
+            ),
+            y: Position2D::calculate_new_speed_helper(
+                stick_y,
+                speed_y,
+                current_speed.y,
+                is_attacking,
+            ),
+        };
+        println!("Calculated added speed: {:#?}", new_speed);
+        new_speed
     }
 
     /// Top speed in either direction: 1.26
     /// Formula: f(x) = 1.26 * sin^2 * (πx / 2)
     /// Where -1 <= x <= 1
-    fn calculate_new_speed_helper(stick: f32, curr_speed: f32, is_attacking: bool) -> f32 {
+    fn calculate_new_speed_helper(stick: f32, sum_speed: f32, is_attacking: bool) -> f32 {
         let mut new_speed = 0.0;
-        println!("Current speed: {}", curr_speed);
-        println!("Stick: {}", stick);
-        if (stick < 0.1 && stick > -0.1) || (is_attacking && curr_speed.abs() > MAX_FLOAT_SPEED) {
-            if curr_speed >= 0.08 || curr_speed <= -0.08 || is_attacking {
+        if (stick < 0.1 && stick > -0.1) || (is_attacking && sum_speed.abs() > MAX_FLOAT_SPEED) {
+            if sum_speed >= 0.08 || sum_speed <= -0.08 || is_attacking {
                 if stick.is_sign_negative() {
-                    new_speed = curr_speed / FLOAT_SPEED_LOSS;
+                    new_speed = sum_speed / FLOAT_SPEED_LOSS;
                 } else {
-                    new_speed = -curr_speed / FLOAT_SPEED_LOSS;
+                    new_speed = -sum_speed / FLOAT_SPEED_LOSS;
                 }
                 println!("Slowing down.");
             } else {
                 println!("No change needed!");
             }
         } else {
-            let abs_curr_speed = curr_speed.abs();
+            let abs_curr_speed = sum_speed.abs();
             println!("Absolute curr speed {}", abs_curr_speed);
             if abs_curr_speed != MAX_FLOAT_SPEED {
                 new_speed = MAX_INCREMENTAL_SPEED * (PI * stick / 2.0).sin().powi(2);
@@ -282,7 +301,6 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
                     false.into(),
                 );
             }
-            println!("Current speed: {:#?}", GS[iv.entry_id].float_speed);
             if iv.is_start_of_float() {
                 macros::PLAY_SE(fighter, Hash40::new("se_ganon_special_l01"));
                 CancelModule::enable_cancel(boma);
