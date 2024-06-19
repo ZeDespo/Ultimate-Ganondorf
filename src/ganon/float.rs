@@ -26,10 +26,12 @@ const FLOAT_SPEED_LOSS: f32 = 25.0; // Number of frames that should pass until s
 unsafe extern "C" fn adjust_float_velocity(boma: *mut BattleObjectModuleAccessor, iv: &InitValues) {
     let attacking = iv.status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR;
     if attacking && iv.motion_module_frame < 2.0 {
+        WorkModule::on_flag(boma, GANON_FLOAT_HAS_ATTACKED);
         return;
     }
     let dir = PostureModule::lr(boma);
-    let curr_x_speed = KineticModule::get_sum_speed_x(boma, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN);
+    let mut curr_x_speed =
+        KineticModule::get_sum_speed_x(boma, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN);
     let curr_y_speed = KineticModule::get_sum_speed_y(boma, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN);
     let was_attacking = iv.prev_status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR
         && curr_x_speed.abs() == 0.0
@@ -39,6 +41,10 @@ unsafe extern "C" fn adjust_float_velocity(boma: *mut BattleObjectModuleAccessor
         println!("Adding current speed due to previous attack.");
         KineticModule::add_speed(boma, &GS[iv.entry_id].float_speed.to_vector3f());
     } else {
+        if WorkModule::is_flag(boma, GANON_FLOAT_HAS_ATTACKED) && dir == -1.0 {
+            println!("Sum speed x correction.");
+            curr_x_speed = -curr_x_speed
+        }
         let new_speed = Position2D::calculate_new_speed(
             ControlModule::get_stick_x(boma) * dir,
             ControlModule::get_stick_y(boma),
@@ -272,6 +278,9 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
     println!("New float state: {}", GS[iv.entry_id].float_status);
     match GS[iv.entry_id].float_status {
         FloatStatus::CannotFloat => {
+            if WorkModule::is_flag(boma, GANON_FLOAT_HAS_ATTACKED) {
+                WorkModule::off_flag(boma, GANON_FLOAT_HAS_ATTACKED)
+            }
             if iv.is_start_of_float() {
                 StatusModule::change_status_request_from_script(
                     boma,
