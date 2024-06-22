@@ -43,7 +43,7 @@ unsafe extern "C" fn adjust_float_velocity(boma: *mut BattleObjectModuleAccessor
     } else {
         if WorkModule::is_flag(boma, GANON_FLOAT_HAS_ATTACKED) && dir == -1.0 {
             println!("Sum speed x correction.");
-            curr_x_speed = -curr_x_speed
+            // curr_x_speed = -curr_x_speed
         }
         let new_speed = Position2D::calculate_new_speed(
             ControlModule::get_stick_x(boma) * dir,
@@ -172,18 +172,8 @@ impl Position2D {
         println!("Sum speed y: {}", speed_y);
         println!("In attack state: {}", is_attacking);
         let new_speed = Position2D {
-            x: Position2D::calculate_new_speed_helper(
-                stick_x,
-                speed_x,
-                current_speed.x,
-                is_attacking,
-            ),
-            y: Position2D::calculate_new_speed_helper(
-                stick_y,
-                speed_y,
-                current_speed.y,
-                is_attacking,
-            ),
+            x: Position2D::calculate_new_speed_helper(stick_x, speed_x, is_attacking),
+            y: Position2D::calculate_new_speed_helper(stick_y, speed_y, is_attacking),
         };
         println!("Calculated added speed: {:#?}", new_speed);
         new_speed

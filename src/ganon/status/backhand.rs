@@ -1,3 +1,15 @@
+//!
+//! Return 0 => Keep going with the status kind scripts.
+//! Return 1 => Do not continue with the status kind.
+//!
+//! Pre => constructor
+//! Init => Post constructor (not necessary)
+//! Main > MainLoop => Logic regarding current execution
+//! Exec => Runs logic one frame after main (not necessary)
+//! End => Status script gracefully ends
+//! Exit => Status script has been interrupted by something (like a hit) (not necessary)
+//!
+//! set_status_kind_interrupt is goated for status scripts to transition from one SK to another.
 use skyline_smash::app::GroundCliffCheckKind;
 use skyline_smash::app::GroundCorrectKind;
 use skyline_smash::app::SituationKind;
@@ -13,19 +25,18 @@ use {
 pub fn install() {
     Agent::new("ganon")
         .status(Pre, *FIGHTER_STATUS_KIND_SPECIAL_S, transition_to_backhand)
-        .status(Init, FIGHTER_GANON_STATUS_KIND_BACKHAND, specials_pre)
-        .status(Exit, FIGHTER_GANON_STATUS_KIND_BACKHAND, specials_end)
+        .status(Pre, FIGHTER_GANON_STATUS_KIND_BACKHAND, specials_pre)
         .status(Main, FIGHTER_GANON_STATUS_KIND_BACKHAND, special_s_main)
+        .status(End, FIGHTER_GANON_STATUS_KIND_BACKHAND, specials_end)
         .install();
 }
 
 unsafe extern "C" fn transition_to_backhand(fighter: &mut L2CFighterCommon) -> L2CValue {
-    StatusModule::change_status_request_from_script(
+    StatusModule::set_status_kind_interrupt(
         fighter.module_accessor,
         FIGHTER_GANON_STATUS_KIND_BACKHAND,
-        false,
     );
-    0.into()
+    1.into()
 }
 
 unsafe extern "C" fn specials_end(fighter: &mut L2CFighterCommon) -> L2CValue {
@@ -33,10 +44,6 @@ unsafe extern "C" fn specials_end(fighter: &mut L2CFighterCommon) -> L2CValue {
 }
 
 unsafe extern "C" fn specials_pre(fighter: &mut L2CFighterCommon) -> L2CValue {
-    StatusModule::set_status_kind_interrupt(
-        fighter.module_accessor,
-        *FIGHTER_STATUS_KIND_SPECIAL_S,
-    );
     StatusModule::init_settings(
         fighter.module_accessor,
         SituationKind(*SITUATION_KIND_NONE),
@@ -64,21 +71,50 @@ unsafe extern "C" fn specials_pre(fighter: &mut L2CFighterCommon) -> L2CValue {
     return L2CValue::I32(1);
 }
 
+/// Perform first time checks for certain animations, initializing some things that
+/// don't quite belong in Init, such as resetting flags and changing animations,
 pub unsafe extern "C" fn special_s_main(fighter: &mut L2CFighterCommon) -> L2CValue {
+    // The following if/else statement is to check if we did the animation for the first
+    // time, as we need to call _SLIGHTLY_ different functions.
+    if StatusModule::situation_kind(fighter.module_accessor) == *SITUATION_KIND_GROUND {
+        GroundModule::correct(
+            fighter.module_accessor,
+            GroundCorrectKind(*GROUND_CORRECT_KIND_GROUND_CLIFF_STOP),
+        );
+        KineticModule::change_kinetic(fighter.module_accessor, *FIGHTER_KINETIC_TYPE_GROUND_STOP);
+        MotionModule::change_motion(
+            fighter.module_accessor,
+            Hash40::new("special_s"),
+            0.0,
+            1.0,
+            false,
+            0.0,
+            false,
+            false,
+        );
+    } else {
+        GroundModule::correct(
+            fighter.module_accessor,
+            GroundCorrectKind(*GROUND_CORRECT_KIND_AIR),
+        );
+        KineticModule::change_kinetic(fighter.module_accessor, *FIGHTER_KINETIC_TYPE_AIR_STOP);
+        MotionModule::change_motion(
+            fighter.module_accessor,
+            Hash40::new("special_air_s"),
+            0.0,
+            1.0,
+            false,
+            0.0,
+            false,
+            false,
+        );
+    }
+
     fighter.sub_shift_status_main(L2CValue::Ptr(special_s_main_loop as *const () as _))
 }
 
 unsafe extern "C" fn special_s_main_loop(fighter: &mut L2CFighterCommon) -> L2CValue {
-    WorkModule::set_int64(
-        fighter.module_accessor,
-        hash40("special_s") as i64,
-        *FIGHTER_MARTH_STATUS_SPECIAL_S_WORK_INT_MOTION_KIND,
-    );
-    WorkModule::set_int64(
-        fighter.module_accessor,
-        hash40("special_air_s") as i64,
-        *FIGHTER_MARTH_STATUS_SPECIAL_S_WORK_INT_MOTION_KIND_AIR,
-    );
+    let boma = fighter.module_accessor;
     if CancelModule::is_enable_cancel(fighter.module_accessor)
         && fighter
             .sub_wait_ground_check_common(false.into())
@@ -86,33 +122,49 @@ unsafe extern "C" fn special_s_main_loop(fighter: &mut L2CFighterCommon) -> L2CV
             == false
         && fighter.sub_air_check_fall_common().get_bool()
     {
+        // Handles cancels to transition out of the status given certain unique
+        // situations
         return L2CValue::I32(0);
     }
-    let motion_g = WorkModule::get_int64(
-        fighter.module_accessor,
-        *FIGHTER_MARTH_STATUS_SPECIAL_S_WORK_INT_MOTION_KIND,
-    );
-    let motion_a = WorkModule::get_int64(
-        fighter.module_accessor,
-        *FIGHTER_MARTH_STATUS_SPECIAL_S_WORK_INT_MOTION_KIND_AIR,
-    );
-    fighter.sub_change_motion_by_situation(
-        Hash40::new_raw(motion_g).into(),
-        Hash40::new_raw(motion_a).into(),
-        true.into(),
-    );
-    if fighter.global_table[0x16].get_i32() != *SITUATION_KIND_GROUND {
-        KineticModule::change_kinetic(fighter.module_accessor, *FIGHTER_KINETIC_TYPE_UNIQ);
-        GroundModule::correct(
-            fighter.module_accessor,
-            GroundCorrectKind(*GROUND_CORRECT_KIND_AIR),
-        );
-    } else {
-        GroundModule::correct(
-            fighter.module_accessor,
-            GroundCorrectKind(*GROUND_CORRECT_KIND_GROUND_CLIFF_STOP),
-        );
-        KineticModule::change_kinetic(fighter.module_accessor, *FIGHTER_KINETIC_TYPE_MOTION);
+    if StatusModule::is_changing(boma) || StatusModule::is_situation_changed(boma) {
+        // If you do a move in the air then land on the ground, we want to ensure
+        // the aerial animation rules are still followed, despite using a grounded
+        // animation. This is mostly for visual purposes that has no impact on
+        // the hitboxes.
+        if fighter.global_table[0x16].get_i32() == *SITUATION_KIND_GROUND {
+            GroundModule::correct(
+                fighter.module_accessor,
+                GroundCorrectKind(*GROUND_CORRECT_KIND_GROUND_CLIFF_STOP),
+            );
+            KineticModule::change_kinetic(
+                fighter.module_accessor,
+                *FIGHTER_KINETIC_TYPE_GROUND_STOP,
+            );
+            MotionModule::change_motion_inherit_frame(
+                boma,
+                Hash40::new("special_s"),
+                -1.0,
+                1.0,
+                0.0,
+                false,
+                false,
+            );
+        } else {
+            KineticModule::change_kinetic(fighter.module_accessor, *FIGHTER_KINETIC_TYPE_AIR_STOP);
+            GroundModule::correct(
+                fighter.module_accessor,
+                GroundCorrectKind(*GROUND_CORRECT_KIND_AIR),
+            );
+            MotionModule::change_motion_inherit_frame(
+                boma,
+                Hash40::new("special_air_s"),
+                -1.0,
+                1.0,
+                0.0,
+                false,
+                false,
+            );
+        }
     }
     if MotionModule::is_end(fighter.module_accessor) {
         if fighter.global_table[0x16].get_i32() == *SITUATION_KIND_GROUND {
@@ -121,5 +173,5 @@ unsafe extern "C" fn special_s_main_loop(fighter: &mut L2CFighterCommon) -> L2CV
             fighter.change_status(FIGHTER_STATUS_KIND_FALL.into(), false.into());
         }
     }
-    return L2CValue::I32(0);
+    0.into()
 }
