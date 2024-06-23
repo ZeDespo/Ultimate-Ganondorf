@@ -11,8 +11,6 @@ use smash::lib::lua_const::*;
 use smash_script::macros;
 use {smash::lua2cpp::*, smashline::*};
 
-use crate::ganon::utils::FloatStatus;
-use crate::ganon::utils::GS;
 use crate::utils::shield::*;
 
 unsafe extern "C" fn ganon_speciallw(agent: &mut L2CAgentBase) {

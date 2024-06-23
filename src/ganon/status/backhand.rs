@@ -16,6 +16,7 @@ use skyline_smash::app::SituationKind;
 use smash::app::lua_bind::*;
 use smash::lib::lua_const::*;
 
+use crate::ganon::utils::in_dive;
 use crate::ganon::utils::FIGHTER_GANON_STATUS_KIND_BACKHAND;
 use {
     smash::{hash40, lua2cpp::*},
