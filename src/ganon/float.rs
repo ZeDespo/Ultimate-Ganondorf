@@ -3,7 +3,7 @@
 //! of his aerials. His specials will remove his float status; however, given the right
 //! control inputs, his side-special can get some serious distance.
 use super::utils::*;
-use skyline_smash::app::BattleObjectModuleAccessor;
+use skyline_smash::{app::BattleObjectModuleAccessor, phx::Vector3f};
 use smash::app::lua_bind::*;
 use smash::lib::lua_const::*;
 use smash_script::macros;
@@ -39,7 +39,15 @@ unsafe extern "C" fn adjust_float_velocity(boma: *mut BattleObjectModuleAccessor
     println!("Current speed: {:#?}", GS[iv.entry_id].float_speed);
     if was_attacking {
         println!("Adding current speed due to previous attack.");
-        KineticModule::add_speed(boma, &GS[iv.entry_id].float_speed.to_vector3f());
+        let curr_float_speed = GS[iv.entry_id].float_speed.to_vector3f();
+        KineticModule::add_speed(
+            boma,
+            &Vector3f {
+                x: curr_float_speed.x * dir,
+                y: curr_float_speed.y,
+                z: curr_float_speed.z,
+            },
+        );
     } else {
         if WorkModule::is_flag(boma, GANON_FLOAT_HAS_ATTACKED) && dir == -1.0 {
             println!("Sum speed x correction.");
