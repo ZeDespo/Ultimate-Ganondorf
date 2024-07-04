@@ -1,6 +1,22 @@
 ---
 motion_path: fighter/ganon/motion/body/c00
 list:
+  jump_float:
+    game_script: game_float_ganon
+    flags: "0x80"
+    transition: 0
+    animations:
+      - name: a90float.nuanmb
+        unk: 0
+    scripts:
+      - expression_jumpback
+      - sound_jumpback
+      - effect_jumpback
+    extra:
+      xlu_start: 0
+      xlu_end: 0
+      cancel_frame: 0
+      no_stop_intp: false
   wait:
     game_script: game_wait1
     flags: "0x0"
