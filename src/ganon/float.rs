@@ -127,7 +127,7 @@ impl FloatStatus {
             if i == 0
                 || init_values.situation_kind != SITUATION_KIND_AIR
                 || [
-                    *FIGHTER_STATUS_KIND_JUMP_AERIAL,
+                    // *FIGHTER_STATUS_KIND_JUMP_AERIAL,
                     *FIGHTER_STATUS_KIND_DAMAGE_FLY,
                     *FIGHTER_STATUS_KIND_DAMAGE_FLY_METEOR,
                     *FIGHTER_STATUS_KIND_DAMAGE_FLY_ROLL,
@@ -223,7 +223,7 @@ impl InitValues {
     }
 
     fn is_start_of_float(self: &Self) -> bool {
-        self.motion_module_frame == STARTING_FLOAT_FRAME && self.is_special_air_n()
+        self.start_float
     }
 }
 
