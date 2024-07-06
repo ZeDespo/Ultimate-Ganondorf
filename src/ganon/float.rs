@@ -26,7 +26,6 @@ const FLOAT_SPEED_LOSS: f32 = 25.0; // Number of frames that should pass until s
 unsafe extern "C" fn adjust_float_velocity(boma: *mut BattleObjectModuleAccessor, iv: &InitValues) {
     let attacking = iv.status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR;
     if attacking && iv.motion_module_frame < 2.0 {
-        WorkModule::on_flag(boma, GANON_FLOAT_HAS_ATTACKED);
         return;
     }
     let dir = PostureModule::lr(boma);
@@ -49,10 +48,6 @@ unsafe extern "C" fn adjust_float_velocity(boma: *mut BattleObjectModuleAccessor
             },
         );
     } else {
-        if WorkModule::is_flag(boma, GANON_FLOAT_HAS_ATTACKED) && dir == -1.0 {
-            println!("Sum speed x correction.");
-            // curr_x_speed = -curr_x_speed
-        }
         let new_speed = Position2D::calculate_new_speed(
             ControlModule::get_stick_x(boma) * dir,
             ControlModule::get_stick_y(boma),
@@ -224,7 +219,7 @@ impl Position2D {
 
 impl InitValues {
     fn is_special_air_n(self: &Self) -> bool {
-        self.motion_kind == hash40("special_air_n")
+        self.motion_kind == hash40("jump_float")
     }
 
     fn is_start_of_float(self: &Self) -> bool {
@@ -276,9 +271,6 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
     println!("New float state: {}", GS[iv.entry_id].float_status);
     match GS[iv.entry_id].float_status {
         FloatStatus::CannotFloat => {
-            if WorkModule::is_flag(boma, GANON_FLOAT_HAS_ATTACKED) {
-                WorkModule::off_flag(boma, GANON_FLOAT_HAS_ATTACKED)
-            }
             if iv.is_start_of_float() {
                 StatusModule::change_status_request_from_script(
                     boma,
