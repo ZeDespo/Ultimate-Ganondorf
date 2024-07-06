@@ -9,9 +9,9 @@ list:
       - name: a90float.nuanmb
         unk: 0
     scripts:
-      - expression_jumpback
-      - sound_jumpback
-      - effect_jumpback
+      - expression_float
+      - sound_float
+      - effect_float
     extra:
       xlu_start: 0
       xlu_end: 0

@@ -121,6 +121,12 @@ pub unsafe extern "C" fn in_teleport(boma: *mut BattleObjectModuleAccessor) -> b
     WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG)
 }
 
+// We have some functions where we don't require a script running as it is handled
+// in some other opff file.
+pub unsafe extern "C" fn stub_acmd(fighter: &mut L2CAgentBase) {
+    let _lua_state = fighter.lua_state_agent;
+}
+
 pub unsafe extern "C" fn triforce_hand_fx(agent: &mut L2CAgentBase, rate: f32) {
     if macros::is_excute(agent) {
         macros::EFFECT_FOLLOW(
