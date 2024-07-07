@@ -22,7 +22,7 @@ pub unsafe extern "C" fn float_check(fighter: &mut L2CFighterCommon, iv: &InitVa
                 );
                 if GS[iv.entry_id].pre_float_frame_counter == -1 {
                     if iv.status_kind == *FIGHTER_STATUS_KIND_JUMP
-                        || iv.status_kind == *FIGHTER_STATUS_KIND_CLIFF_JUMP_2
+                        || iv.status_kind == *FIGHTER_STATUS_KIND_CLIFF_JUMP2
                     {
                         GS[iv.entry_id].pre_float_frame_counter = 16;
                     } else if iv.status_kind == *FIGHTER_STATUS_KIND_JUMP_AERIAL {
