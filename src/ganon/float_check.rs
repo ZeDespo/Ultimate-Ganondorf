@@ -13,6 +13,9 @@ pub unsafe extern "C" fn float_check(fighter: &mut L2CFighterCommon, iv: &InitVa
     let boma = fighter.module_accessor;
     match GS[iv.entry_id].float_status {
         FloatStatus::CanFloat => {
+            if iv.situation_kind == *SITUATION_KIND_GROUND {
+                GS[iv.entry_id].pre_float_frame_counter = -1;
+            }
             if WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_JUMP_COUNT) - 1
                 != WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_JUMP_COUNT_MAX)
             {
@@ -20,7 +23,8 @@ pub unsafe extern "C" fn float_check(fighter: &mut L2CFighterCommon, iv: &InitVa
                     "Float Frame Counter: {}",
                     GS[iv.entry_id].pre_float_frame_counter,
                 );
-                if GS[iv.entry_id].pre_float_frame_counter == -1 {
+                if GS[iv.entry_id].pre_float_frame_counter == -1 || StatusModule::is_changing(boma)
+                {
                     if iv.status_kind == *FIGHTER_STATUS_KIND_JUMP
                         || iv.status_kind == *FIGHTER_STATUS_KIND_CLIFF_JUMP2
                     {
@@ -29,12 +33,16 @@ pub unsafe extern "C" fn float_check(fighter: &mut L2CFighterCommon, iv: &InitVa
                         GS[iv.entry_id].pre_float_frame_counter = 29;
                     }
                 } else {
+                    if GS[iv.entry_id].pre_float_frame_counter == -2 {
+                        return;
+                    }
                     GS[iv.entry_id].pre_float_frame_counter -= 1;
                     if GS[iv.entry_id].pre_float_frame_counter == 0 {
                         if ControlModule::check_button_on(boma, *CONTROL_PAD_BUTTON_JUMP) {
                             WorkModule::on_flag(boma, GANON_CAN_FLOAT_FLAG);
+                        } else {
+                            GS[iv.entry_id].pre_float_frame_counter = -2;
                         }
-                    } else {
                     }
                 }
             }
@@ -58,6 +66,7 @@ pub unsafe extern "C" fn float_check(fighter: &mut L2CFighterCommon, iv: &InitVa
         }
         _ => {
             WorkModule::off_flag(boma, GANON_CAN_FLOAT_FLAG);
+            GS[iv.entry_id].pre_float_frame_counter = -1;
         }
     }
 }
