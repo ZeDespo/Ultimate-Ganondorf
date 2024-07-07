@@ -65,6 +65,7 @@ pub struct GanonState {
     pub float_status: FloatStatus,
     pub float_speed: Position2D,
     pub teleport_direction: Position2D,
+    pub pre_float_frame_counter: i32,
 }
 
 #[repr(i32)]
@@ -99,6 +100,7 @@ impl TeleportStatus {
 pub static mut GS: [GanonState; 8] = [GanonState {
     float_status: FloatStatus::CanFloat,
     float_speed: Position2D { x: 0.0, y: 0.0 },
+    pre_float_frame_counter: -1,
     teleport_direction: Position2D { x: 0.0, y: 0.0 },
 }; 8];
 
@@ -110,6 +112,7 @@ pub const GANON_FLOAT_INTO_DIVE: i32 = 0x69423;
 pub const GANON_DARK_RUPTURE_ACTIVE: i32 = 0x69424;
 pub const GANON_CAN_FLOAT_FLAG: i32 = 0x69425;
 pub const GANON_CAN_TELEPORT_FLAG: i32 = 0x69426;
+pub const GANON_PRE_FLOAT_FRAME_COUNTER: i32 = 0x69427;
 pub const FIGHTER_GANON_STATUS_KIND_PRE_TELEPORT: i32 = 0x1ED;
 pub const FIGHTER_GANON_STATUS_KIND_BACKHAND: i32 = 0x1EE;
 pub const FIGHTER_GANON_STATUS_KIND_FLOAT: i32 = 0x1EF;
