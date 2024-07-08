@@ -1,7 +1,7 @@
 use super::utils::{in_teleport, InitValues};
 use crate::ganon::{
     float::ganon_float, float_check::float_check, new_down_special::new_down_special,
-    teleport_check::teleport_check, utils::GANON_CAN_FLOAT_FLAG, warlock_punch::warlock_punch,
+    teleport_check::teleport_check, utils::GANON_START_FLOAT_FLAG, warlock_punch::warlock_punch,
 };
 use skyline_smash::lib::lua_const::FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID;
 use smash::app::lua_bind::*;
@@ -18,7 +18,7 @@ pub unsafe extern "C" fn ganon_frame(fighter: &mut L2CFighterCommon) {
         motion_kind: MotionModule::motion_kind(boma),
         kinetic_kind: KineticModule::get_kinetic_type(boma),
         teleport_into_float: in_teleport(boma),
-        start_float: WorkModule::is_flag(boma, GANON_CAN_FLOAT_FLAG),
+        start_float: WorkModule::is_flag(boma, GANON_START_FLOAT_FLAG),
     };
     println!("{:#?}", iv);
     float_check(fighter, &iv);

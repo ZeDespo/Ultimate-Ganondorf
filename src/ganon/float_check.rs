@@ -13,39 +13,111 @@ pub unsafe extern "C" fn float_check(fighter: &mut L2CFighterCommon, iv: &InitVa
     let boma = fighter.module_accessor;
     match GS[iv.entry_id].float_status {
         FloatStatus::CanFloat => {
-            if iv.situation_kind == *SITUATION_KIND_GROUND {
-                GS[iv.entry_id].pre_float_frame_counter = -1;
-            }
-            if WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_JUMP_COUNT) - 1
-                != WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_JUMP_COUNT_MAX)
-            {
-                println!(
-                    "Float Frame Counter: {}",
-                    GS[iv.entry_id].pre_float_frame_counter,
-                );
-                if GS[iv.entry_id].pre_float_frame_counter == -1 || StatusModule::is_changing(boma)
-                {
+            println!(
+                "Float Activation Status: {}",
+                GS[iv.entry_id].float_activation_status
+            );
+            match GS[iv.entry_id].float_activation_status {
+                FloatActivationStatus::Waiting => {
                     if iv.status_kind == *FIGHTER_STATUS_KIND_JUMP
                         || iv.status_kind == *FIGHTER_STATUS_KIND_CLIFF_JUMP2
                     {
-                        GS[iv.entry_id].pre_float_frame_counter = 16;
+                        GS[iv.entry_id].float_activation_status = FloatActivationStatus::Jump(16);
                     } else if iv.status_kind == *FIGHTER_STATUS_KIND_JUMP_AERIAL {
-                        GS[iv.entry_id].pre_float_frame_counter = 29;
-                    }
-                } else {
-                    if GS[iv.entry_id].pre_float_frame_counter == -2 {
-                        return;
-                    }
-                    GS[iv.entry_id].pre_float_frame_counter -= 1;
-                    if GS[iv.entry_id].pre_float_frame_counter == 0 {
-                        if ControlModule::check_button_on(boma, *CONTROL_PAD_BUTTON_JUMP) {
-                            WorkModule::on_flag(boma, GANON_CAN_FLOAT_FLAG);
-                        } else {
-                            GS[iv.entry_id].pre_float_frame_counter = -2;
-                        }
+                        GS[iv.entry_id].float_activation_status =
+                            FloatActivationStatus::JumpAerial(29);
                     }
                 }
+                FloatActivationStatus::Jump(i) => {
+                    let frame_counter = i - 1;
+                    if frame_counter == 0 {
+                        if ControlModule::check_button_on(boma, *CONTROL_PAD_BUTTON_JUMP) {
+                            WorkModule::on_flag(boma, GANON_START_FLOAT_FLAG);
+                        } else {
+                            GS[iv.entry_id].float_activation_status =
+                                FloatActivationStatus::JumpUsed;
+                        }
+                    } else {
+                        GS[iv.entry_id].float_activation_status =
+                            FloatActivationStatus::Jump(frame_counter);
+                    }
+                }
+                FloatActivationStatus::JumpUsed => {
+                    if iv.status_kind == *FIGHTER_STATUS_KIND_JUMP_AERIAL {
+                        GS[iv.entry_id].float_activation_status =
+                            FloatActivationStatus::JumpAerial(29);
+                    } else if iv.situation_kind == *SITUATION_KIND_GROUND {
+                        GS[iv.entry_id].float_activation_status = FloatActivationStatus::Waiting;
+                    }
+                }
+                FloatActivationStatus::JumpAerial(i) => {
+                    let frame_counter = i - 1;
+                    if frame_counter == 0 {
+                        if ControlModule::check_button_on(boma, *CONTROL_PAD_BUTTON_JUMP) {
+                            WorkModule::on_flag(boma, GANON_START_FLOAT_FLAG);
+                        } else {
+                            GS[iv.entry_id].float_activation_status =
+                                FloatActivationStatus::JumpAerialUsed;
+                        }
+                    } else {
+                        GS[iv.entry_id].float_activation_status =
+                            FloatActivationStatus::JumpAerial(frame_counter);
+                    }
+                }
+                FloatActivationStatus::JumpAerialUsed => {
+                    if ControlModule::check_button_on(boma, *CONTROL_PAD_BUTTON_JUMP) {
+                        WorkModule::on_flag(boma, GANON_START_FLOAT_FLAG);
+                        GS[iv.entry_id].float_activation_status =
+                            FloatActivationStatus::NotApplicable;
+                    }
+                    if iv.situation_kind == *SITUATION_KIND_GROUND {
+                        GS[iv.entry_id].float_activation_status = FloatActivationStatus::Waiting;
+                    }
+                }
+                FloatActivationStatus::NotApplicable => {}
             }
+            //
+            // if iv.situation_kind == *SITUATION_KIND_GROUND {
+            //     GS[iv.entry_id].pre_float_frame_counter = -1;
+            // }
+            // println!(
+            //     "Float Frame Counter: {}",
+            //     GS[iv.entry_id].pre_float_frame_counter,
+            // );
+            // if GS[iv.entry_id].pre_float_frame_counter == -1 {
+            //     if iv.status_kind == *FIGHTER_STATUS_KIND_JUMP
+            //         || iv.status_kind == *FIGHTER_STATUS_KIND_CLIFF_JUMP2
+            //     {
+            //         GS[iv.entry_id].pre_float_frame_counter = 16;
+            //     } else if iv.status_kind == *FIGHTER_STATUS_KIND_JUMP_AERIAL {
+            //         GS[iv.entry_id].pre_float_frame_counter = 29;
+            //     }
+            // } else if GS[iv.entry_id].pre_float_frame_counter != -2 {
+            //     GS[iv.entry_id].pre_float_frame_counter -= 1;
+            //     if GS[iv.entry_id].pre_float_frame_counter == 0 {
+            //         if ControlModule::check_button_on(boma, *CONTROL_PAD_BUTTON_JUMP) {
+            //             WorkModule::on_flag(boma, GANON_START_FLOAT_FLAG);
+            //         } else {
+            //             GS[iv.entry_id].pre_float_frame_counter = -2;
+            //         }
+            //     }
+            // }
+            // if GS[iv.entry_id].pre_float_frame_counter == -2
+            //     && !WorkModule::is_flag(boma, GANON_PRE_FLOAT_MUTEX)
+            //     && ![*FIGHTER_STATUS_KIND_JUMP, *FIGHTER_STATUS_KIND_JUMP_AERIAL]
+            //         .contains(&iv.status_kind)
+            // {
+            //     if ControlModule::check_button_on(boma, *CONTROL_PAD_BUTTON_JUMP) {
+            //         WorkModule::on_flag(boma, GANON_START_FLOAT_FLAG);
+            //         WorkModule::on_flag(boma, GANON_PRE_FLOAT_MUTEX);
+            //     }
+            // }
+            //
+            //
+            //
+            //
+            //
+            //
             // let frame_counter = WorkModule::get_int(boma, GANON_PRE_FLOAT_FRAME_COUNTER);
             // println!("Frame Counter: {}", frame_counter);
             // if frame_counter == -1 {
@@ -65,8 +137,9 @@ pub unsafe extern "C" fn float_check(fighter: &mut L2CFighterCommon, iv: &InitVa
             // }
         }
         _ => {
-            WorkModule::off_flag(boma, GANON_CAN_FLOAT_FLAG);
-            GS[iv.entry_id].pre_float_frame_counter = -1;
+            WorkModule::off_flag(boma, GANON_START_FLOAT_FLAG);
+            WorkModule::off_flag(boma, GANON_PRE_FLOAT_MUTEX);
+            GS[iv.entry_id].float_activation_status = FloatActivationStatus::Waiting;
         }
     }
 }

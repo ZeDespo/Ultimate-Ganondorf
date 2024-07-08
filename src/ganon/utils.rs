@@ -24,6 +24,29 @@ impl fmt::Display for FloatStatus {
     }
 }
 
+#[derive(Copy, Clone)]
+pub enum FloatActivationStatus {
+    Waiting,
+    Jump(i8),
+    JumpUsed,
+    JumpAerial(i8),
+    JumpAerialUsed,
+    NotApplicable,
+}
+
+impl fmt::Display for FloatActivationStatus {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            FloatActivationStatus::NotApplicable => write!(f, "'Not Applicable'"),
+            FloatActivationStatus::Waiting => write!(f, "'Waiting'"),
+            FloatActivationStatus::Jump(i) => write!(f, "'Jump({})'", i),
+            FloatActivationStatus::JumpUsed => write!(f, "'JumpUsed'"),
+            FloatActivationStatus::JumpAerial(i) => write!(f, "'JumpAerial({})'", i),
+            FloatActivationStatus::JumpAerialUsed => write!(f, "'JumpAerialUsed'"),
+        }
+    }
+}
+
 /// A convenience struct that holds necessary values. It beats having a function
 /// accept numerous parameters.
 #[derive(Debug)]
@@ -64,8 +87,8 @@ impl Position2D {
 pub struct GanonState {
     pub float_status: FloatStatus,
     pub float_speed: Position2D,
+    pub float_activation_status: FloatActivationStatus,
     pub teleport_direction: Position2D,
-    pub pre_float_frame_counter: i32,
 }
 
 #[repr(i32)]
@@ -100,8 +123,8 @@ impl TeleportStatus {
 pub static mut GS: [GanonState; 8] = [GanonState {
     float_status: FloatStatus::CanFloat,
     float_speed: Position2D { x: 0.0, y: 0.0 },
-    pre_float_frame_counter: -1,
     teleport_direction: Position2D { x: 0.0, y: 0.0 },
+    float_activation_status: FloatActivationStatus::Waiting,
 }; 8];
 
 pub const GANON_TELEPORT_WORK_INT: i32 = 0x42069;
@@ -110,12 +133,13 @@ pub const GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG: i32 = 0x69421;
 pub const GANON_TELEPORT_INTO_FLOAT_WAS_CANNOT_FLOAT_FLAG: i32 = 0x69422;
 pub const GANON_FLOAT_INTO_DIVE: i32 = 0x69423;
 pub const GANON_DARK_RUPTURE_ACTIVE: i32 = 0x69424;
-pub const GANON_CAN_FLOAT_FLAG: i32 = 0x69425;
+pub const GANON_START_FLOAT_FLAG: i32 = 0x69425;
 pub const GANON_CAN_TELEPORT_FLAG: i32 = 0x69426;
 pub const GANON_PRE_FLOAT_FRAME_COUNTER: i32 = 0x69427;
+pub const GANON_CAN_FLOAT_FLAG: i32 = 0x69428;
+pub const GANON_PRE_FLOAT_MUTEX: i32 = 0x69428;
 pub const FIGHTER_GANON_STATUS_KIND_PRE_TELEPORT: i32 = 0x1ED;
 pub const FIGHTER_GANON_STATUS_KIND_BACKHAND: i32 = 0x1EE;
-pub const FIGHTER_GANON_STATUS_KIND_FLOAT: i32 = 0x1EF;
 
 pub unsafe extern "C" fn in_dive(boma: *mut BattleObjectModuleAccessor) -> bool {
     WorkModule::is_flag(boma, GANON_FLOAT_INTO_DIVE)
