@@ -5,7 +5,7 @@ use smash::app::lua_bind::*;
 use smash::app::sv_animcmd::*;
 use smash::app::sv_battle_object::notify_event_msc_cmd;
 use smash::lib::lua_const::*;
-use smash_script::{damage, lua_args, macros, shield, slope};
+use smash_script::{damage, lua_args, macros, search, shield};
 use {
     smash::{hash40, lua2cpp::*},
     smashline::*,
@@ -26,41 +26,31 @@ pub fn install() {
 }
 
 unsafe extern "C" fn ganon_specials(agent: &mut L2CAgentBase) {
-    frame(agent.lua_state_agent, 0.1);
-    macros::FT_MOTION_RATE(agent, 0.81);
-    frame(agent.lua_state_agent, 11.0);
-    macros::FT_MOTION_RATE(agent, 1.0);
+    frame(agent.lua_state_agent, 13.0);
     if macros::is_excute(agent) {
-        // shield!(
-        //     agent,
-        //     *MA_MSC_CMD_SHIELD_ON,
-        //     *COLLISION_KIND_REFLECTOR,
-        //     0,
-        //     *FIGHTER_REFLECTOR_GROUP_EXTEND
-        // );
         macros::ATTACK(
             agent,
             0,
             0,
-            Hash40::new("top"),
-            7.0,
-            110,
-            100,
-            80,
+            Hash40::new("handl"),
+            14.5,
+            88,
+            5,
             0,
-            7.5,
+            102,
+            7.0,
             0.0,
-            6.7,
-            9.7,
+            0.0,
+            0.0,
             None,
             None,
             None,
-            1.0,
+            0.3,
             1.0,
             *ATTACK_SETOFF_KIND_OFF,
             *ATTACK_LR_CHECK_F,
             false,
-            4,
+            5,
             0.0,
             0,
             false,
@@ -68,38 +58,38 @@ unsafe extern "C" fn ganon_specials(agent: &mut L2CAgentBase) {
             false,
             false,
             true,
-            *COLLISION_SITUATION_MASK_GA,
+            *COLLISION_SITUATION_MASK_G,
             *COLLISION_CATEGORY_MASK_ALL,
             *COLLISION_PART_MASK_ALL,
             false,
-            Hash40::new("collision_attr_normal"),
+            Hash40::new("collision_attr_paralyze"),
             *ATTACK_SOUND_LEVEL_M,
             *COLLISION_SOUND_ATTR_PUNCH,
-            *ATTACK_REGION_OBJECT,
+            *ATTACK_REGION_PUNCH,
         );
         macros::ATTACK(
             agent,
             1,
             0,
             Hash40::new("handl"),
-            7.0,
-            110,
-            100,
-            80,
+            14.0,
+            81,
+            5,
             0,
-            5.0,
+            92,
+            7.0,
             0.0,
             0.0,
             0.0,
             None,
             None,
             None,
-            1.0,
+            0.3,
             1.0,
             *ATTACK_SETOFF_KIND_OFF,
             *ATTACK_LR_CHECK_F,
             false,
-            4,
+            5,
             0.0,
             0,
             false,
@@ -107,37 +97,59 @@ unsafe extern "C" fn ganon_specials(agent: &mut L2CAgentBase) {
             false,
             false,
             true,
-            *COLLISION_SITUATION_MASK_GA,
+            *COLLISION_SITUATION_MASK_A,
             *COLLISION_CATEGORY_MASK_ALL,
             *COLLISION_PART_MASK_ALL,
             false,
-            Hash40::new("collision_attr_normal"),
+            Hash40::new("collision_attr_paralyze"),
             *ATTACK_SOUND_LEVEL_M,
-            *COLLISION_SOUND_ATTR_BAT,
-            *ATTACK_REGION_OBJECT,
+            *COLLISION_SOUND_ATTR_PUNCH,
+            *ATTACK_REGION_PUNCH,
         );
-
-        activate_reflector(
+        macros::ATK_SET_SHIELD_SETOFF_MUL_arg3(agent, 0, 1.2, 5.0);
+        AttackModule::set_add_reaction_frame_revised(agent.module_accessor, 0, 19.0, false);
+        AttackModule::set_add_reaction_frame_revised(agent.module_accessor, 1, 14.0, false);
+        AttackModule::set_attack_camera_quake_forced(
+            agent.module_accessor,
+            0,
+            *CAMERA_QUAKE_KIND_L,
+            false,
+        );
+        search!(agent, *MA_MSC_CMD_SEARCH_SEARCH_SCH_CLR_ALL);
+        shield!(
             agent,
-            1,
-            Hash40::new("handl"),
-            100.0,
+            *MA_MSC_CMD_REFLECTOR,
+            *COLLISION_KIND_REFLECTOR,
+            0,
+            Hash40::new("top"),
+            13.0,
             0.0,
+            12.0,
+            1.0,
             0.0,
+            4.0,
             0.0,
-            0.0,
-            0.0,
-            0.0,
-            2.0,
-            1.3,
-            200,
-            1.5,
+            1.0,
+            1.2,
+            80,
+            false,
+            1.0,
+            *FIGHTER_REFLECTOR_GROUP_HOMERUNBAT
         );
     }
-    frame(agent.lua_state_agent, 20.0);
+    frame(agent.lua_state_agent, 22.0);
     if macros::is_excute(agent) {
-        disable_reflector(agent, 2);
         AttackModule::clear_all(agent.module_accessor);
+    }
+    frame(agent.lua_state_agent, 30.0);
+    if macros::is_excute(agent) {
+        shield!(
+            agent,
+            *MA_MSC_CMD_SHIELD_OFF,
+            *COLLISION_KIND_REFLECTOR,
+            0,
+            *FIGHTER_REFLECTOR_GROUP_HOMERUNBAT
+        );
     }
 }
 
