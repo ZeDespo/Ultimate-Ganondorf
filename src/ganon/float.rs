@@ -140,6 +140,7 @@ impl FloatStatus {
                 .contains(&init_values.status_kind)
                 || (init_values.status_kind == *FIGHTER_STATUS_KIND_DAMAGE_AIR
                     && init_values.teleport_into_float)
+                || (!init_values.jump_button_pressed && !init_values.teleport_into_float)
             {
                 return FloatStatus::CannotFloat;
             }
@@ -205,7 +206,7 @@ impl Position2D {
                 new_speed = MAX_INCREMENTAL_SPEED * (PI * stick / 2.0).sin().powi(2);
                 if abs_curr_speed + new_speed > MAX_FLOAT_SPEED {
                     println!("Overflow, correcting.");
-                    new_speed = MAX_FLOAT_SPEED - abs_curr_speed;
+                    new_speed = 0.0;
                 }
             }
         }
@@ -276,10 +277,7 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
                     *FIGHTER_STATUS_KIND_FALL_AERIAL,
                     true,
                 );
-            } else if iv.status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR {
-                KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_FALL);
-            }
-            if iv.teleport_into_float {
+            } else if iv.teleport_into_float {
                 WorkModule::turn_off_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG);
                 macros::WHOLE_HIT(fighter, *HIT_STATUS_NORMAL);
                 VisibilityModule::set_whole(boma, true);
@@ -289,6 +287,8 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
                 } else {
                     GS[iv.entry_id].float_status = FloatStatus::CanFloat;
                 }
+            } else {
+                KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_FALL);
             }
         }
         FloatStatus::Floating(i) => {

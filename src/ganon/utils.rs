@@ -60,6 +60,7 @@ pub struct InitValues {
     pub kinetic_kind: i32,
     pub teleport_into_float: bool,
     pub start_float: bool,
+    pub jump_button_pressed: bool,
 }
 
 #[derive(Copy, Clone, Debug)]

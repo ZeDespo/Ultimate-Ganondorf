@@ -1,7 +1,7 @@
 use super::utils::*;
 use smash::app::lua_bind::*;
 use smash::lib::lua_const::*;
-use {smash::lua2cpp::*, smashline::*};
+use smash::lua2cpp::*;
 
 // TODO:
 //
@@ -31,7 +31,7 @@ pub unsafe extern "C" fn float_check(fighter: &mut L2CFighterCommon, iv: &InitVa
                 FloatActivationStatus::Jump(i) => {
                     let frame_counter = i - 1;
                     if frame_counter == 0 {
-                        if ControlModule::check_button_on(boma, *CONTROL_PAD_BUTTON_JUMP) {
+                        if iv.jump_button_pressed {
                             WorkModule::on_flag(boma, GANON_START_FLOAT_FLAG);
                         } else {
                             GS[iv.entry_id].float_activation_status =
@@ -53,7 +53,7 @@ pub unsafe extern "C" fn float_check(fighter: &mut L2CFighterCommon, iv: &InitVa
                 FloatActivationStatus::JumpAerial(i) => {
                     let frame_counter = i - 1;
                     if frame_counter == 0 {
-                        if ControlModule::check_button_on(boma, *CONTROL_PAD_BUTTON_JUMP) {
+                        if iv.jump_button_pressed {
                             WorkModule::on_flag(boma, GANON_START_FLOAT_FLAG);
                         } else {
                             GS[iv.entry_id].float_activation_status =
@@ -65,7 +65,7 @@ pub unsafe extern "C" fn float_check(fighter: &mut L2CFighterCommon, iv: &InitVa
                     }
                 }
                 FloatActivationStatus::JumpAerialUsed => {
-                    if ControlModule::check_button_on(boma, *CONTROL_PAD_BUTTON_JUMP) {
+                    if iv.jump_button_pressed {
                         WorkModule::on_flag(boma, GANON_START_FLOAT_FLAG);
                         GS[iv.entry_id].float_activation_status =
                             FloatActivationStatus::NotApplicable;
