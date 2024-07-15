@@ -150,7 +150,7 @@ impl FloatStatus {
 
     /// Switch to a float status if the special button is pressed and in the air.
     fn transition_to_floating_if_able(self: Self, init_values: &InitValues) -> FloatStatus {
-        if init_values.is_start_of_float() {
+        if init_values.start_float {
             return FloatStatus::Floating(MAX_FLOAT_FRAMES);
         }
         if init_values.teleport_into_float {
@@ -206,7 +206,7 @@ impl Position2D {
                 new_speed = MAX_INCREMENTAL_SPEED * (PI * stick / 2.0).sin().powi(2);
                 if abs_curr_speed + new_speed > MAX_FLOAT_SPEED {
                     println!("Overflow, correcting.");
-                    new_speed = 0.0;
+                    new_speed = MAX_FLOAT_SPEED - abs_curr_speed;
                 }
             }
         }
@@ -221,10 +221,6 @@ impl Position2D {
 impl InitValues {
     fn is_special_air_n(self: &Self) -> bool {
         self.motion_kind == hash40("jump_float")
-    }
-
-    fn is_start_of_float(self: &Self) -> bool {
-        self.start_float
     }
 }
 
@@ -271,7 +267,7 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
     println!("New float state: {}", GS[iv.entry_id].float_status);
     match GS[iv.entry_id].float_status {
         FloatStatus::CannotFloat => {
-            if iv.is_start_of_float() {
+            if iv.start_float {
                 StatusModule::change_status_request_from_script(
                     boma,
                     *FIGHTER_STATUS_KIND_FALL_AERIAL,
@@ -299,9 +295,10 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
                     false.into(),
                 );
             }
-            if iv.is_start_of_float() {
+            if iv.start_float {
                 macros::PLAY_SE(fighter, Hash40::new("se_ganon_special_l01"));
                 CancelModule::enable_cancel(boma);
+                KineticModule::clear_speed_energy_id(boma, *FIGHTER_KINETIC_ENERGY_ID_GRAVITY);
             }
             if i % 30 == 0 {
                 float_effect(fighter);
