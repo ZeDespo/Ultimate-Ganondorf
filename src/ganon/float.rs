@@ -299,6 +299,16 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
                 macros::PLAY_SE(fighter, Hash40::new("se_ganon_special_l01"));
                 CancelModule::enable_cancel(boma);
                 KineticModule::clear_speed_energy_id(boma, *FIGHTER_KINETIC_ENERGY_ID_GRAVITY);
+                MotionModule::change_motion(
+                    boma,
+                    Hash40::new("jump_float"),
+                    0.0,
+                    1.0,
+                    false,
+                    0.0,
+                    false,
+                    false,
+                );
             }
             if i % 30 == 0 {
                 float_effect(fighter);

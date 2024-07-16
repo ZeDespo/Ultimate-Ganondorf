@@ -4,7 +4,6 @@ use crate::ganon::utils::Position2D;
 use crate::ganon::utils::TeleportStatus;
 use crate::ganon::utils::FIGHTER_GANON_STATUS_KIND_PRE_TELEPORT;
 use crate::ganon::utils::GANON_CAN_TELEPORT_FLAG;
-use crate::ganon::utils::GANON_FLOAT_INTO_DIVE;
 use crate::ganon::utils::GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG;
 use crate::ganon::utils::GANON_TELEPORT_INTO_FLOAT_INIT_FLAG;
 use crate::ganon::utils::GANON_TELEPORT_WORK_INT;

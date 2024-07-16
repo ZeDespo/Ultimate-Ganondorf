@@ -13,43 +13,21 @@ use smash::app::lua_bind::*;
 use smash::lib::lua_const::*;
 use {smash::lua2cpp::*, smashline::*};
 
-//
-unsafe extern "C" fn precondition_check(
-    boma: *mut BattleObjectModuleAccessor,
-    iv: &InitValues,
-) -> bool {
-    if !in_teleport(boma)
-        && iv.status_kind == FIGHTER_STATUS_KIND_SPECIAL_LW
-        && iv.situation_kind == *SITUATION_KIND_AIR
-    {
-        return true;
-    }
-    false
-    // if let FloatStatus::Floating(_) = GS[iv.entry_id].float_status {
-    //     if !in_teleport(boma) && iv.status_kind == FIGHTER_STATUS_KIND_SPECIAL_LW {
-    //         return true;
-    //     }
-    // }
-    // false
-}
-
 pub unsafe extern "C" fn new_down_special(fighter: &mut L2CFighterCommon, iv: &InitValues) {
     let boma = fighter.module_accessor;
-    let dive_check = in_dive(boma);
-    if !dive_check {
-        let pc_check = precondition_check(boma, iv);
-        if pc_check {
-            WorkModule::on_flag(boma, GANON_FLOAT_INTO_DIVE);
-        } else {
-            return;
+    if !in_dive(boma) {
+        if iv.status_kind == *FIGHTER_STATUS_KIND_SPECIAL_LW {
+            if iv.situation_kind == *SITUATION_KIND_GROUND {
+                WorkModule::on_flag(boma, GANON_DOWN_SPECIAL_GROUND);
+            } else if iv.situation_kind == *SITUATION_KIND_AIR
+                && !WorkModule::is_flag(boma, GANON_DOWN_SPECIAL_GROUND)
+            {
+                StatusModule::change_status_request_from_script(
+                    boma,
+                    *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_CATCH,
+                    false.into(),
+                );
+            }
         }
-        return;
-    }
-    if iv.status_kind == FIGHTER_STATUS_KIND_SPECIAL_LW {
-        StatusModule::change_status_request_from_script(
-            boma,
-            *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_CATCH,
-            false.into(),
-        );
     }
 }

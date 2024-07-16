@@ -132,18 +132,17 @@ pub const GANON_TELEPORT_WORK_INT: i32 = 0x42069;
 pub const GANON_TELEPORT_INTO_FLOAT_INIT_FLAG: i32 = 0x69420;
 pub const GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG: i32 = 0x69421;
 pub const GANON_TELEPORT_INTO_FLOAT_WAS_CANNOT_FLOAT_FLAG: i32 = 0x69422;
-pub const GANON_FLOAT_INTO_DIVE: i32 = 0x69423;
+pub const GANON_DOWN_SPECIAL_AIR: i32 = 0x69423;
 pub const GANON_DARK_RUPTURE_ACTIVE: i32 = 0x69424;
 pub const GANON_START_FLOAT_FLAG: i32 = 0x69425;
 pub const GANON_CAN_TELEPORT_FLAG: i32 = 0x69426;
-pub const GANON_PRE_FLOAT_FRAME_COUNTER: i32 = 0x69427;
-pub const GANON_CAN_FLOAT_FLAG: i32 = 0x69428;
+pub const GANON_DOWN_SPECIAL_GROUND: i32 = 0x69427;
 pub const GANON_PRE_FLOAT_MUTEX: i32 = 0x69428;
 pub const FIGHTER_GANON_STATUS_KIND_PRE_TELEPORT: i32 = 0x1ED;
 pub const FIGHTER_GANON_STATUS_KIND_BACKHAND: i32 = 0x1EE;
 
 pub unsafe extern "C" fn in_dive(boma: *mut BattleObjectModuleAccessor) -> bool {
-    WorkModule::is_flag(boma, GANON_FLOAT_INTO_DIVE)
+    WorkModule::is_flag(boma, GANON_DOWN_SPECIAL_AIR)
 }
 
 /// Convenience function for checking teleport status via a handler flag.

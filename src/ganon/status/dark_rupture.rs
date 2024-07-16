@@ -4,7 +4,7 @@
 //!
 use crate::ganon::utils::in_dive;
 use crate::ganon::utils::GANON_DARK_RUPTURE_ACTIVE;
-use crate::ganon::utils::GANON_FLOAT_INTO_DIVE;
+use crate::ganon::utils::GANON_DOWN_SPECIAL_AIR;
 use skyline_smash::app::BattleObjectModuleAccessor;
 use skyline_smash::app::GroundCorrectKind;
 use smash::app::lua_bind::*;
@@ -133,7 +133,7 @@ unsafe extern "C" fn fun_7100006ef0(
 
 unsafe extern "C" fn ganon_specialairsend_init(agent: &mut L2CFighterCommon) -> L2CValue {
     if in_dive(agent.module_accessor) {
-        WorkModule::off_flag(agent.module_accessor, GANON_FLOAT_INTO_DIVE);
+        WorkModule::off_flag(agent.module_accessor, GANON_DOWN_SPECIAL_AIR);
         WorkModule::on_flag(agent.module_accessor, GANON_DARK_RUPTURE_ACTIVE);
         AttackModule::clear_all(agent.module_accessor);
     }
@@ -198,7 +198,7 @@ unsafe extern "C" fn ganon_specialarsend_main_loop(fighter: &mut L2CFighterCommo
 }
 
 unsafe extern "C" fn ganon_specialairsend_exit(fighter: &mut L2CFighterCommon) -> L2CValue {
-    WorkModule::off_flag(fighter.module_accessor, GANON_FLOAT_INTO_DIVE);
+    WorkModule::off_flag(fighter.module_accessor, GANON_DOWN_SPECIAL_AIR);
     WorkModule::off_flag(fighter.module_accessor, GANON_DARK_RUPTURE_ACTIVE);
     CatchModule::catch_cut(fighter.module_accessor, false, false);
     0.into()
