@@ -29,8 +29,7 @@ unsafe extern "C" fn adjust_float_velocity(boma: *mut BattleObjectModuleAccessor
         return;
     }
     let dir = PostureModule::lr(boma);
-    let mut curr_x_speed =
-        KineticModule::get_sum_speed_x(boma, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN);
+    let curr_x_speed = KineticModule::get_sum_speed_x(boma, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN);
     let curr_y_speed = KineticModule::get_sum_speed_y(boma, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN);
     let was_attacking = iv.prev_status_kind == FIGHTER_STATUS_KIND_ATTACK_AIR
         && curr_x_speed.abs() == 0.0
@@ -299,16 +298,16 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
                 macros::PLAY_SE(fighter, Hash40::new("se_ganon_special_l01"));
                 CancelModule::enable_cancel(boma);
                 KineticModule::clear_speed_energy_id(boma, *FIGHTER_KINETIC_ENERGY_ID_GRAVITY);
-                MotionModule::change_motion(
-                    boma,
-                    Hash40::new("jump_float"),
-                    0.0,
-                    1.0,
-                    false,
-                    0.0,
-                    false,
-                    false,
-                );
+                // MotionModule::change_motion(
+                //     boma,
+                //     Hash40::new("jump_float"),
+                //     0.0,
+                //     1.0,
+                //     false,
+                //     0.0,
+                //     false,
+                //     false,
+                // );
             }
             if i % 30 == 0 {
                 float_effect(fighter);
