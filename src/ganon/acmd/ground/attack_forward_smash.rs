@@ -16,6 +16,7 @@ unsafe extern "C" fn extended_hitbox_helper(
     id: u64,
     x_offset: f32,
     y_offset: f32,
+    z_offset: f32,
 ) {
     if macros::is_excute(agent) {
         macros::ATTACK(
@@ -31,7 +32,7 @@ unsafe extern "C" fn extended_hitbox_helper(
             3.0,
             x_offset,
             y_offset,
-            0.0,
+            z_offset,
             None,
             None,
             None,
@@ -111,15 +112,15 @@ unsafe extern "C" fn ganon_attacks4(agent: &mut L2CAgentBase) {
         );
     }
     wait(agent.lua_state_agent, 1.0);
-    extended_hitbox_helper(agent, 1, 3.0, 3.0);
+    extended_hitbox_helper(agent, 1, 3.0, 5.0, 0.0);
     wait(agent.lua_state_agent, 1.0);
-    extended_hitbox_helper(agent, 2, 6.0, 6.0);
+    extended_hitbox_helper(agent, 2, 6.0, 8.0, 0.0);
     wait(agent.lua_state_agent, 2.0);
-    extended_hitbox_helper(agent, 3, 9.0, 9.0);
+    extended_hitbox_helper(agent, 3, 9.0, 13.0, 0.0);
     wait(agent.lua_state_agent, 2.0);
-    extended_hitbox_helper(agent, 4, 12.0, 12.0);
+    extended_hitbox_helper(agent, 4, 12.0, 18.0, 0.0);
     wait(agent.lua_state_agent, 4.0);
-    extended_hitbox_helper(agent, 5, 15.0, 25.0);
+    extended_hitbox_helper(agent, 5, 15.0, 23.0, 4.0);
     frame(agent.lua_state_agent, 38.0);
     if macros::is_excute(agent) {
         AttackModule::clear_all(agent.module_accessor);
