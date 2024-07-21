@@ -119,7 +119,7 @@ unsafe extern "C" fn ganon_attacks4(agent: &mut L2CAgentBase) {
     wait(agent.lua_state_agent, 2.0);
     extended_hitbox_helper(agent, 4, 12.0, 12.0);
     wait(agent.lua_state_agent, 4.0);
-    extended_hitbox_helper(agent, 5, 15.0, 15.0);
+    extended_hitbox_helper(agent, 5, 15.0, 25.0);
     frame(agent.lua_state_agent, 38.0);
     if macros::is_excute(agent) {
         AttackModule::clear_all(agent.module_accessor);
