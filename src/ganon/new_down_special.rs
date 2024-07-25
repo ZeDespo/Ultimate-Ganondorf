@@ -22,12 +22,17 @@ pub unsafe extern "C" fn new_down_special(fighter: &mut L2CFighterCommon, iv: &I
             } else if iv.situation_kind == *SITUATION_KIND_AIR
                 && !WorkModule::is_flag(boma, GANON_DOWN_SPECIAL_GROUND)
             {
+                WorkModule::on_flag(boma, GANON_DOWN_SPECIAL_AIR);
                 StatusModule::change_status_request_from_script(
                     boma,
                     *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_CATCH,
                     false.into(),
                 );
             }
+        } else {
+            WorkModule::off_flag(boma, GANON_DOWN_SPECIAL_GROUND)
         }
+    } else {
+        WorkModule::off_flag(boma, GANON_DOWN_SPECIAL_GROUND)
     }
 }

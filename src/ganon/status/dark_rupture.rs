@@ -133,7 +133,6 @@ unsafe extern "C" fn fun_7100006ef0(
 
 unsafe extern "C" fn ganon_specialairsend_init(agent: &mut L2CFighterCommon) -> L2CValue {
     if in_dive(agent.module_accessor) {
-        WorkModule::off_flag(agent.module_accessor, GANON_DOWN_SPECIAL_AIR);
         WorkModule::on_flag(agent.module_accessor, GANON_DARK_RUPTURE_ACTIVE);
         AttackModule::clear_all(agent.module_accessor);
     }
