@@ -217,12 +217,6 @@ impl Position2D {
     }
 }
 
-impl InitValues {
-    fn is_special_air_n(self: &Self) -> bool {
-        self.motion_kind == hash40("jump_float")
-    }
-}
-
 /// The main driver logic for floating, given the current frame, this _main_ block will
 /// determine the current float status and handle each case.
 pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitValues) {

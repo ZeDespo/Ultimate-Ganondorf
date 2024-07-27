@@ -150,7 +150,7 @@ unsafe extern "C" fn effect_attackairlw(agent: &mut L2CAgentBase) {
         }
         wait(agent.lua_state_agent, 3.0);
     }
-    frame(agent.lua_state_agent, 17.0);
+    frame(agent.lua_state_agent, 16.0);
     if macros::is_excute(agent) {
         macros::EFFECT(
             agent,

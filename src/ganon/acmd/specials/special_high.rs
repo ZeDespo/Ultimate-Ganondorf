@@ -22,23 +22,7 @@ pub fn install() {
 /// Take that base teleport from Ultimate S, but only handle the entry animation.
 /// Later handling is elsewhere.
 unsafe extern "C" fn ganon_teleport(fighter: &mut L2CAgentBase) {
-    macros::FT_MOTION_RATE(fighter, /*FSM*/ 0.75);
-    // frame(fighter.lua_state_agent, 1.0);
-    // if macros::is_excute(fighter) {
-    //     WorkModule::set_int(
-    //         fighter.module_accessor,
-    //         TeleportStatus::PreTransit as i32,
-    //         GANON_TELEPORT_WORK_INT,
-    //     );
-    // }
-    // frame(fighter.lua_state_agent, 16.0);
-    // if macros::is_excute(fighter) {
-    //     WorkModule::set_int(
-    //         fighter.module_accessor,
-    //         TeleportStatus::Transit as i32,
-    //         GANON_TELEPORT_WORK_INT,
-    //     );
-    // }
+    macros::FT_MOTION_RATE(fighter, 0.75);
 }
 
 unsafe extern "C" fn ganon_teleport_eff(fighter: &mut L2CAgentBase) {

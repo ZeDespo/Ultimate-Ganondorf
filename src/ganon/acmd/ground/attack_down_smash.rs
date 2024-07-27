@@ -11,6 +11,118 @@ use {
     smashline::*,
 };
 
+unsafe extern "C" fn extended_hitbox_helper(
+    agent: &mut L2CAgentBase,
+    id: u64,
+    x_offset: f32,
+    y_offset: f32,
+    z_offset: f32,
+) {
+    if macros::is_excute(agent) {
+        macros::ATTACK(
+            agent,
+            id,
+            0,
+            Hash40::new("top"),
+            2.0,
+            90,
+            100,
+            90,
+            0,
+            5.0,
+            x_offset,
+            y_offset,
+            z_offset,
+            None,
+            None,
+            None,
+            1.0,
+            1.0,
+            *ATTACK_SETOFF_KIND_OFF,
+            *ATTACK_LR_CHECK_POS,
+            false,
+            0,
+            0.0,
+            0,
+            false,
+            false,
+            false,
+            false,
+            true,
+            *COLLISION_SITUATION_MASK_GA,
+            *COLLISION_CATEGORY_MASK_ALL,
+            *COLLISION_PART_MASK_ALL,
+            false,
+            Hash40::new("collision_attr_elec"),
+            *ATTACK_SOUND_LEVEL_S,
+            *COLLISION_SOUND_ATTR_FIRE,
+            *ATTACK_REGION_NONE,
+        );
+    }
+}
+
+unsafe extern "C" fn ganon_attacklw4(agent: &mut L2CAgentBase) {
+    frame(agent.lua_state_agent, 10.0);
+    if macros::is_excute(agent) {
+        WorkModule::on_flag(
+            agent.module_accessor,
+            *FIGHTER_STATUS_ATTACK_FLAG_START_SMASH_HOLD,
+        );
+    }
+    frame(agent.lua_state_agent, 33.0);
+    if macros::is_excute(agent) {
+        macros::ATTACK(
+            agent,
+            0,
+            0,
+            Hash40::new("top"),
+            2.0,
+            90,
+            100,
+            90,
+            0,
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            None,
+            None,
+            None,
+            1.0,
+            1.0,
+            *ATTACK_SETOFF_KIND_THRU,
+            *ATTACK_LR_CHECK_POS,
+            false,
+            0,
+            0.0,
+            0,
+            false,
+            false,
+            false,
+            false,
+            true,
+            *COLLISION_SITUATION_MASK_GA,
+            *COLLISION_CATEGORY_MASK_ALL,
+            *COLLISION_PART_MASK_ALL,
+            false,
+            Hash40::new("collision_attr_elec"),
+            *ATTACK_SOUND_LEVEL_S,
+            *COLLISION_SOUND_ATTR_FIRE,
+            *ATTACK_REGION_NONE,
+        );
+    }
+    frame(agent.lua_state_agent, 38.0);
+    extended_hitbox_helper(agent, 1, 0.0, 0.0, 8.0);
+    frame(agent.lua_state_agent, 40.0);
+    extended_hitbox_helper(agent, 2, 0.0, 0.0, 14.0);
+    frame(agent.lua_state_agent, 44.0);
+    extended_hitbox_helper(agent, 3, 0.0, 0.0, 20.0);
+    frame(agent.lua_state_agent, 59.0);
+    if macros::is_excute(agent) {
+        AttackModule::clear_all(agent.module_accessor);
+    }
+}
+
 unsafe extern "C" fn effect_attacklw4charge(agent: &mut L2CAgentBase) {
     for _ in 0..i32::MAX {
         if macros::is_excute(agent) {
@@ -598,6 +710,7 @@ unsafe extern "C" fn expression_attacklw4(agent: &mut L2CAgentBase) {
 
 pub fn install() {
     Agent::new("ganon")
+        .game_acmd("game_attacklw4", ganon_attacklw4, Priority::Default)
         .effect_acmd("effect_attacklw4", effect_attacklw4, Priority::Default)
         .effect_acmd(
             "effect_attacklw4charge",
