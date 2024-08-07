@@ -70,6 +70,7 @@ unsafe extern "C" fn ganon_attacklw4(agent: &mut L2CAgentBase) {
         );
     }
     frame(agent.lua_state_agent, 13.0);
+    macros::FT_MOTION_RATE(agent, 0.75);
     if macros::is_excute(agent) {
         macros::ATTACK(
             agent,
@@ -119,14 +120,17 @@ unsafe extern "C" fn ganon_attacklw4(agent: &mut L2CAgentBase) {
             false,
         );
     }
+    frame(agent.lua_state_agent, 25.0);
+    macros::FT_MOTION_RATE(agent, 1.25);
     frame(agent.lua_state_agent, 30.0);
+    macros::FT_MOTION_RATE(agent, 0.75);
     if macros::is_excute(agent) {
         AttackModule::clear_all(agent.module_accessor);
         macros::ATTACK(
             agent,
             0,
             0,
-            Hash40::new("handr"),
+            Hash40::new("handl"),
             18.0,
             361,
             100,
@@ -162,50 +166,9 @@ unsafe extern "C" fn ganon_attacklw4(agent: &mut L2CAgentBase) {
             *ATTACK_REGION_NONE,
         );
     }
-    frame(agent.lua_state_agent, 33.0);
-    if macros::is_excute(agent) {
-        AttackModule::clear_all(agent.module_accessor);
-        macros::ATTACK(
-            agent,
-            0,
-            0,
-            Hash40::new("top"),
-            2.0,
-            90,
-            100,
-            90,
-            0,
-            4.0,
-            0.0,
-            0.0,
-            0.0,
-            None,
-            None,
-            None,
-            1.0,
-            1.0,
-            *ATTACK_SETOFF_KIND_THRU,
-            *ATTACK_LR_CHECK_POS,
-            false,
-            0,
-            0.0,
-            0,
-            false,
-            false,
-            false,
-            false,
-            true,
-            *COLLISION_SITUATION_MASK_GA,
-            *COLLISION_CATEGORY_MASK_ALL,
-            *COLLISION_PART_MASK_ALL,
-            false,
-            Hash40::new("collision_attr_elec"),
-            *ATTACK_SOUND_LEVEL_S,
-            *COLLISION_SOUND_ATTR_FIRE,
-            *ATTACK_REGION_NONE,
-        );
-    }
+
     frame(agent.lua_state_agent, 38.0);
+    macros::FT_MOTION_RATE(agent, 1.0);
     extended_hitbox_helper(agent, 1, 0.0, 0.0, 8.0);
     extended_hitbox_helper(agent, 2, 0.0, 0.0, -8.0);
     frame(agent.lua_state_agent, 40.0);
