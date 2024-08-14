@@ -38,8 +38,13 @@ pub unsafe extern "C" fn float_check(fighter: &mut L2CFighterCommon, iv: &InitVa
                                 FloatActivationStatus::JumpUsed;
                         }
                     } else {
-                        GS[iv.entry_id].float_activation_status =
-                            FloatActivationStatus::Jump(frame_counter);
+                        if !iv.jump_button_pressed {
+                            GS[iv.entry_id].float_activation_status =
+                                FloatActivationStatus::JumpUsed
+                        } else {
+                            GS[iv.entry_id].float_activation_status =
+                                FloatActivationStatus::Jump(frame_counter);
+                        }
                     }
                 }
                 FloatActivationStatus::JumpUsed => {
@@ -65,7 +70,13 @@ pub unsafe extern "C" fn float_check(fighter: &mut L2CFighterCommon, iv: &InitVa
                     }
                 }
                 FloatActivationStatus::JumpAerialUsed => {
-                    if iv.jump_button_pressed {
+                    if iv.jump_button_pressed
+                        && iv.status_kind != *FIGHTER_STATUS_KIND_CLIFF_CATCH
+                        && iv.status_kind != *FIGHTER_STATUS_KIND_CLIFF_WAIT
+                        && iv.status_kind != *FIGHTER_STATUS_KIND_CLIFF_JUMP1
+                        && iv.status_kind != *FIGHTER_STATUS_KIND_CLIFF_ROBBED
+                    {
+                        println!("I FUCKED UP");
                         WorkModule::on_flag(boma, GANON_START_FLOAT_FLAG);
                         GS[iv.entry_id].float_activation_status =
                             FloatActivationStatus::NotApplicable;

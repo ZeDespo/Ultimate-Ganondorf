@@ -1,17 +1,12 @@
 # Float
 
 - If off stage, reduce float time in half.
-- BUG: If both double jumps used, and on ledge, cannot do ledge jump if float is available.
-- BUG: jump button should be held from frames 1 - N for float to activate.
+- Bug: Air dodge controls are reversed when floating
 - Add float sound effects.
 
 # Down Smash
-- Extend z hitbox on both sides to 24.0 units (absolute value)
-- Create pickup hitbox if down smash is done next to the opponent (frame 13?)
-- Create center mass hitbox that will start once Ganondorf descends that will launch bigly far. 
-- Do same for opposite end.
-- Once that's done make ganondorf's jump more dramatic by playing around with motion rate 
-    - Quick jump, stall in air a bit, then quick descent
+
+- nerf center hitbox
 
 # Forward Smash 
 - Add small pickup hitbox in front of ganondorf (using top)
@@ -19,6 +14,8 @@
 
 # Up Air 
 - Make hitbox in the hand itself to pick up to portal
+- Nerf hit stun 
+- nerf knockback
 
 # Up Tilt
 - Fix furthest portal hitbox to scoop
@@ -26,6 +23,10 @@
 # Down Air 
 - Make spike hitbox a bit smaller
 - All other hitboxes should send directly up.
+
+# Up Special 
+- Grounded teleport can be multidirectional. 
+- Air teleport should still be multidirectional but with fixed lengths. 
 
 # Down Special 
 - Fix bug where if you die doing down special, you can do it again. 
