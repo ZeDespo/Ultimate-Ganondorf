@@ -1,7 +1,7 @@
 # Float
 
 - If off stage, reduce float time in half.
-- Bug: Air dodge controls are reversed when floating
+- Bug: Air dodge controls are reversed when / after floating
 - Add float sound effects.
 
 # Down Smash

@@ -24,7 +24,7 @@ unsafe extern "C" fn extended_hitbox_helper(
             id,
             0,
             Hash40::new("top"),
-            2.0,
+            8.0,
             90,
             100,
             90,
@@ -787,4 +787,16 @@ pub fn install() {
             Priority::Default,
         )
         .install();
+}
+
+unsafe extern "C" fn func() {
+    if StatusModule::status_kind(boma) == *FIGHTER_STATUS_KIND_SPECIAL_AIR_S {
+        if !is_down_special_piledriver(boma) {
+            StatusModule::change_status_request_from_script(
+                boma,
+                GANON_FIGHTER_STATUS_KIND_BACKHAND,
+                false.into,
+            );
+        }
+    }
 }
