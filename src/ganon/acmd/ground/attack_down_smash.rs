@@ -70,7 +70,7 @@ unsafe extern "C" fn ganon_attacklw4(agent: &mut L2CAgentBase) {
         );
     }
     frame(agent.lua_state_agent, 13.0);
-    macros::FT_MOTION_RATE(agent, 0.75);
+    macros::FT_MOTION_RATE(agent, 0.85);
     if macros::is_excute(agent) {
         macros::ATTACK(
             agent,
@@ -131,7 +131,7 @@ unsafe extern "C" fn ganon_attacklw4(agent: &mut L2CAgentBase) {
             0,
             0,
             Hash40::new("handl"),
-            18.0,
+            14.0,
             361,
             100,
             0,

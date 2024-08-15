@@ -30,9 +30,19 @@ pub unsafe extern "C" fn new_down_special(fighter: &mut L2CFighterCommon, iv: &I
                 );
             }
         } else {
-            WorkModule::off_flag(boma, GANON_DOWN_SPECIAL_GROUND)
+            WorkModule::off_flag(boma, GANON_DOWN_SPECIAL_GROUND);
         }
     } else {
-        WorkModule::off_flag(boma, GANON_DOWN_SPECIAL_GROUND)
+        WorkModule::off_flag(boma, GANON_DOWN_SPECIAL_GROUND);
+        // WorkModule::off_flag(boma, GANON_DOWN_SPECIAL_AIR);
+    }
+    if [
+        *FIGHTER_STATUS_KIND_WIN,
+        *FIGHTER_STATUS_KIND_LOSE,
+        *FIGHTER_STATUS_KIND_DEAD,
+    ]
+    .contains(&iv.status_kind)
+    {
+        WorkModule::off_flag(boma, GANON_DOWN_SPECIAL_AIR);
     }
 }

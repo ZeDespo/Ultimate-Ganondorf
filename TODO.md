@@ -6,7 +6,6 @@
 
 # Down Smash
 
-- nerf center hitbox
 
 # Forward Smash 
 - Add small pickup hitbox in front of ganondorf (using top)
@@ -29,7 +28,6 @@
 - Air teleport should still be multidirectional but with fixed lengths. 
 
 # Down Special 
-- Fix bug where if you die doing down special, you can do it again. 
 - Depending on the number of frames spent falling, damage / explosion get substantially bigger. 
 - Grant ability to cancel after 60 frames of free fall. 
 
