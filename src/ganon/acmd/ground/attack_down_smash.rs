@@ -788,15 +788,3 @@ pub fn install() {
         )
         .install();
 }
-
-unsafe extern "C" fn func() {
-    if StatusModule::status_kind(boma) == *FIGHTER_STATUS_KIND_SPECIAL_AIR_S {
-        if !is_down_special_piledriver(boma) {
-            StatusModule::change_status_request_from_script(
-                boma,
-                GANON_FIGHTER_STATUS_KIND_BACKHAND,
-                false.into,
-            );
-        }
-    }
-}
