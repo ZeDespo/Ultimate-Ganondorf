@@ -4,23 +4,21 @@
 use crate::imports::*;
 use super::utils::*;
 
-pub unsafe extern "C" fn teleport_check(fighter: &mut L2CFighterCommon, iv: &InitValues) {
-    let boma = fighter.module_accessor;
+pub unsafe extern "C" fn teleport_check(fighter: &mut L2CFighterCommon) {
+    // Make sure to add the `&mut *`
+    let boma = &mut *fighter.module_accessor;
     let can_teleport = WorkModule::is_flag(boma, GANON_CAN_TELEPORT_FLAG);
-    if !can_teleport && (iv.situation_kind == *SITUATION_KIND_GROUND)
-        || (iv.situation_kind == *SITUATION_KIND_AIR
-            && [
-                *FIGHTER_STATUS_KIND_DAMAGE_AIR,
-                *FIGHTER_STATUS_KIND_DAMAGE_FLY,
-                *FIGHTER_STATUS_KIND_DAMAGE_FLY_METEOR,
-            ]
-            .contains(&iv.status_kind))
-    {
-        WorkModule::on_flag(boma, GANON_CAN_TELEPORT_FLAG);
-    } else if can_teleport
-        && iv.situation_kind == *SITUATION_KIND_AIR
-        && iv.status_kind == *FIGHTER_STATUS_KIND_SPECIAL_HI
-    {
+
+    if !can_teleport {
+        if boma.is_situation(*SITUATION_KIND_GROUND)
+        && [
+            *FIGHTER_STATUS_KIND_DAMAGE_AIR,
+            *FIGHTER_STATUS_KIND_DAMAGE_FLY,
+            *FIGHTER_STATUS_KIND_DAMAGE_FLY_METEOR,
+        ].contains(&boma.situation_kind()) {
+            WorkModule::on_flag(boma, GANON_CAN_TELEPORT_FLAG);
+        }
+    } else if boma.is_situation(*SITUATION_KIND_AIR) && boma.is_status(*FIGHTER_STATUS_KIND_SPECIAL_HI) {
         WorkModule::off_flag(boma, GANON_CAN_TELEPORT_FLAG);
     }
 }

@@ -24,7 +24,7 @@ pub unsafe extern "C" fn ganon_frame(fighter: &mut L2CFighterCommon) {
     ganon_float(fighter, &iv);
     warlock_punch(fighter, &iv);
     new_down_special(fighter, &iv);
-    teleport_check(fighter, &iv);
+    teleport_check(fighter); // Removed InitValue
 }
 
 pub fn install() {

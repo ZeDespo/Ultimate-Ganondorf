@@ -92,21 +92,20 @@ impl FloatStatus {
     /// Ganondorf can regain his ability to float when...
     /// - he is in a neutral state, (i.e. is on the ground, started a new match)
     /// - he catches an oppoent with side-special or up-special
-    fn transition_to_can_float_if_able(self: Self, init_values: &InitValues) -> FloatStatus {
-        if [
+    unsafe fn transition_to_can_float_if_able(self, boma: &mut BattleObjectModuleAccessor) -> FloatStatus {
+        if !boma.is_situation(*SITUATION_KIND_AIR)
+        || [
             *FIGHTER_GANON_STATUS_KIND_SPECIAL_HI_CLING,
             *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_CATCH,
             *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_END,
             *FIGHTER_STATUS_KIND_WIN,
             *FIGHTER_STATUS_KIND_LOSE,
             *FIGHTER_STATUS_KIND_DEAD,
-        ]
-        .contains(&init_values.status_kind)
-            || init_values.situation_kind != SITUATION_KIND_AIR
-        {
+        ].contains(&boma.status_kind()) {
             return FloatStatus::CanFloat;
         }
-        return self;
+
+        FloatStatus::CannotFloat
     }
 
     /// Ganondorf will lose his float after he...
@@ -213,7 +212,7 @@ impl Position2D {
 /// The main driver logic for floating, given the current frame, this _main_ block will
 /// determine the current float status and handle each case.
 pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitValues) {
-    let boma = fighter.module_accessor;
+    let boma = &mut *fighter.module_accessor;
     if WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG) {
         println!("Teleport into float!");
         WorkModule::set_flag(boma, false, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG);
@@ -234,7 +233,7 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
             } else {
                 GS[iv.entry_id]
                     .float_status
-                    .transition_to_can_float_if_able(&iv)
+                    .transition_to_can_float_if_able(boma)
             }
         }
         FloatStatus::Floating(_) => {
@@ -244,7 +243,7 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
             if matches!(fs, FloatStatus::Floating(_)) {
                 GS[iv.entry_id]
                     .float_status
-                    .transition_to_can_float_if_able(&iv)
+                    .transition_to_can_float_if_able(boma)
             } else {
                 fs
             }
