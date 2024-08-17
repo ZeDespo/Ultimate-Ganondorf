@@ -113,7 +113,7 @@ impl FloatStatus {
     /// - Gets hit (and launched) while floating
     /// - His float timer naturall expires
     /// - Performs an air dodge.
-    fn transition_to_cannot_float_if_able(self: Self, init_values: &InitValues) -> FloatStatus {
+    fn transition_to_cannot_float_if_able(self, init_values: &InitValues) -> FloatStatus {
         if let FloatStatus::Floating(i) = self {
             if i == 0
                 || init_values.situation_kind != SITUATION_KIND_AIR
@@ -136,18 +136,20 @@ impl FloatStatus {
                 return FloatStatus::CannotFloat;
             }
         }
-        return self;
+
+        FloatStatus::CanFloat
     }
 
     /// Switch to a float status if the special button is pressed and in the air.
-    fn transition_to_floating_if_able(self: Self, init_values: &InitValues) -> FloatStatus {
+    fn transition_to_floating_if_able(self, init_values: &InitValues) -> FloatStatus {
         if init_values.start_float {
             return FloatStatus::Floating(MAX_FLOAT_FRAMES);
         }
         if init_values.teleport_into_float {
             return FloatStatus::Floating(TELEPORT_TO_FLOAT_FRAMES);
         }
-        return self;
+
+        FloatStatus::CannotFloat
     }
 }
 
