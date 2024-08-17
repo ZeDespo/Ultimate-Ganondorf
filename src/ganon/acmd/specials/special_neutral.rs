@@ -16,10 +16,10 @@ pub fn install() {
             ganon_float_expr,
             Priority::Default,
         )
-        .game_acmd("game_float_ganon", stub_acmd, Priority::Default)
-        .effect_acmd("effect_float", stub_acmd, Priority::Default)
-        .sound_acmd("sound_float", stub_acmd, Priority::Default)
-        .expression_acmd("expression_float", stub_acmd, Priority::Default)
+        .game_acmd("game_float_ganon", acmd_stub, Priority::Default)
+        .effect_acmd("effect_float", acmd_stub, Priority::Default)
+        .sound_acmd("sound_float", acmd_stub, Priority::Default)
+        .expression_acmd("expression_float", acmd_stub, Priority::Default)
         .install();
 }
 
