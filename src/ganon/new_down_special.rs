@@ -7,11 +7,8 @@
 //! Frame 7 - 13 -> Large explosion, least knockback
 //! Frame 14 -> 18 -> meduium explosion, pathetic knockback
 //! Frame 19 - 40 -> End lag.
+use crate::imports::*;
 use super::utils::*;
-use skyline_smash::app::BattleObjectModuleAccessor;
-use smash::app::lua_bind::*;
-use smash::lib::lua_const::*;
-use {smash::lua2cpp::*, smashline::*};
 
 pub unsafe extern "C" fn new_down_special(fighter: &mut L2CFighterCommon, iv: &InitValues) {
     let boma = fighter.module_accessor;

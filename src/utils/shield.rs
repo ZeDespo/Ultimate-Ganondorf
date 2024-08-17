@@ -1,7 +1,5 @@
 //! Shield generic helpers.
-use smash::lib::lua_const::*;
-use smash_script::{lua_args, shield};
-use {smash::lua2cpp::*, smashline::*};
+use crate::imports::*;
 
 /// Activates a reflector for a defined hitbox. This hitbox will always
 /// reflect projectiles back at the oppoenent.

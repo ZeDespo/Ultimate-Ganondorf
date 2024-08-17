@@ -1,11 +1,6 @@
 //! General utility scripts that will enable Ganondorf's core function hooking.
 use core::fmt;
-
-use smash::app::lua_bind::{EffectModule, WorkModule};
-use smash::app::BattleObjectModuleAccessor;
-use smash::phx::Vector3f;
-use smash_script::macros;
-use smashline::{Hash40, L2CAgentBase};
+use crate::imports::*;
 
 #[derive(Copy, Clone)]
 pub enum FloatStatus {

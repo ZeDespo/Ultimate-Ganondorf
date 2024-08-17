@@ -1,10 +1,8 @@
 //! If Ganondorf used his teleport in the air, he cannot use it again until he lands
 //! or gets hit with a strong move.
 //! This file will ensure that we cannot abuse teleport.
+use crate::imports::*;
 use super::utils::*;
-use smash::app::lua_bind::*;
-use smash::lib::lua_const::*;
-use {smash::lua2cpp::*, smashline::*};
 
 pub unsafe extern "C" fn teleport_check(fighter: &mut L2CFighterCommon, iv: &InitValues) {
     let boma = fighter.module_accessor;

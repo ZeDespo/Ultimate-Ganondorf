@@ -2,16 +2,9 @@
 //! float. In his float state, Ganondorf can move freely in the air, and perform all
 //! of his aerials. His specials will remove his float status; however, given the right
 //! control inputs, his side-special can get some serious distance.
+use crate::imports::*;
 use super::utils::*;
-use skyline_smash::{app::BattleObjectModuleAccessor, phx::Vector3f};
-use smash::app::lua_bind::*;
-use smash::lib::lua_const::*;
-use smash_script::macros;
 use std::f32::consts::PI;
-use {
-    smash::{hash40, lua2cpp::*},
-    smashline::*,
-};
 
 const MAX_FLOAT_FRAMES: i16 = 91; // Float by this amount
 const TELEPORT_TO_FLOAT_FRAMES: i16 = 40; // Teleport into float frames.

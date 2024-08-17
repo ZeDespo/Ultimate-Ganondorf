@@ -1,11 +1,5 @@
 //! U-Air has an extra two frames of active hitboxes, from frame 14 to frame 18
-use smash::app::lua_bind::*;
-use smash::app::sv_animcmd::*;
-use smash::lib::lua_const::*;
-use smash::lua2cpp::*;
-use smash::phx::{Hash40, Vector2f};
-use smash_script::*;
-use smashline::*;
+use crate::imports::*;
 
 unsafe extern "C" fn portal_hitbox(
     agent: &mut L2CAgentBase,

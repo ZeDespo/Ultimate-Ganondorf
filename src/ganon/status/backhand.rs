@@ -10,18 +10,8 @@
 //! Exit => Status script has been interrupted by something (like a hit) (not necessary)
 //!
 //! set_status_kind_interrupt is goated for status scripts to transition from one SK to another.
-use skyline_smash::app::GroundCliffCheckKind;
-use skyline_smash::app::GroundCorrectKind;
-use skyline_smash::app::SituationKind;
-use smash::app::lua_bind::*;
-use smash::lib::lua_const::*;
-
-use crate::ganon::utils::in_dive;
-use crate::ganon::utils::FIGHTER_GANON_STATUS_KIND_BACKHAND;
-use {
-    smash::{hash40, lua2cpp::*},
-    smashline::*,
-};
+use crate::imports::*;
+use crate::ganon::utils::*;
 
 pub fn install() {
     Agent::new("ganon")

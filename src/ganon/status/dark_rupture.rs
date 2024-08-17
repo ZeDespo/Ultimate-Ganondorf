@@ -2,20 +2,8 @@
 //!
 //! Ganondorf plunges into the ground, causing an explosion.
 //!
-use crate::ganon::utils::in_dive;
-use crate::ganon::utils::GANON_DARK_RUPTURE_ACTIVE;
-use crate::ganon::utils::GANON_DOWN_SPECIAL_AIR;
-use skyline_smash::app::BattleObjectModuleAccessor;
-use skyline_smash::app::GroundCorrectKind;
-use smash::app::lua_bind::*;
-use smash::app::sv_animcmd::*;
-use smash::app::sv_battle_object::notify_event_msc_cmd;
-use smash::lib::lua_const::*;
-use smash_script::{damage, lua_args, macros, slope};
-use {
-    smash::{hash40, lua2cpp::*},
-    smashline::*,
-};
+use crate::imports::*;
+use crate::ganon::utils::*;
 
 const SITUATION_KIND: i32 = 0x16;
 

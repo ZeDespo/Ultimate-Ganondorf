@@ -1,13 +1,7 @@
 //! This function just deals with the ground special attack's startup. How the rest of
 //! the move is handled belongs to `crate::ganon::omni_teleport`.
-use crate::ganon::utils::stub_acmd;
-use crate::ganon::utils::{TeleportStatus, GANON_TELEPORT_WORK_INT};
-use smash::app::lua_bind::*;
-use smash::app::sv_animcmd::*;
-use smash::lua2cpp::*;
-use smash::phx::Hash40;
-use smash_script::*;
-use smashline::*;
+use crate::imports::*;
+use crate::ganon::utils::*;
 
 pub fn install() {
     Agent::new("ganon")
