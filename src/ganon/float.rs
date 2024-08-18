@@ -105,7 +105,7 @@ impl FloatStatus {
             return FloatStatus::CanFloat;
         }
 
-        FloatStatus::CannotFloat
+        self
     }
 
     /// Ganondorf will lose his float after he...
@@ -137,7 +137,7 @@ impl FloatStatus {
             }
         }
 
-        FloatStatus::CanFloat
+        self
     }
 
     /// Switch to a float status if the special button is pressed and in the air.
@@ -149,7 +149,7 @@ impl FloatStatus {
             return FloatStatus::Floating(TELEPORT_TO_FLOAT_FRAMES);
         }
 
-        FloatStatus::CannotFloat
+        self
     }
 }
 

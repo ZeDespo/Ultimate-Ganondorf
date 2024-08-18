@@ -180,7 +180,7 @@ impl BomaExt for BattleObjectModuleAccessor {
     }
 
     unsafe fn is_situation(&mut self, kind: i32) -> bool {
-        self.status_kind() == kind
+        self.situation_kind() == kind
     }
 
     unsafe fn motion_kind(&mut self) -> u64 {
