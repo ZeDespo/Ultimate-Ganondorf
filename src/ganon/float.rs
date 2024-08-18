@@ -14,7 +14,7 @@ use {
 };
 
 const MAX_FLOAT_FRAMES: i16 = 91; // Float by this amount
-const TELEPORT_TO_FLOAT_FRAMES: i16 = 40; // Teleport into float frames.
+const TELEPORT_TO_FLOAT_FRAMES: i16 = 20; // Teleport into float frames.
 const STARTING_FLOAT_FRAME: f32 = 2.0; // When the float frame will start.
 const MAX_FLOAT_SPEED: f32 = 1.26; // Max speed in any direction for float
 const MAX_INCREMENTAL_SPEED: f32 = MAX_FLOAT_SPEED / 4.0; // How many frames until max speed achieved.

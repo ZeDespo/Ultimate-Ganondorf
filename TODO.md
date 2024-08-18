@@ -9,12 +9,8 @@
 
 # Forward Smash 
 - Add small pickup hitbox in front of ganondorf (using top)
-- Adjust damage.
 
 # Up Air 
-- Make hitbox in the hand itself to pick up to portal
-- Nerf hit stun 
-- nerf knockback
 
 # Up Tilt
 - Fix furthest portal hitbox to scoop
@@ -26,6 +22,7 @@
 # Up Special 
 - Grounded teleport can be multidirectional. 
 - Air teleport should still be multidirectional but with fixed lengths. 
+- If teleporting from air to ground, cut teleport time to 10 frames. 
 
 # Down Special 
 - Depending on the number of frames spent falling, damage / explosion get substantially bigger. 
@@ -36,3 +33,6 @@
 
 # Neutral Special
 - IFF articles can be cloned now, look into bringing in Sephiroth's neutral special as a dead man's volley.
+
+# General 
+- Make Ganondorf's air mobility more floaty. 
