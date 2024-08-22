@@ -1,13 +1,7 @@
 //! *NOTE*: This file is solely the work of the Ultimate S team, headed by `@chrispo`.
 //!
 //! The only credit I can claim is converting the library to use Smashline 2.
-use smash::app::lua_bind::*;
-use smash::app::sv_animcmd::*;
-use smash::lib::lua_const::*;
-use smash::lua2cpp::*;
-use smash::phx::{Hash40, Vector2f};
-use smash_script::*;
-use smashline::*;
+use crate::imports::*;
 
 unsafe extern "C" fn ganon_utilt(fighter: &mut L2CAgentBase) {
     frame(fighter.lua_state_agent, 8.0);

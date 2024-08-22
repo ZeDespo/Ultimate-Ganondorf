@@ -1,13 +1,7 @@
 //! This function just deals with the ground special attack's startup. How the rest of
 //! the move is handled belongs to `crate::ganon::omni_teleport`.
-use crate::ganon::utils::stub_acmd;
-use crate::ganon::utils::{TeleportStatus, GANON_TELEPORT_WORK_INT};
-use smash::app::lua_bind::*;
-use smash::app::sv_animcmd::*;
-use smash::lua2cpp::*;
-use smash::phx::Hash40;
-use smash_script::*;
-use smashline::*;
+use crate::imports::*;
+use crate::ganon::utils::*;
 
 pub fn install() {
     Agent::new("ganon")
@@ -22,10 +16,10 @@ pub fn install() {
             ganon_float_expr,
             Priority::Default,
         )
-        .game_acmd("game_float_ganon", stub_acmd, Priority::Default)
-        .effect_acmd("effect_float", stub_acmd, Priority::Default)
-        .sound_acmd("sound_float", stub_acmd, Priority::Default)
-        .expression_acmd("expression_float", stub_acmd, Priority::Default)
+        .game_acmd("game_float_ganon", acmd_stub, Priority::Default)
+        .effect_acmd("effect_float", acmd_stub, Priority::Default)
+        .sound_acmd("sound_float", acmd_stub, Priority::Default)
+        .expression_acmd("expression_float", acmd_stub, Priority::Default)
         .install();
 }
 

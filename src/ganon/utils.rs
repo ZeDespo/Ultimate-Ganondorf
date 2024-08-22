@@ -1,11 +1,6 @@
 //! General utility scripts that will enable Ganondorf's core function hooking.
 use core::fmt;
-
-use smash::app::lua_bind::{EffectModule, WorkModule};
-use smash::app::BattleObjectModuleAccessor;
-use smash::phx::Vector3f;
-use smash_script::macros;
-use smashline::{Hash40, L2CAgentBase};
+use crate::imports::*;
 
 #[derive(Copy, Clone)]
 pub enum FloatStatus {
@@ -141,6 +136,88 @@ pub const GANON_PRE_FLOAT_MUTEX: i32 = 0x69428;
 pub const FIGHTER_GANON_STATUS_KIND_PRE_TELEPORT: i32 = 0x1ED;
 pub const FIGHTER_GANON_STATUS_KIND_BACKHAND: i32 = 0x1EE;
 
+pub trait BomaExt {
+    unsafe fn prev_status_kind(&mut self) -> i32;
+    unsafe fn status_kind(&mut self) -> i32;
+
+    // You could do something like this
+    unsafe fn is_status(&mut self, kind: i32) -> bool;
+
+    unsafe fn situation_kind(&mut self) -> i32;
+    unsafe fn is_situation(&mut self, kind: i32) -> bool;
+
+    unsafe fn motion_kind(&mut self) -> u64;
+    unsafe fn entry_id(&mut self) -> usize;
+    unsafe fn motion_module_frame(&mut self) -> f32;
+    unsafe fn kinetic_kind(&mut self) -> i32;
+
+    unsafe fn teleport_into_float(&mut self) -> bool;
+    unsafe fn start_float(&mut self) -> bool;
+
+    unsafe fn jump_button_pressed(&mut self) -> bool;
+    // Or could do
+    // unsafe fn is_button_on(&mut self, button type) -> bool;
+    // And pass in the jump button
+
+    unsafe fn in_dive(&mut self) -> bool;
+}
+
+impl BomaExt for BattleObjectModuleAccessor {
+    unsafe fn prev_status_kind(&mut self) -> i32 {
+        StatusModule::prev_status_kind(self, 0)
+    }
+
+    unsafe fn status_kind(&mut self) -> i32 {
+        StatusModule::status_kind(self)
+    }
+
+    unsafe fn is_status(&mut self, kind: i32) -> bool {
+        self.status_kind() == kind
+    }
+
+    unsafe fn situation_kind(&mut self) -> i32 {
+        StatusModule::situation_kind(self)
+    }
+
+    unsafe fn is_situation(&mut self, kind: i32) -> bool {
+        self.situation_kind() == kind
+    }
+
+    unsafe fn motion_kind(&mut self) -> u64 {
+        MotionModule::motion_kind(self)
+    }
+
+    unsafe fn entry_id(&mut self) -> usize {
+        WorkModule::get_int(self, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize
+    }
+
+    unsafe fn motion_module_frame(&mut self) -> f32 {
+        MotionModule::frame(self)
+    }
+
+    unsafe fn kinetic_kind(&mut self) -> i32 {
+        KineticModule::get_kinetic_type(self)
+    }
+
+    unsafe fn teleport_into_float(&mut self) -> bool {
+        in_teleport(self)
+    }
+
+    unsafe fn start_float(&mut self) -> bool {
+        WorkModule::is_flag(self, GANON_START_FLOAT_FLAG)
+    }
+
+    unsafe fn jump_button_pressed(&mut self) -> bool {
+        ControlModule::check_button_on(self, *CONTROL_PAD_BUTTON_JUMP)
+    }
+
+    unsafe fn in_dive(&mut self) -> bool {
+        WorkModule::is_flag(self, GANON_DOWN_SPECIAL_AIR)
+    }
+}
+
+// This, and other functions, can be moved into the trait thingy if you want
+// Already did this func, as you can see above
 pub unsafe extern "C" fn in_dive(boma: *mut BattleObjectModuleAccessor) -> bool {
     WorkModule::is_flag(boma, GANON_DOWN_SPECIAL_AIR)
 }
@@ -148,12 +225,6 @@ pub unsafe extern "C" fn in_dive(boma: *mut BattleObjectModuleAccessor) -> bool 
 /// Convenience function for checking teleport status via a handler flag.
 pub unsafe extern "C" fn in_teleport(boma: *mut BattleObjectModuleAccessor) -> bool {
     WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG)
-}
-
-// We have some functions where we don't require a script running as it is handled
-// in some other opff file.
-pub unsafe extern "C" fn stub_acmd(fighter: &mut L2CAgentBase) {
-    let _lua_state = fighter.lua_state_agent;
 }
 
 pub unsafe extern "C" fn triforce_hand_fx(agent: &mut L2CAgentBase, rate: f32) {

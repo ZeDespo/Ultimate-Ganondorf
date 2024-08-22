@@ -1,11 +1,5 @@
-use crate::ganon::utils::in_teleport;
-use smash::app::lua_bind::*;
-use smash::app::sv_animcmd::*;
-use smash::lib::lua_const::*;
-use smash::lua2cpp::*;
-use smash::phx::Hash40;
-use smash_script::*;
-use smashline::*;
+use crate::imports::*;
+use crate::ganon::utils::*;
 
 pub fn install() {
     Agent::new("ganon")

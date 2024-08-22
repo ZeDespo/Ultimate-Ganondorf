@@ -1,15 +1,4 @@
-use skyline_smash::app::ArticleOperationTarget;
-
-use {
-    smash::{
-        app::{lua_bind::*, sv_animcmd::*},
-        lib::lua_const::*,
-        lua2cpp::*,
-        phx::*,
-    },
-    smash_script::*,
-    smashline::*,
-};
+use crate::imports::*;
 
 unsafe extern "C" fn extended_hitbox_helper(
     agent: &mut L2CAgentBase,
@@ -787,16 +776,4 @@ pub fn install() {
             Priority::Default,
         )
         .install();
-}
-
-unsafe extern "C" fn func() {
-    if StatusModule::status_kind(boma) == *FIGHTER_STATUS_KIND_SPECIAL_AIR_S {
-        if !is_down_special_piledriver(boma) {
-            StatusModule::change_status_request_from_script(
-                boma,
-                GANON_FIGHTER_STATUS_KIND_BACKHAND,
-                false.into,
-            );
-        }
-    }
 }

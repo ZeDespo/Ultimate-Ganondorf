@@ -1,8 +1,4 @@
-use smash::app::lua_bind::*;
-use smash::app::sv_animcmd::*;
-use smash::lib::lua_const::*;
-use smash_script::macros;
-use {smash::lua2cpp::*, smashline::*};
+use crate::imports::*;
 
 pub fn install() {
     Agent::new("ganon")

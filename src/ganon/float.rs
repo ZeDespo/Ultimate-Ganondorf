@@ -2,16 +2,9 @@
 //! float. In his float state, Ganondorf can move freely in the air, and perform all
 //! of his aerials. His specials will remove his float status; however, given the right
 //! control inputs, his side-special can get some serious distance.
+use crate::imports::*;
 use super::utils::*;
-use skyline_smash::{app::BattleObjectModuleAccessor, phx::Vector3f};
-use smash::app::lua_bind::*;
-use smash::lib::lua_const::*;
-use smash_script::macros;
 use std::f32::consts::PI;
-use {
-    smash::{hash40, lua2cpp::*},
-    smashline::*,
-};
 
 const MAX_FLOAT_FRAMES: i16 = 91; // Float by this amount
 const TELEPORT_TO_FLOAT_FRAMES: i16 = 40; // Teleport into float frames.
@@ -99,21 +92,20 @@ impl FloatStatus {
     /// Ganondorf can regain his ability to float when...
     /// - he is in a neutral state, (i.e. is on the ground, started a new match)
     /// - he catches an oppoent with side-special or up-special
-    fn transition_to_can_float_if_able(self: Self, init_values: &InitValues) -> FloatStatus {
-        if [
+    unsafe fn transition_to_can_float_if_able(self, boma: &mut BattleObjectModuleAccessor) -> FloatStatus {
+        if !boma.is_situation(*SITUATION_KIND_AIR)
+        || [
             *FIGHTER_GANON_STATUS_KIND_SPECIAL_HI_CLING,
             *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_CATCH,
             *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_END,
             *FIGHTER_STATUS_KIND_WIN,
             *FIGHTER_STATUS_KIND_LOSE,
             *FIGHTER_STATUS_KIND_DEAD,
-        ]
-        .contains(&init_values.status_kind)
-            || init_values.situation_kind != SITUATION_KIND_AIR
-        {
+        ].contains(&boma.status_kind()) {
             return FloatStatus::CanFloat;
         }
-        return self;
+
+        self
     }
 
     /// Ganondorf will lose his float after he...
@@ -121,7 +113,7 @@ impl FloatStatus {
     /// - Gets hit (and launched) while floating
     /// - His float timer naturall expires
     /// - Performs an air dodge.
-    fn transition_to_cannot_float_if_able(self: Self, init_values: &InitValues) -> FloatStatus {
+    fn transition_to_cannot_float_if_able(self, init_values: &InitValues) -> FloatStatus {
         if let FloatStatus::Floating(i) = self {
             if i == 0
                 || init_values.situation_kind != SITUATION_KIND_AIR
@@ -144,18 +136,20 @@ impl FloatStatus {
                 return FloatStatus::CannotFloat;
             }
         }
-        return self;
+
+        self
     }
 
     /// Switch to a float status if the special button is pressed and in the air.
-    fn transition_to_floating_if_able(self: Self, init_values: &InitValues) -> FloatStatus {
+    fn transition_to_floating_if_able(self, init_values: &InitValues) -> FloatStatus {
         if init_values.start_float {
             return FloatStatus::Floating(MAX_FLOAT_FRAMES);
         }
         if init_values.teleport_into_float {
             return FloatStatus::Floating(TELEPORT_TO_FLOAT_FRAMES);
         }
-        return self;
+
+        self
     }
 }
 
@@ -220,7 +214,7 @@ impl Position2D {
 /// The main driver logic for floating, given the current frame, this _main_ block will
 /// determine the current float status and handle each case.
 pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitValues) {
-    let boma = fighter.module_accessor;
+    let boma = &mut *fighter.module_accessor;
     if WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG) {
         println!("Teleport into float!");
         WorkModule::set_flag(boma, false, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG);
@@ -241,7 +235,7 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
             } else {
                 GS[iv.entry_id]
                     .float_status
-                    .transition_to_can_float_if_able(&iv)
+                    .transition_to_can_float_if_able(boma)
             }
         }
         FloatStatus::Floating(_) => {
@@ -251,7 +245,7 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
             if matches!(fs, FloatStatus::Floating(_)) {
                 GS[iv.entry_id]
                     .float_status
-                    .transition_to_can_float_if_able(&iv)
+                    .transition_to_can_float_if_able(boma)
             } else {
                 fs
             }
