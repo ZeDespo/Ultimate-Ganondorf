@@ -44,16 +44,5 @@
         "fighter/ganon/c07": [
             "fighter/ganon/motion/body/c07/a90float.nuanmb"
         ]
-    },
-    "share-to-added": {
-        "fighter/ganon/motion/body/c00/a90float.nuanmb": [
-            "fighter/ganon/motion/body/c01/a90float.nuanmb",
-            "fighter/ganon/motion/body/c02/a90float.nuanmb",
-            "fighter/ganon/motion/body/c03/a90float.nuanmb",
-            "fighter/ganon/motion/body/c04/a90float.nuanmb",
-            "fighter/ganon/motion/body/c05/a90float.nuanmb",
-            "fighter/ganon/motion/body/c06/a90float.nuanmb",
-            "fighter/ganon/motion/body/c07/a90float.nuanmb"
-        ]
     }
 }
