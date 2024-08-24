@@ -1,7 +1,7 @@
 use crate::imports::*;
 use super::utils::*;
 use crate::ganon::{
-    float::ganon_float, float_check::float_check, new_down_special::new_down_special,
+    float::ganon_float, float_check::float_check,
     teleport_check::teleport_check, warlock_punch::warlock_punch,
 };
 
@@ -23,7 +23,6 @@ pub unsafe extern "C" fn ganon_frame(fighter: &mut L2CFighterCommon) {
     float_check(fighter, &iv);
     ganon_float(fighter, &iv);
     warlock_punch(fighter, &iv);
-    new_down_special(fighter, &iv);
     teleport_check(fighter); // Removed InitValue
 }
 
