@@ -8,6 +8,10 @@ pub fn install() {
         .game_acmd("game_specialairsbackhand", game_backhand, Priority::Default)
         .effect_acmd("effect_specialsbackhand", effect_backhand, Priority::Default)
         .effect_acmd("effect_specialairsbackhand", effect_backhand, Priority::Default)
+        .sound_acmd("sound_specialsbackhand", sound_backhand, Priority::Default)
+        .sound_acmd("sound_specialairsbackhand", sound_airbackhand, Priority::Default)
+        .expression_acmd("expression_specialsbackhand", expression_backhand, Priority::Default)
+        .expression_acmd("expression_specialairsbackhand", expression_airbackhand, Priority::Default)
         .install();
 }
 
@@ -181,5 +185,59 @@ unsafe extern "C" fn effect_backhand(agent: &mut L2CAgentBase) {
             true,
             *EF_FLIP_NONE,
         );
+    }
+}
+
+unsafe extern "C" fn sound_backhand(agent: &mut L2CAgentBase) {
+    frame(agent.lua_state_agent, 4.0);
+    if macros::is_excute(agent) {
+        macros::STOP_SE(agent, Hash40::new("se_ganon_special_s02"));
+        macros::PLAY_SE(agent, Hash40::new("se_ganon_special_s03"));
+    }
+    wait(agent.lua_state_agent, 14.0);
+    if macros::is_excute(agent) {
+        macros::PLAY_SE(agent, Hash40::new("vc_ganon_special_s01"));
+    }
+    wait(agent.lua_state_agent, 13.0);
+    if macros::is_excute(agent) {
+        macros::PLAY_SE(agent, Hash40::new("se_ganon_special_n02"));
+    }
+}
+
+unsafe extern "C" fn sound_airbackhand(agent: &mut L2CAgentBase) {
+    frame(agent.lua_state_agent, 1.0);
+    if macros::is_excute(agent) {
+        macros::PLAY_SE(agent, Hash40::new("vc_ganon_special_s01"));
+    }
+    wait(agent.lua_state_agent, 3.0);
+    if macros::is_excute(agent) {
+        macros::STOP_SE(agent, Hash40::new("se_ganon_special_s01"));
+        macros::STOP_SE(agent, Hash40::new("se_ganon_special_s02"));
+        macros::PLAY_SE(agent, Hash40::new("se_ganon_special_s03"));
+        macros::PLAY_SE(agent, Hash40::new("se_ganon_special_n02"));
+    }
+}
+
+unsafe extern "C" fn expression_backhand(agent: &mut L2CAgentBase) {
+    if macros::is_excute(agent) {
+        ControlModule::set_rumble(agent.module_accessor, Hash40::new("rbkind_attackm"), 0, false, *BATTLE_OBJECT_ID_INVALID as u32);
+        slope!(agent, *MA_MSC_CMD_SLOPE_SLOPE, *SLOPE_STATUS_LR);
+    }
+    frame(agent.lua_state_agent, 32.0);
+    if macros::is_excute(agent) {
+        macros::QUAKE(agent, *CAMERA_QUAKE_KIND_L);
+        ControlModule::set_rumble(agent.module_accessor, Hash40::new("rbkind_explosionm"), 0, false, *BATTLE_OBJECT_ID_INVALID as u32);
+    }
+}
+
+unsafe extern "C" fn expression_airbackhand(agent: &mut L2CAgentBase) {
+    if macros::is_excute(agent) {
+        slope!(agent, *MA_MSC_CMD_SLOPE_SLOPE, *SLOPE_STATUS_LR);
+        macros::QUAKE(agent, *CAMERA_QUAKE_KIND_L);
+        ControlModule::set_rumble(agent.module_accessor, Hash40::new("rbkind_impact"), 3, false, *BATTLE_OBJECT_ID_INVALID as u32);
+    }
+    frame(agent.lua_state_agent, 5.0);
+    if macros::is_excute(agent) {
+        ControlModule::set_rumble(agent.module_accessor, Hash40::new("rbkind_explosionm"), 0, false, *BATTLE_OBJECT_ID_INVALID as u32);
     }
 }
