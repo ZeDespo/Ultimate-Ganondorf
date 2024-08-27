@@ -75,7 +75,7 @@ pub unsafe extern "C" fn special_s_main(fighter: &mut L2CFighterCommon) -> L2CVa
         KineticModule::change_kinetic(fighter.module_accessor, *FIGHTER_KINETIC_TYPE_GROUND_STOP);
         MotionModule::change_motion(
             fighter.module_accessor,
-            Hash40::new("special_s"),
+            Hash40::new("special_s_backhand"),
             0.0,
             1.0,
             false,
@@ -91,7 +91,7 @@ pub unsafe extern "C" fn special_s_main(fighter: &mut L2CFighterCommon) -> L2CVa
         KineticModule::change_kinetic(fighter.module_accessor, *FIGHTER_KINETIC_TYPE_AIR_STOP);
         MotionModule::change_motion(
             fighter.module_accessor,
-            Hash40::new("special_air_s"),
+            Hash40::new("special_air_s_backhand"),
             0.0,
             1.0,
             false,
@@ -133,7 +133,7 @@ unsafe extern "C" fn special_s_main_loop(fighter: &mut L2CFighterCommon) -> L2CV
             );
             MotionModule::change_motion_inherit_frame(
                 boma,
-                Hash40::new("special_s"),
+                Hash40::new("special_s_backhand"),
                 -1.0,
                 1.0,
                 0.0,
@@ -148,7 +148,7 @@ unsafe extern "C" fn special_s_main_loop(fighter: &mut L2CFighterCommon) -> L2CV
             );
             MotionModule::change_motion_inherit_frame(
                 boma,
-                Hash40::new("special_air_s"),
+                Hash40::new("special_air_s_backhand"),
                 -1.0,
                 1.0,
                 0.0,
