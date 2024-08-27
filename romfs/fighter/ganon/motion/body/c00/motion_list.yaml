@@ -348,7 +348,7 @@ list:
       unk_800: false
       unk_1000: false
       unk_2000: false
-    blend_frames: 6
+    blend_frames: 16
     animations:
       - name: a01walkslow.nuanmb
         unk: 0
@@ -378,7 +378,7 @@ list:
       unk_800: false
       unk_1000: false
       unk_2000: false
-    blend_frames: 6
+    blend_frames: 16
     animations:
       - name: a01walkmiddle.nuanmb
         unk: 0
@@ -408,7 +408,7 @@ list:
       unk_800: false
       unk_1000: false
       unk_2000: false
-    blend_frames: 6
+    blend_frames: 16
     animations:
       - name: a01walkfast.nuanmb
         unk: 0

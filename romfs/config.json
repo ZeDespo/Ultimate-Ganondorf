@@ -1,5 +1,14 @@
 {
     "unshare-blacklist": [
+        "fighter/ganon/motion/body/c00/a01walkfast.nuanmb",
+        "fighter/ganon/motion/body/c00/a01walkmiddle.nuanmb",
+        "fighter/ganon/motion/body/c00/a01walkslow.nuanmb",
+        "fighter/ganon/motion/body/c00/a02dash.nuanmb",
+        "fighter/ganon/motion/body/c00/a02run.nuanmb",
+        "fighter/ganon/motion/body/c00/a02runbrakel.nuanmb",
+        "fighter/ganon/motion/body/c00/a02runbraker.nuanmb",
+        "fighter/ganon/motion/body/c00/a02turndash.nuanmb",
+        "fighter/ganon/motion/body/c00/a02turnrun.nuanmb",
         "fighter/ganon/motion/body/c00/c00attackdash.nuanmb",
         "fighter/ganon/motion/body/c00/c02attackhi3.nuanmb",
         "fighter/ganon/motion/body/c00/c03attacks4charge.nuanmb",

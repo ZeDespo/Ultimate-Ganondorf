@@ -38,6 +38,7 @@ tasks:
         cmds: 
             - mkdir -p {{.SSBU_MOD_DIR}}
             - cp -r romfs/* {{.SSBU_MOD_DIR}}
+            - rm {{.SSBU_MOD_DIR}}fighter/ganon/motion/body/c00/motion_list.yaml
         desc: "Deploy assets related to the mod, such as animations, effects, audio, and UI elements."
         deps: 
             - clean
