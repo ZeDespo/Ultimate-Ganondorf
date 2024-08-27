@@ -2,20 +2,8 @@
 //!
 //! Ganondorf plunges into the ground, causing an explosion.
 //!
-use crate::ganon::utils::in_dive;
-use crate::ganon::utils::GANON_DARK_RUPTURE_ACTIVE;
-use crate::ganon::utils::GANON_DOWN_SPECIAL_AIR;
-use skyline_smash::app::BattleObjectModuleAccessor;
-use skyline_smash::app::GroundCorrectKind;
-use smash::app::lua_bind::*;
-use smash::app::sv_animcmd::*;
-use smash::app::sv_battle_object::notify_event_msc_cmd;
-use smash::lib::lua_const::*;
-use smash_script::{damage, lua_args, macros, slope};
-use {
-    smash::{hash40, lua2cpp::*},
-    smashline::*,
-};
+use crate::imports::*;
+use crate::ganon::utils::*;
 
 const SITUATION_KIND: i32 = 0x16;
 
@@ -117,29 +105,16 @@ unsafe extern "C" fn fun_7100010b20(agent: &mut L2CFighterCommon) {
     );
 }
 
-unsafe extern "C" fn fun_7100006ef0(
-    agent: &mut L2CFighterCommon,
-    param_2: L2CValue,
-    param_3: L2CValue,
-) {
-    let al_stack80: u64 = 0x32e468d950;
-    agent.clear_lua_stack();
-    agent.push_lua_stack(&mut L2CValue::new_int(al_stack80));
-    agent.push_lua_stack(&mut L2CValue::new_int(param_2.get_u64()));
-    agent.push_lua_stack(&mut L2CValue::new_int(param_3.get_u64()));
-    notify_event_msc_cmd(agent.lua_state_agent);
-    agent.pop_lua_stack(1);
-}
-
 unsafe extern "C" fn ganon_specialairsend_init(agent: &mut L2CFighterCommon) -> L2CValue {
     if in_dive(agent.module_accessor) {
         WorkModule::on_flag(agent.module_accessor, GANON_DARK_RUPTURE_ACTIVE);
         AttackModule::clear_all(agent.module_accessor);
     }
-    fun_7100006ef0(
+    notify_event_msc_cmd!(
         agent,
-        hash40("catched_ganon").into(),
-        hash40("catched_air_end_ganon").into(),
+        Hash40::new_raw(0x32e468d950),
+        Hash40::new("catched_ganon"),
+        Hash40::new("catched_air_end_ganon"),
     );
     0.into()
 }

@@ -1,13 +1,5 @@
 //! D-Air can be cancelled on frame 30 instead of frame 32.
-use std::convert::TryInto;
-
-use smash::app::lua_bind::*;
-use smash::app::sv_animcmd::*;
-use smash::lib::lua_const::*;
-use smash::lua2cpp::*;
-use smash::phx::Hash40;
-use smash_script::*;
-use smashline::*;
+use crate::imports::*;
 
 const DAIR_LENGTH: f32 = 30.0;
 const DAIR_FRAME: f32 = 17.0;

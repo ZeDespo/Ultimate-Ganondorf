@@ -1,15 +1,4 @@
-use skyline_smash::app::ArticleOperationTarget;
-
-use {
-    smash::{
-        app::{lua_bind::*, sv_animcmd::*},
-        lib::lua_const::*,
-        lua2cpp::*,
-        phx::*,
-    },
-    smash_script::*,
-    smashline::*,
-};
+use crate::imports::*;
 
 unsafe extern "C" fn extended_hitbox_helper(
     agent: &mut L2CAgentBase,

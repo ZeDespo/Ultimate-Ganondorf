@@ -1,15 +1,6 @@
-use crate::ganon::utils::in_dive;
-use crate::utils::shield::activate_reflector;
-use crate::utils::shield::disable_reflector;
-use smash::app::lua_bind::*;
-use smash::app::sv_animcmd::*;
-use smash::app::sv_battle_object::notify_event_msc_cmd;
-use smash::lib::lua_const::*;
-use smash_script::{damage, lua_args, macros, search, shield};
-use {
-    smash::{hash40, lua2cpp::*},
-    smashline::*,
-};
+use crate::imports::*;
+use crate::ganon::utils::*;
+use crate::utils::shield::*;
 
 pub fn install() {
     Agent::new("ganon")

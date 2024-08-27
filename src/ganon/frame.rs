@@ -1,13 +1,9 @@
-use super::utils::{in_teleport, InitValues};
+use crate::imports::*;
+use super::utils::*;
 use crate::ganon::{
     float::ganon_float, float_check::float_check, new_down_special::new_down_special,
-    teleport_check::teleport_check, utils::GANON_START_FLOAT_FLAG, warlock_punch::warlock_punch,
+    teleport_check::teleport_check, warlock_punch::warlock_punch,
 };
-use skyline_smash::lib::lua_const::{
-    CONTROL_PAD_BUTTON_JUMP, FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID,
-};
-use smash::app::lua_bind::*;
-use {smash::lua2cpp::*, smashline::*};
 
 pub unsafe extern "C" fn ganon_frame(fighter: &mut L2CFighterCommon) {
     let boma = fighter.module_accessor;
@@ -28,7 +24,7 @@ pub unsafe extern "C" fn ganon_frame(fighter: &mut L2CFighterCommon) {
     ganon_float(fighter, &iv);
     warlock_punch(fighter, &iv);
     new_down_special(fighter, &iv);
-    teleport_check(fighter, &iv);
+    teleport_check(fighter); // Removed InitValue
 }
 
 pub fn install() {

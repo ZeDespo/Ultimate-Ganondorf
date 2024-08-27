@@ -1,4 +1,24 @@
 {
+    "unshare-blacklist": [
+        "fighter/ganon/motion/body/c00/c00attackdash.nuanmb",
+        "fighter/ganon/motion/body/c00/c02attackhi3.nuanmb",
+        "fighter/ganon/motion/body/c00/c03attacks4charge.nuanmb",
+        "fighter/ganon/motion/body/c00/c03attacks4s.nuanmb",
+        "fighter/ganon/motion/body/c00/c04attackhi4.nuanmb",
+        "fighter/ganon/motion/body/c00/c04attacklw4.nuanmb",
+        "fighter/ganon/motion/body/c00/c04attacklw4charge.nuanmb",
+        "fighter/ganon/motion/body/c00/c05attackairhi.nuanmb",
+        "fighter/ganon/motion/body/c00/c05attackairlw.nuanmb",
+        "fighter/ganon/motion/body/c00/c05attackairn.nuanmb",
+        "fighter/ganon/motion/body/c00/c05landingairhi.nuanmb",
+        "fighter/ganon/motion/body/c00/c05landingairlw.nuanmb",
+        "fighter/ganon/motion/body/c00/c05landingairn.nuanmb",
+        "fighter/ganon/motion/body/c00/d01specialairs.nuanmb.nuanmb",
+        "fighter/ganon/motion/body/c00/d01specials.nuanmb.nuanmb",
+        "fighter/ganon/motion/body/c00/d02specialairhi.nuanmb",
+        "fighter/ganon/motion/body/c00/d02specialhi.nuanmb",
+        "fighter/ganon/motion/body/c00/motion_list.bin"
+    ],
     "new-dir-files": {
         "fighter/ganon/c00": [
             "fighter/ganon/motion/body/c00/a90float.nuanmb"
@@ -22,6 +42,17 @@
             "fighter/ganon/motion/body/c06/a90float.nuanmb"
         ],
         "fighter/ganon/c07": [
+            "fighter/ganon/motion/body/c07/a90float.nuanmb"
+        ]
+    },
+    "share-to-added": {
+        "fighter/ganon/motion/body/c00/a90float.nuanmb": [
+            "fighter/ganon/motion/body/c01/a90float.nuanmb",
+            "fighter/ganon/motion/body/c02/a90float.nuanmb",
+            "fighter/ganon/motion/body/c03/a90float.nuanmb",
+            "fighter/ganon/motion/body/c04/a90float.nuanmb",
+            "fighter/ganon/motion/body/c05/a90float.nuanmb",
+            "fighter/ganon/motion/body/c06/a90float.nuanmb",
             "fighter/ganon/motion/body/c07/a90float.nuanmb"
         ]
     }

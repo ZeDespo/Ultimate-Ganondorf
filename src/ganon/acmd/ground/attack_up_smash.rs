@@ -1,12 +1,5 @@
-use skyline_smash::app::ArticleOperationTarget;
-use smash::app::lua_bind::*;
-use smash::app::sv_animcmd::*;
-use smash::lib::lua_const::*;
-use smash::phx::Vector2f;
-use smash_script::macros;
-
-use crate::ganon::utils::triforce_hand_fx;
-use {smash::lua2cpp::*, smashline::*};
+use crate::imports::*;
+use crate::ganon::utils::*;
 
 pub fn install() {
     Agent::new("ganon")

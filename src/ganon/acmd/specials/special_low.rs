@@ -4,13 +4,7 @@
 //! - Tapping the special button will yield a shorter Wizard's Kick animation ending on frame 24.
 //!    - Reflector will only last until frame 24 as well.
 //! - Holding the special button past frame 10 will use the old Wizard's Kick animation.
-
-use smash::app::lua_bind::*;
-use smash::app::sv_animcmd::*;
-use smash::lib::lua_const::*;
-use smash_script::macros;
-use {smash::lua2cpp::*, smashline::*};
-
+use crate::imports::*;
 use crate::utils::shield::*;
 
 unsafe extern "C" fn ganon_speciallw(agent: &mut L2CAgentBase) {

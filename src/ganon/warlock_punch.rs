@@ -2,14 +2,8 @@
 //! Warlock Punch.
 //!
 //! This file will bind mount the Warlock punch to other inputs.
-use smash::app::lua_bind::*;
-use smash::lib::lua_const::*;
-use smash::lua2cpp::*;
-use smash_script::macros;
-
-use super::utils::InitValues;
-use skyline_smash::app::BattleObjectModuleAccessor;
-use smashline::*;
+use crate::imports::*;
+use super::utils::*;
 
 const WARLOCK_N_TURN_FRAMES: i16 = 127;
 

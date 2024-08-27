@@ -1,27 +1,9 @@
-use crate::ganon::utils::in_dive;
-use crate::ganon::utils::InitValues;
-use crate::ganon::utils::Position2D;
-use crate::ganon::utils::TeleportStatus;
-use crate::ganon::utils::FIGHTER_GANON_STATUS_KIND_PRE_TELEPORT;
-use crate::ganon::utils::GANON_CAN_TELEPORT_FLAG;
-use crate::ganon::utils::GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG;
-use crate::ganon::utils::GANON_TELEPORT_INTO_FLOAT_INIT_FLAG;
-use crate::ganon::utils::GANON_TELEPORT_WORK_INT;
-use crate::ganon::utils::GS;
-use skyline_smash::app::BattleObjectModuleAccessor;
-use skyline_smash::app::GroundCorrectKind;
-use skyline_smash::phx::Vector2f;
-use smash::app::lua_bind::*;
-use smash::app::sv_animcmd::*;
-use smash::app::sv_battle_object::notify_event_msc_cmd;
-use smash::lib::lua_const::*;
-use smash_script::{damage, lua_args, macros, slope};
-use {
-    smash::{hash40, lua2cpp::*},
-    smashline::*,
-};
+use crate::imports::*;
+use crate::ganon::utils::*;
+
 const MIN_TELEPORT_STEP: f32 = 20.0;
 const MID_TELEPORT_STEP: f32 = 40.0;
+
 pub fn install() {
     Agent::new("ganon")
         .status(Pre, *FIGHTER_STATUS_KIND_SPECIAL_HI, teleport_init)
