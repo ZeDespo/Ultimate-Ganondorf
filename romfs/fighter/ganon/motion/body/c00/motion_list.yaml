@@ -528,7 +528,7 @@ list:
       unk_800: false
       unk_1000: false
       unk_2000: false
-    blend_frames: 0
+    blend_frames: 10
     animations:
       - name: a02dash.nuanmb
         unk: 0
@@ -558,7 +558,7 @@ list:
       unk_800: false
       unk_1000: false
       unk_2000: false
-    blend_frames: 0
+    blend_frames: 16
     animations:
       - name: a02turndash.nuanmb
         unk: 0
@@ -588,7 +588,7 @@ list:
       unk_800: false
       unk_1000: false
       unk_2000: false
-    blend_frames: 4
+    blend_frames: 14
     animations:
       - name: a02run.nuanmb
         unk: 0
@@ -618,7 +618,7 @@ list:
       unk_800: false
       unk_1000: false
       unk_2000: false
-    blend_frames: 3
+    blend_frames: 12
     animations:
       - name: a02runbraker.nuanmb
         unk: 0
@@ -648,7 +648,7 @@ list:
       unk_800: false
       unk_1000: false
       unk_2000: false
-    blend_frames: 3
+    blend_frames: 12
     animations:
       - name: a02runbrakel.nuanmb
         unk: 0
@@ -678,7 +678,7 @@ list:
       unk_800: false
       unk_1000: false
       unk_2000: false
-    blend_frames: 5
+    blend_frames: 12
     animations:
       - name: a02turnrun.nuanmb
         unk: 0
@@ -708,7 +708,7 @@ list:
       unk_800: false
       unk_1000: false
       unk_2000: false
-    blend_frames: 6
+    blend_frames: 16
     animations:
       - name: a02turnrunbrake.nuanmb
         unk: 0
