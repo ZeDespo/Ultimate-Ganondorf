@@ -30,41 +30,49 @@
     "new-dir-files": {
         "fighter/ganon/c00": [
             "fighter/ganon/motion/body/c00/a90float.nuanmb",
+            "fighter/ganon/motion/body/c00/c02attacklw32.nuanmb",
             "fighter/ganon/motion/body/c00/d01specialairsbackhand.nuanmb",
             "fighter/ganon/motion/body/c00/d01specialsbackhand.nuanmb"
         ],
         "fighter/ganon/c01": [
             "fighter/ganon/motion/body/c01/a90float.nuanmb",
+            "fighter/ganon/motion/body/c00/c02attacklw32.nuanmb",
             "fighter/ganon/motion/body/c01/d01specialairsbackhand.nuanmb",
             "fighter/ganon/motion/body/c01/d01specialsbackhand.nuanmb"
         ],
         "fighter/ganon/c02": [
             "fighter/ganon/motion/body/c02/a90float.nuanmb",
+            "fighter/ganon/motion/body/c00/c02attacklw32.nuanmb",
             "fighter/ganon/motion/body/c02/d01specialairsbackhand.nuanmb",
             "fighter/ganon/motion/body/c02/d01specialsbackhand.nuanmb"
         ],
         "fighter/ganon/c03": [
             "fighter/ganon/motion/body/c03/a90float.nuanmb",
+            "fighter/ganon/motion/body/c00/c02attacklw32.nuanmb",
             "fighter/ganon/motion/body/c03/d01specialairsbackhand.nuanmb",
             "fighter/ganon/motion/body/c03/d01specialsbackhand.nuanmb"
         ],
         "fighter/ganon/c04": [
             "fighter/ganon/motion/body/c04/a90float.nuanmb",
+            "fighter/ganon/motion/body/c00/c02attacklw32.nuanmb",
             "fighter/ganon/motion/body/c04/d01specialairsbackhand.nuanmb",
             "fighter/ganon/motion/body/c04/d01specialsbackhand.nuanmb"
         ],
         "fighter/ganon/c05": [
             "fighter/ganon/motion/body/c05/a90float.nuanmb",
+            "fighter/ganon/motion/body/c00/c02attacklw32.nuanmb",
             "fighter/ganon/motion/body/c05/d01specialairsbackhand.nuanmb",
             "fighter/ganon/motion/body/c05/d01specialsbackhand.nuanmb"
         ],
         "fighter/ganon/c06": [
             "fighter/ganon/motion/body/c06/a90float.nuanmb",
+            "fighter/ganon/motion/body/c00/c02attacklw32.nuanmb",
             "fighter/ganon/motion/body/c06/d01specialairsbackhand.nuanmb",
             "fighter/ganon/motion/body/c06/d01specialsbackhand.nuanmb"
         ],
         "fighter/ganon/c07": [
             "fighter/ganon/motion/body/c07/a90float.nuanmb",
+            "fighter/ganon/motion/body/c00/c02attacklw32.nuanmb",
             "fighter/ganon/motion/body/c07/d01specialairsbackhand.nuanmb",
             "fighter/ganon/motion/body/c07/d01specialsbackhand.nuanmb"
         ]

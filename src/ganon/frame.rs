@@ -1,9 +1,9 @@
-use crate::imports::*;
 use super::utils::*;
 use crate::ganon::{
-    float::ganon_float, float_check::float_check,
-    teleport_check::teleport_check, warlock_punch::warlock_punch,
+    down_tilt_followup::down_tilt_followup_input_checker, float::ganon_float,
+    float_check::float_check, teleport_check::teleport_check, warlock_punch::warlock_punch,
 };
+use crate::imports::*;
 
 pub unsafe extern "C" fn ganon_frame(fighter: &mut L2CFighterCommon) {
     let boma = fighter.module_accessor;
@@ -24,6 +24,7 @@ pub unsafe extern "C" fn ganon_frame(fighter: &mut L2CFighterCommon) {
     ganon_float(fighter, &iv);
     warlock_punch(fighter, &iv);
     teleport_check(fighter); // Removed InitValue
+    down_tilt_followup_input_checker(fighter);
 }
 
 pub fn install() {

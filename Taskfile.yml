@@ -16,14 +16,6 @@ tasks:
             - rm -r {{.SSBU_MOD_DIR}}/* || echo "No mod assets to delete!"
         desc: "Remove all traces of the mod."
         silent: true
-    copy-romfs-to-slots: 
-      cmds: 
-        - for: { var: FOLDERS }
-          cmd: cp motion/body/c00/* motion/body/{{ .ITEM }}
-      desc: Copy fighter files from c00 to others.
-      dir: romfs/fighter/{{.CLI_ARGS}}
-      vars: 
-          FOLDERS: c01 c02 c03 c04 c05 c06 c07
     deploy-global-plugin:
         cmd: find {{.BUILD_DIR}} -name "*.nro" -exec cp {} {{.NRO_GLOBAL_PLUGINS_DIR}}/{{.GLOBAL_NRO_MOD_NAME}} xargs cp -t {{.NRO_GLOBAL_PLUGINS_DIR}}
         desc: "Deploy `.nro` plugin to the skyline plugins directory."
@@ -42,6 +34,12 @@ tasks:
         desc: "Deploy assets related to the mod, such as animations, effects, audio, and UI elements."
         deps: 
             - clean
+    new-motion-list-bin:
+        cmd: yamlist.exe -o motion_list.bin asm motion_list.yaml
+        desc: "Compile `motion_list.yml` into `motion_list.bin"
+        dir: romfs/fighter/ganon/motion/body/c00
+        precondition: 
+            - which yamlist.exe
     publish-dev: 
         cmds: 
             - task: deploy-mod-assets
