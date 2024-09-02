@@ -29,10 +29,15 @@
 - Grant ability to cancel after 60 frames of free fall. 
 
 # Side Special 
-- Make it neutral special OR try to create a new motion kind so we can support down special and this. 
 
 # Neutral Special
 - IFF articles can be cloned now, look into bringing in Sephiroth's neutral special as a dead man's volley.
 
 # General 
-- Make Ganondorf's air mobility more floaty. 
+- New sounds 
+- Cape Physics
+
+# Down Tilt
+- Programmable A input 
+    - Transition to standing on attack 2
+- Hitboxes on both

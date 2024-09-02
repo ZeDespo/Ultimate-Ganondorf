@@ -1,5 +1,5 @@
-use crate::imports::*;
 use crate::ganon::utils::*;
+use crate::imports::*;
 
 pub fn install() {
     Agent::new("ganon")
@@ -46,7 +46,7 @@ unsafe extern "C" fn ganon_attackhi4(agent: &mut L2CAgentBase) {
             -8.0,
             Some(0.0),
             Some(11.7),
-            Some(9.5),
+            Some(13.5),
             1.0,
             1.0,
             *ATTACK_SETOFF_KIND_THRU,
@@ -454,14 +454,53 @@ unsafe extern "C" fn effect_attackhi4charge(agent: &mut L2CAgentBase) {
 }
 
 unsafe extern "C" fn effect_attackhi4(agent: &mut L2CAgentBase) {
-    frame(agent.lua_state_agent, 10.0);
-    triforce_hand_fx(agent, 3.0);
-    frame(agent.lua_state_agent, 13.0);
+    frame(agent.lua_state_agent, 6.0);
     if macros::is_excute(agent) {
-        macros::EFFECT_FOLLOW(
+        macros::EFFECT(
             agent,
-            Hash40::new("ganon_appeal_aura"),
-            Hash40::new("handr"),
+            Hash40::new("sys_smash_flash"),
+            Hash40::new("haver"),
+            0,
+            18,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            true,
+        );
+    }
+    frame(agent.lua_state_agent, 11.0);
+    if macros::is_excute(agent) {
+        macros::EFFECT(
+            agent,
+            Hash40::new("younglink_final_triforce"),
+            Hash40::new("top"),
+            0,
+            -3,
+            0,
+            0,
+            90,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            true,
+        );
+        macros::EFFECT(
+            agent,
+            Hash40::new("reflet_entry"),
+            Hash40::new("top"),
             0,
             0,
             0,
@@ -469,20 +508,58 @@ unsafe extern "C" fn effect_attackhi4(agent: &mut L2CAgentBase) {
             0,
             0,
             1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
             true,
         );
-        macros::EFFECT_FOLLOW(
+        macros::LANDING_EFFECT(
             agent,
-            Hash40::new("ganon_final_hand_triforce"),
+            Hash40::new("sys_quake"),
+            Hash40::new("top"),
+            1.5,
+            0,
+            -18,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            true,
+        );
+        macros::QUAKE(agent, *CAMERA_QUAKE_KIND_S);
+        macros::LANDING_EFFECT(
+            agent,
+            Hash40::new("sys_landing_smoke"),
             Hash40::new("top"),
             0,
-            2,
             0,
             0,
             0,
-            75,
-            7,
-            true,
+            0,
+            0,
+            1.1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            false,
         );
+    }
+
+    frame(agent.lua_state_agent, 50.0);
+    if macros::is_excute(agent) {
+        macros::EFFECT_OFF_KIND(agent, Hash40::new("younglink_final_triforce"), false, false);
+        macros::EFFECT_OFF_KIND(agent, Hash40::new("reflet_entry"), false, false);
     }
 }
