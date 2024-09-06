@@ -6,7 +6,7 @@ use crate::imports::*;
 pub unsafe extern "C" fn down_tilt_followup_input_checker(fighter: &mut L2CFighterCommon) {
     let boma = &mut *fighter.module_accessor;
     if boma.motion_kind() == hash40("attack_lw3")
-        && boma.motion_module_frame() >= 16.0
+        && boma.motion_module_frame() >= 12.0
         && ControlModule::check_button_on(boma, *CONTROL_PAD_BUTTON_ATTACK)
     {
         WorkModule::on_flag(boma, GANON_DOWN_TILT_2_FLAG);

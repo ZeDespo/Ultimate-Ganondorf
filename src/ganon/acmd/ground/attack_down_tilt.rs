@@ -51,7 +51,7 @@ unsafe extern "C" fn ganon_down_tilt_1(agent: &mut L2CAgentBase) {
     }
 }
 
-/// Down tilt part 1 attack hitboxes.
+/// Down tilt part 2 attack hitboxes.
 unsafe extern "C" fn ganon_down_tilt_2(agent: &mut L2CAgentBase) {
     frame(agent.lua_state_agent, 17.0);
     if macros::is_excute(agent) {
@@ -100,6 +100,14 @@ unsafe extern "C" fn ganon_down_tilt_2(agent: &mut L2CAgentBase) {
         AttackModule::clear_all(agent.module_accessor);
         WorkModule::off_flag(agent.module_accessor, GANON_DOWN_TILT_2_FLAG)
     }
+    frame(agent.lua_state_agent, 40.0);
+    if macros::is_excute(agent) {
+        StatusModule::change_status_request_from_script(
+            agent.module_accessor,
+            *FIGHTER_STATUS_KIND_WAIT,
+            false.into(),
+        );
+    }
 }
 
 unsafe extern "C" fn ganon_down_tilt(agent: &mut L2CAgentBase) {
@@ -110,8 +118,22 @@ unsafe extern "C" fn ganon_down_tilt(agent: &mut L2CAgentBase) {
     }
 }
 
+unsafe extern "C" fn ganon_down_tilt_expression(agent: &mut L2CAgentBase) {
+    if WorkModule::is_flag(agent.module_accessor, GANON_DOWN_TILT_2_FLAG) {
+        frame(agent.lua_state_agent, 17.0);
+        if macros::is_excute(agent) {
+            macros::QUAKE(agent, *CAMERA_QUAKE_KIND_M);
+        }
+    }
+}
+
 pub fn install() {
     Agent::new("ganon")
         .game_acmd("game_attacklw3", ganon_down_tilt, Priority::Default)
+        .expression_acmd(
+            "expression_attacklw3",
+            ganon_down_tilt_expression,
+            Priority::Default,
+        )
         .install();
 }

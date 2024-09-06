@@ -2,13 +2,12 @@
 //! float. In his float state, Ganondorf can move freely in the air, and perform all
 //! of his aerials. His specials will remove his float status; however, given the right
 //! control inputs, his side-special can get some serious distance.
-use crate::imports::*;
 use super::utils::*;
+use crate::imports::*;
 use std::f32::consts::PI;
 
 const MAX_FLOAT_FRAMES: i16 = 91; // Float by this amount
-const TELEPORT_TO_FLOAT_FRAMES: i16 = 20; // Teleport into float frames.
-const STARTING_FLOAT_FRAME: f32 = 2.0; // When the float frame will start.
+const TELEPORT_TO_FLOAT_FRAMES: i16 = 30; // Teleport into float frames.
 const MAX_FLOAT_SPEED: f32 = 1.26; // Max speed in any direction for float
 const MAX_INCREMENTAL_SPEED: f32 = MAX_FLOAT_SPEED / 4.0; // How many frames until max speed achieved.
 const FLOAT_SPEED_LOSS: f32 = 25.0; // Number of frames that should pass until speed is 0.0
@@ -92,16 +91,21 @@ impl FloatStatus {
     /// Ganondorf can regain his ability to float when...
     /// - he is in a neutral state, (i.e. is on the ground, started a new match)
     /// - he catches an oppoent with side-special or up-special
-    unsafe fn transition_to_can_float_if_able(self, boma: &mut BattleObjectModuleAccessor) -> FloatStatus {
+    unsafe fn transition_to_can_float_if_able(
+        self,
+        boma: &mut BattleObjectModuleAccessor,
+    ) -> FloatStatus {
         if !boma.is_situation(*SITUATION_KIND_AIR)
-        || [
-            *FIGHTER_GANON_STATUS_KIND_SPECIAL_HI_CLING,
-            *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_CATCH,
-            *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_END,
-            *FIGHTER_STATUS_KIND_WIN,
-            *FIGHTER_STATUS_KIND_LOSE,
-            *FIGHTER_STATUS_KIND_DEAD,
-        ].contains(&boma.status_kind()) {
+            || [
+                *FIGHTER_GANON_STATUS_KIND_SPECIAL_HI_CLING,
+                *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_CATCH,
+                *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_END,
+                *FIGHTER_STATUS_KIND_WIN,
+                *FIGHTER_STATUS_KIND_LOSE,
+                *FIGHTER_STATUS_KIND_DEAD,
+            ]
+            .contains(&boma.status_kind())
+        {
             return FloatStatus::CanFloat;
         }
 
