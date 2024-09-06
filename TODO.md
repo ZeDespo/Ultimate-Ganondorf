@@ -39,6 +39,7 @@
 # General 
 - New sounds 
 - Cape Physics
+- Redo common prc file due to grab air stall glitch
 
 # Down Tilt
 - Programmable A input 
