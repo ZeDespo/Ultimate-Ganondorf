@@ -6,9 +6,10 @@
 
 # Down Smash
 
+# Up Smash 
+- buff the launch strength
 
 # Forward Smash 
-- Add small pickup hitbox in front of ganondorf (using top)
 
 # Up Air 
 
@@ -23,6 +24,8 @@
 - Grounded teleport can be multidirectional. 
 - Air teleport should still be multidirectional but with fixed lengths. 
 - If teleporting from air to ground, cut teleport time to 10 frames. 
+    - If teleporting from ground, make sure to add the 0.1 y offset. 
+    - If teleporting from air into ground, subtract the 0.1 offset
 
 # Down Special 
 - Depending on the number of frames spent falling, damage / explosion get substantially bigger. 

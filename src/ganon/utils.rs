@@ -1,6 +1,6 @@
 //! General utility scripts that will enable Ganondorf's core function hooking.
-use core::fmt;
 use crate::imports::*;
+use core::fmt;
 
 #[derive(Copy, Clone)]
 pub enum FloatStatus {
@@ -130,6 +130,7 @@ pub const GANON_TELEPORT_INTO_FLOAT_WAS_CANNOT_FLOAT_FLAG: i32 = 0x69422;
 pub const GANON_START_FLOAT_FLAG: i32 = 0x69423;
 pub const GANON_CAN_TELEPORT_FLAG: i32 = 0x69424;
 pub const GANON_PRE_FLOAT_MUTEX: i32 = 0x69425;
+pub const GANON_DOWN_TILT_2_FLAG: i32 = 0x69426;
 pub const FIGHTER_GANON_STATUS_KIND_PRE_TELEPORT: i32 = 0x1ED;
 pub const FIGHTER_GANON_STATUS_KIND_BACKHAND: i32 = 0x1EE;
 

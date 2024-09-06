@@ -1,17 +1,37 @@
-use crate::imports::*;
 use crate::ganon::utils::*;
+use crate::imports::*;
 use crate::utils::shield::*;
 
 pub fn install() {
     Agent::new("ganon")
         .game_acmd("game_specialsbackhand", game_backhand, Priority::Default)
         .game_acmd("game_specialairsbackhand", game_backhand, Priority::Default)
-        .effect_acmd("effect_specialsbackhand", effect_backhand, Priority::Default)
-        .effect_acmd("effect_specialairsbackhand", effect_backhand, Priority::Default)
+        .effect_acmd(
+            "effect_specialsbackhand",
+            effect_backhand,
+            Priority::Default,
+        )
+        .effect_acmd(
+            "effect_specialairsbackhand",
+            effect_backhand,
+            Priority::Default,
+        )
         .sound_acmd("sound_specialsbackhand", sound_backhand, Priority::Default)
-        .sound_acmd("sound_specialairsbackhand", sound_airbackhand, Priority::Default)
-        .expression_acmd("expression_specialsbackhand", expression_backhand, Priority::Default)
-        .expression_acmd("expression_specialairsbackhand", expression_airbackhand, Priority::Default)
+        .sound_acmd(
+            "sound_specialairsbackhand",
+            sound_airbackhand,
+            Priority::Default,
+        )
+        .expression_acmd(
+            "expression_specialsbackhand",
+            expression_backhand,
+            Priority::Default,
+        )
+        .expression_acmd(
+            "expression_specialairsbackhand",
+            expression_airbackhand,
+            Priority::Default,
+        )
         .install();
 }
 
@@ -63,7 +83,7 @@ unsafe extern "C" fn game_backhand(agent: &mut L2CAgentBase) {
             0,
             Hash40::new("handl"),
             14.0,
-            81,
+            20,
             5,
             0,
             92,
@@ -220,13 +240,25 @@ unsafe extern "C" fn sound_airbackhand(agent: &mut L2CAgentBase) {
 
 unsafe extern "C" fn expression_backhand(agent: &mut L2CAgentBase) {
     if macros::is_excute(agent) {
-        ControlModule::set_rumble(agent.module_accessor, Hash40::new("rbkind_attackm"), 0, false, *BATTLE_OBJECT_ID_INVALID as u32);
+        ControlModule::set_rumble(
+            agent.module_accessor,
+            Hash40::new("rbkind_attackm"),
+            0,
+            false,
+            *BATTLE_OBJECT_ID_INVALID as u32,
+        );
         slope!(agent, *MA_MSC_CMD_SLOPE_SLOPE, *SLOPE_STATUS_LR);
     }
     frame(agent.lua_state_agent, 32.0);
     if macros::is_excute(agent) {
         macros::QUAKE(agent, *CAMERA_QUAKE_KIND_L);
-        ControlModule::set_rumble(agent.module_accessor, Hash40::new("rbkind_explosionm"), 0, false, *BATTLE_OBJECT_ID_INVALID as u32);
+        ControlModule::set_rumble(
+            agent.module_accessor,
+            Hash40::new("rbkind_explosionm"),
+            0,
+            false,
+            *BATTLE_OBJECT_ID_INVALID as u32,
+        );
     }
 }
 
@@ -234,10 +266,22 @@ unsafe extern "C" fn expression_airbackhand(agent: &mut L2CAgentBase) {
     if macros::is_excute(agent) {
         slope!(agent, *MA_MSC_CMD_SLOPE_SLOPE, *SLOPE_STATUS_LR);
         macros::QUAKE(agent, *CAMERA_QUAKE_KIND_L);
-        ControlModule::set_rumble(agent.module_accessor, Hash40::new("rbkind_impact"), 3, false, *BATTLE_OBJECT_ID_INVALID as u32);
+        ControlModule::set_rumble(
+            agent.module_accessor,
+            Hash40::new("rbkind_impact"),
+            3,
+            false,
+            *BATTLE_OBJECT_ID_INVALID as u32,
+        );
     }
     frame(agent.lua_state_agent, 5.0);
     if macros::is_excute(agent) {
-        ControlModule::set_rumble(agent.module_accessor, Hash40::new("rbkind_explosionm"), 0, false, *BATTLE_OBJECT_ID_INVALID as u32);
+        ControlModule::set_rumble(
+            agent.module_accessor,
+            Hash40::new("rbkind_explosionm"),
+            0,
+            false,
+            *BATTLE_OBJECT_ID_INVALID as u32,
+        );
     }
 }
