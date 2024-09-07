@@ -2,7 +2,7 @@
 
 - If off stage, reduce float time in half.
 - Bug: Air dodge controls are reversed when / after floating
-- Add float sound effects.
+- Implement a90float animation? Might be tough considering the variable float times. 
 
 # Up Smash 
 - buff the launch strength
@@ -45,21 +45,18 @@
 # Neutral Special
 - IFF articles can be cloned now, look into bringing in Sephiroth's neutral special as a dead man's volley.
 
-# General 
-- New sounds 
-- Cape Physics
-- Redo common prc file due to grab air stall glitch
+# Side special 
+- Make change to swingblend.prc to have cape use animation instead of general physics.
 
-# Down Tilt
-- Programmable A input 
-    - Transition to standing on attack 2
-- Hitboxes on both
 
 # Dash attack 
 - Replace effects with electricity
 - Multihit move launching on third hit. 
 - Make dash attack startup faster. 
 
+# General 
+- Sounds, expressions, and effects 
+- Redo common prc file due to grab air stall glitch
 
 ## Sounds safe to replace
 - se_ganon_swing_s
