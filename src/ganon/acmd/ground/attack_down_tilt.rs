@@ -95,7 +95,10 @@ unsafe extern "C" fn ganon_down_tilt_2(agent: &mut L2CAgentBase) {
             *ATTACK_REGION_MAGIC,
         );
     }
-    wait(agent.lua_state_agent, 8.0);
+    frame(agent.lua_state_agent, 18.0);
+    macros::FT_MOTION_RATE(agent, 2.0);
+    wait(agent.lua_state_agent, 7.0);
+    macros::FT_MOTION_RATE(agent, 1.0);
     if macros::is_excute(agent) {
         AttackModule::clear_all(agent.module_accessor);
         WorkModule::off_flag(agent.module_accessor, GANON_DOWN_TILT_2_FLAG)
