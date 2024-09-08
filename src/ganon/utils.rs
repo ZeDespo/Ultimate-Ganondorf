@@ -137,7 +137,7 @@ pub const FIGHTER_GANON_STATUS_KIND_PRE_TELEPORT: i32 = 0x1ED;
 pub const FIGHTER_GANON_STATUS_KIND_BACKHAND: i32 = 0x1EE;
 
 pub const MAX_FLOAT_FRAMES: i32 = 91; // Float duration when activated normally.
-pub const TELEPORT_TO_FLOAT_FRAMES: i32 = 45; // Float duration when using up-special.
+pub const TELEPORT_TO_FLOAT_FRAMES: i32 = 35; // Float duration when using up-special.
 pub const TELEPORT_TO_FLOAT_CANCEL_FRAMES: i32 = 1;
 
 pub trait BomaExt {

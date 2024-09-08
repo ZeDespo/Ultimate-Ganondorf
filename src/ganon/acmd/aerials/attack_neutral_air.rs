@@ -89,6 +89,7 @@ unsafe extern "C" fn normal_nair(agent: &mut L2CAgentBase) {
     }
 }
 
+// 6 frames for every 1 successful hitbox
 unsafe extern "C" fn portal_hitbox(agent: &mut L2CAgentBase) {
     // macros::FT_MOTION_RATE(agent, 0.87879);
     frame(agent.lua_state_agent, 0.1);
@@ -99,7 +100,7 @@ unsafe extern "C" fn portal_hitbox(agent: &mut L2CAgentBase) {
         );
     }
     frame(agent.lua_state_agent, 5.0);
-    for _ in 0..5 {
+    for _ in 0..4 {
         if macros::is_excute(agent) {
             // macros::ATTACK(
             //     agent,
@@ -341,9 +342,8 @@ unsafe extern "C" fn portal_hitbox(agent: &mut L2CAgentBase) {
         if macros::is_excute(agent) {
             AttackModule::clear_all(agent.module_accessor);
         }
-        wait(agent.lua_state_agent, 1.0);
     }
-    frame(agent.lua_state_agent, 15.0);
+    wait(agent.lua_state_agent, 1.0);
     if macros::is_excute(agent) {
         macros::ATTACK(
             agent,
