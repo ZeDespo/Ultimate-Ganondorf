@@ -1,5 +1,5 @@
-use crate::imports::*;
 use crate::ganon::utils::*;
+use crate::imports::*;
 
 const MIN_TELEPORT_STEP: f32 = 20.0;
 const MID_TELEPORT_STEP: f32 = 40.0;
@@ -81,7 +81,7 @@ impl Position2D {
     // Down Right vertex: x: 0.9166667, y: -0.5
     // Down Left vertex:  x: -0.9166667, y: -0.5
     unsafe extern "C" fn next_teleport_position(
-        boma: *mut BattleObjectModuleAccessor,
+        boma: &mut BattleObjectModuleAccessor,
     ) -> Position2D {
         let mut x = calculate_base_teleport_distance(ControlModule::get_stick_x(boma));
         let mut y = calculate_base_teleport_distance(ControlModule::get_stick_y(boma));
@@ -90,10 +90,13 @@ impl Position2D {
         } else if x == 0.0 {
             y = add_teleport_distance(y);
         }
-        if StatusModule::situation_kind(boma) == SITUATION_KIND_GROUND && y < 0.0 {
-            y = 0.0;
+        if boma.is_situation(*SITUATION_KIND_GROUND) {
+            if y < 0.0 {
+                y = 0.0
+            }
+            y = y + 0.1;
         }
-        Position2D { x: x, y: y + 0.1 }
+        Position2D { x: x, y: y }
     }
 
     unsafe extern "C" fn set_to_array(self: Self, entry_id: usize) {
@@ -131,7 +134,7 @@ unsafe extern "C" fn teleport_calculator_main(fighter: &mut L2CFighterCommon) ->
 }
 
 unsafe extern "C" fn teleport_calculator_main_loop(fighter: &mut L2CFighterCommon) -> L2CValue {
-    let boma = fighter.module_accessor;
+    let boma = &mut *fighter.module_accessor;
     let frame = MotionModule::frame(boma);
     let ts = TeleportStatus::from_int(WorkModule::get_int(boma, GANON_TELEPORT_WORK_INT));
     let entry_id = WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize;
@@ -182,6 +185,15 @@ unsafe extern "C" fn teleport_calculator_main_loop(fighter: &mut L2CFighterCommo
                 fighter.module_accessor,
                 GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG,
             ) {
+                WorkModule::set_int(
+                    boma,
+                    if boma.is_situation(*SITUATION_KIND_GROUND) {
+                        1
+                    } else {
+                        30
+                    },
+                    GANON_FLOAT_DURATION_WORK_INT,
+                );
                 WorkModule::set_flag(boma, true, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG);
                 WorkModule::set_int(boma, TeleportStatus::Ready as i32, GANON_TELEPORT_WORK_INT);
                 KineticModule::clear_speed_all(boma);

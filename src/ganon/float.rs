@@ -144,15 +144,17 @@ impl FloatStatus {
         self
     }
 
-    /// Switch to a float status if the special button is pressed and in the air.
-    fn transition_to_floating_if_able(self, init_values: &InitValues) -> FloatStatus {
+    unsafe extern "C" fn transition_to_floating_if_able(
+        self,
+        boma: &mut BattleObjectModuleAccessor,
+        init_values: &InitValues,
+    ) -> FloatStatus {
         if init_values.start_float {
             return FloatStatus::Floating(MAX_FLOAT_FRAMES);
         }
         if init_values.teleport_into_float {
-            return FloatStatus::Floating(TELEPORT_TO_FLOAT_FRAMES);
+            return FloatStatus::Floating(boma.get_float_duration());
         }
-
         self
     }
 }
@@ -229,13 +231,13 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
     GS[iv.entry_id].float_status = match GS[iv.entry_id].float_status {
         FloatStatus::CanFloat => GS[iv.entry_id]
             .float_status
-            .transition_to_floating_if_able(&iv),
+            .transition_to_floating_if_able(boma, &iv),
         FloatStatus::CannotFloat => {
             if iv.teleport_into_float {
                 WorkModule::on_flag(boma, GANON_TELEPORT_INTO_FLOAT_WAS_CANNOT_FLOAT_FLAG);
                 GS[iv.entry_id]
                     .float_status
-                    .transition_to_floating_if_able(&iv)
+                    .transition_to_floating_if_able(boma, &iv)
             } else {
                 GS[iv.entry_id]
                     .float_status
@@ -279,6 +281,21 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
             }
         }
         FloatStatus::Floating(i) => {
+            if iv.teleport_into_float {
+                if i == TELEPORT_TO_FLOAT_FRAMES {
+                    StatusModule::change_status_request_from_script(
+                        boma,
+                        FIGHTER_STATUS_KIND_ATTACK_AIR.into(),
+                        false.into(),
+                    );
+                } else if i == 1 {
+                    StatusModule::change_status_request_from_script(
+                        boma,
+                        FIGHTER_STATUS_KIND_FALL.into(),
+                        false.into(),
+                    );
+                }
+            }
             if i == TELEPORT_TO_FLOAT_FRAMES && iv.teleport_into_float {
                 StatusModule::change_status_request_from_script(
                     boma,

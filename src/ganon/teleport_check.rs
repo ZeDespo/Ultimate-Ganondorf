@@ -1,8 +1,8 @@
 //! If Ganondorf used his teleport in the air, he cannot use it again until he lands
 //! or gets hit with a strong move.
 //! This file will ensure that we cannot abuse teleport.
-use crate::imports::*;
 use super::utils::*;
+use crate::imports::*;
 
 pub unsafe extern "C" fn teleport_check(fighter: &mut L2CFighterCommon) {
     // Make sure to add the `&mut *`
@@ -17,6 +17,7 @@ pub unsafe extern "C" fn teleport_check(fighter: &mut L2CFighterCommon) {
                 *FIGHTER_STATUS_KIND_DAMAGE_FLY_METEOR,
             ]
             .contains(&boma.status_kind()))
+        || boma.is_status(*FIGHTER_STATUS_KIND_CLIFF_CATCH)
     {
         WorkModule::on_flag(boma, GANON_CAN_TELEPORT_FLAG);
     } else if can_teleport
