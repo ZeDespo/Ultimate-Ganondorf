@@ -185,15 +185,12 @@ unsafe extern "C" fn teleport_calculator_main_loop(fighter: &mut L2CFighterCommo
                 fighter.module_accessor,
                 GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG,
             ) {
-                WorkModule::set_int(
-                    boma,
-                    if boma.is_situation(*SITUATION_KIND_GROUND) {
-                        1
-                    } else {
-                        30
-                    },
-                    GANON_FLOAT_DURATION_WORK_INT,
-                );
+                let cancellable = boma.is_situation(*SITUATION_KIND_GROUND);
+                boma.set_float_duration(if cancellable {
+                    TELEPORT_TO_FLOAT_CANCEL_FRAMES.into()
+                } else {
+                    TELEPORT_TO_FLOAT_FRAMES.into()
+                });
                 WorkModule::set_flag(boma, true, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG);
                 WorkModule::set_int(boma, TeleportStatus::Ready as i32, GANON_TELEPORT_WORK_INT);
                 KineticModule::clear_speed_all(boma);

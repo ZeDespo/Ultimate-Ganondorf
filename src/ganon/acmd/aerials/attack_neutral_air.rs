@@ -1,5 +1,5 @@
-use crate::imports::*;
 use crate::ganon::utils::*;
+use crate::imports::*;
 
 pub fn install() {
     Agent::new("ganon")

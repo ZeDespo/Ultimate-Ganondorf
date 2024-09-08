@@ -6,8 +6,6 @@ use super::utils::*;
 use crate::imports::*;
 use std::f32::consts::PI;
 
-const MAX_FLOAT_FRAMES: i16 = 91; // Float by this amount
-const TELEPORT_TO_FLOAT_FRAMES: i16 = 30; // Teleport into float frames.
 const MAX_FLOAT_SPEED: f32 = 1.26; // Max speed in any direction for float
 const MAX_INCREMENTAL_SPEED: f32 = MAX_FLOAT_SPEED / 4.0; // How many frames until max speed achieved.
 const FLOAT_SPEED_LOSS: f32 = 25.0; // Number of frames that should pass until speed is 0.0

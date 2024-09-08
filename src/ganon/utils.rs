@@ -5,7 +5,7 @@ use core::fmt;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub enum FloatStatus {
-    Floating(i16),
+    Floating(i32),
     CanFloat,
     CannotFloat,
 }
@@ -136,6 +136,10 @@ pub const GANON_DOWN_TILT_2_FLAG: i32 = 0x69426;
 pub const FIGHTER_GANON_STATUS_KIND_PRE_TELEPORT: i32 = 0x1ED;
 pub const FIGHTER_GANON_STATUS_KIND_BACKHAND: i32 = 0x1EE;
 
+pub const MAX_FLOAT_FRAMES: i32 = 91; // Float duration when activated normally.
+pub const TELEPORT_TO_FLOAT_FRAMES: i32 = 45; // Float duration when using up-special.
+pub const TELEPORT_TO_FLOAT_CANCEL_FRAMES: i32 = 1;
+
 pub trait BomaExt {
     unsafe fn prev_status_kind(&mut self) -> i32;
     unsafe fn status_kind(&mut self) -> i32;
@@ -159,7 +163,7 @@ pub trait BomaExt {
     // unsafe fn is_button_on(&mut self, button type) -> bool;
     // And pass in the jump button
 
-    unsafe fn get_float_duration(&mut self) -> i16;
+    unsafe fn get_float_duration(&mut self) -> i32;
     unsafe fn set_float_duration(&mut self, n: i32);
 }
 
@@ -211,8 +215,8 @@ impl BomaExt for BattleObjectModuleAccessor {
     unsafe fn jump_button_pressed(&mut self) -> bool {
         ControlModule::check_button_on(self, *CONTROL_PAD_BUTTON_JUMP)
     }
-    unsafe fn get_float_duration(&mut self) -> i16 {
-        WorkModule::get_int(self, GANON_FLOAT_DURATION_WORK_INT) as i16
+    unsafe fn get_float_duration(&mut self) -> i32 {
+        WorkModule::get_int(self, GANON_FLOAT_DURATION_WORK_INT)
     }
     unsafe fn set_float_duration(&mut self, n: i32) {
         WorkModule::set_int(self, n, GANON_FLOAT_DURATION_WORK_INT);
