@@ -274,7 +274,12 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
                 } else {
                     GS[iv.entry_id].float_status = FloatStatus::CanFloat;
                 }
-            } else {
+            } else if ![
+                *FIGHTER_STATUS_KIND_ESCAPE_AIR,
+                *FIGHTER_STATUS_KIND_ESCAPE_AIR_SLIDE,
+            ]
+            .contains(&iv.status_kind)
+            {
                 KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_FALL);
             }
         }
