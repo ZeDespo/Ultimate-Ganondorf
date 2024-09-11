@@ -274,13 +274,9 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
                 } else {
                     GS[iv.entry_id].float_status = FloatStatus::CanFloat;
                 }
-            } else if ![
-                *FIGHTER_STATUS_KIND_ESCAPE_AIR,
-                *FIGHTER_STATUS_KIND_ESCAPE_AIR_SLIDE,
-            ]
-            .contains(&iv.status_kind)
-            {
+            } else if WorkModule::is_flag(boma, GANON_END_FLOAT_HANDLER_FLAG) {
                 KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_FALL);
+                WorkModule::off_flag(boma, GANON_END_FLOAT_HANDLER_FLAG);
             }
         }
         FloatStatus::Floating(i) => {
@@ -329,7 +325,7 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
                 KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_AIR);
             }
             if i - 1 == 0 {
-                KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_FALL);
+                WorkModule::on_flag(boma, GANON_END_FLOAT_HANDLER_FLAG);
             } else if !iv.teleport_into_float {
                 adjust_float_velocity(boma, &iv);
             }
