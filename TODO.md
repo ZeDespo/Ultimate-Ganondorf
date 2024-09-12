@@ -1,7 +1,4 @@
 # Float
-
-- If off stage, reduce float time in half.
-- Bug: Air dodge controls are reversed when / after floating
 - Implement a90float animation? Might be tough considering the variable float times. 
 
 # Up Smash 
@@ -20,8 +17,6 @@
 - Like Fox's shine, should give a tiny bit of verical velocity only once in the air. 
 
 # Up Special 
-- If teleporting from ground, make sure to add the 0.1 y offset and do telepor to float logic. 
-- If teleporting from air into ground, subtract the 0.1 offset and do not do the teleport to float logic. Ganondorf should just teleport and be able to immediately act. 
 
 # Down Special (Air)
 - If special button is held: 
