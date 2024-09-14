@@ -3,7 +3,13 @@ use crate::imports::*;
 // Middle point for up-tilt geyser.
 const MEDIAN: f32 = 22.0;
 
-unsafe extern "C" fn ground_hitbox(agent: &mut L2CAgentBase, id: u64, angle: u64, z_offset: f32) {
+unsafe extern "C" fn ground_hitbox(
+    agent: &mut L2CAgentBase,
+    id: u64,
+    angle: u64,
+    z_offset: f32,
+    y_offset: f32,
+) {
     macros::ATTACK(
         agent,
         id,
@@ -16,12 +22,12 @@ unsafe extern "C" fn ground_hitbox(agent: &mut L2CAgentBase, id: u64, angle: u64
         35,
         5.0,
         0.0,
-        2.0,
+        y_offset,
         z_offset,
         None,
         None,
         None,
-        1.0,
+        0.7,
         1.0,
         *ATTACK_SETOFF_KIND_OFF,
         *ATTACK_LR_CHECK_F,
@@ -43,21 +49,26 @@ unsafe extern "C" fn ground_hitbox(agent: &mut L2CAgentBase, id: u64, angle: u64
         *COLLISION_SOUND_ATTR_FIRE,
         *ATTACK_REGION_MAGIC,
     );
-    let autolink_x_offset: f32 = if z_offset < MEDIAN {
-        10.0
-    } else if z_offset > MEDIAN {
-        -10.0
-    } else {
-        0.0
-    };
-    if autolink_x_offset != 0.0 {
+    if angle == 368 {
+        let autolink_x_offset: f32;
+        let autolink_y_offset: f32;
+        if z_offset < MEDIAN {
+            autolink_x_offset = 6.0;
+            autolink_y_offset = 10.0;
+        } else if z_offset > MEDIAN {
+            autolink_x_offset = -6.0;
+            autolink_y_offset = 10.0;
+        } else {
+            autolink_x_offset = 0.0;
+            autolink_y_offset = 5.0;
+        }
         AttackModule::set_vec_target_pos(
             agent.module_accessor,
             id as i32,
             Hash40::new("top"),
             &Vector2f {
                 x: autolink_x_offset,
-                y: 5.0,
+                y: autolink_y_offset,
             },
             5,
             false,
@@ -68,100 +79,14 @@ unsafe extern "C" fn ground_hitbox(agent: &mut L2CAgentBase, id: u64, angle: u64
 unsafe extern "C" fn ganon_utilt(fighter: &mut L2CAgentBase) {
     frame(fighter.lua_state_agent, 8.0);
     if macros::is_excute(fighter) {
-        ground_hitbox(fighter, 0, 368, MEDIAN - 8.0);
-        ground_hitbox(fighter, 1, 90, MEDIAN);
-        ground_hitbox(fighter, 2, 368, MEDIAN + 8.0);
-
-        //     macros::ATTACK(
-        //         fighter,
-        //         1,
-        //         0,
-        //         Hash40::new("toel"),
-        //         0.8,
-        //         368,
-        //         100,
-        //         18,
-        //         35,
-        //         5.0,
-        //         22.0,
-        //         -2.5,
-        //         0.0,
-        //         None,
-        //         None,
-        //         None,
-        //         1.0,
-        //         1.0,
-        //         *ATTACK_SETOFF_KIND_OFF,
-        //         *ATTACK_LR_CHECK_F,
-        //         false,
-        //         0,
-        //         0.0,
-        //         1,
-        //         false,
-        //         false,
-        //         false,
-        //         false,
-        //         true,
-        //         *COLLISION_SITUATION_MASK_GA,
-        //         *COLLISION_CATEGORY_MASK_ALL,
-        //         *COLLISION_PART_MASK_ALL,
-        //         false,
-        //         Hash40::new("collision_attr_normal"),
-        //         *ATTACK_SOUND_LEVEL_M,
-        //         *COLLISION_SOUND_ATTR_FIRE,
-        //         *ATTACK_REGION_MAGIC,
-        //     );
-        //     AttackModule::set_vec_target_pos(
-        //         fighter.module_accessor,
-        //         1,
-        //         Hash40::new("top"),
-        //         &Vector2f { x: -3.0, y: 15.0 },
-        //         5,
-        //         false,
-        //     );
-        //     macros::ATTACK(
-        //         fighter,
-        //         2,
-        //         0,
-        //         Hash40::new("toel"),
-        //         0.8,
-        //         45,
-        //         100,
-        //         18,
-        //         35,
-        //         5.0,
-        //         2.0,
-        //         -2.5,
-        //         0.0,
-        //         None,
-        //         None,
-        //         None,
-        //         1.0,
-        //         1.0,
-        //         *ATTACK_SETOFF_KIND_OFF,
-        //         *ATTACK_LR_CHECK_F,
-        //         false,
-        //         0,
-        //         0.0,
-        //         1,
-        //         false,
-        //         false,
-        //         false,
-        //         false,
-        //         true,
-        //         *COLLISION_SITUATION_MASK_GA,
-        //         *COLLISION_CATEGORY_MASK_ALL,
-        //         *COLLISION_PART_MASK_ALL,
-        //         false,
-        //         Hash40::new("collision_attr_normal"),
-        //         *ATTACK_SOUND_LEVEL_M,
-        //         *COLLISION_SOUND_ATTR_FIRE,
-        //         *ATTACK_REGION_MAGIC,
-        //     );
-        // }
+        ground_hitbox(fighter, 0, 70, MEDIAN - 8.0, 2.0);
+        ground_hitbox(fighter, 1, 90, MEDIAN, 4.0);
+        ground_hitbox(fighter, 2, 368, MEDIAN + 8.0, 2.0);
     }
     frame(fighter.lua_state_agent, 11.0);
     for _ in 0..2 {
+        ground_hitbox(fighter, 3, 90, MEDIAN, 12.0);
+        ground_hitbox(fighter, 4, 365, MEDIAN, 20.0);
         // if macros::is_excute(fighter) {
         //     macros::ATTACK(
         //         fighter,
@@ -205,8 +130,9 @@ unsafe extern "C" fn ganon_utilt(fighter: &mut L2CAgentBase) {
         // }
         wait(fighter.lua_state_agent, 1.0);
         if macros::is_excute(fighter) {
-            // AttackModule::clear(fighter.module_accessor, 3, false);
-            AttackModule::clear_all(fighter.module_accessor);
+            AttackModule::clear(fighter.module_accessor, 3, false);
+            AttackModule::clear(fighter.module_accessor, 4, false);
+            // AttackModule::clear_all(fighter.module_accessor);
         }
         wait(fighter.lua_state_agent, 3.0);
     }
@@ -214,22 +140,22 @@ unsafe extern "C" fn ganon_utilt(fighter: &mut L2CAgentBase) {
     if macros::is_excute(fighter) {
         macros::ATTACK(
             fighter,
+            3,
             0,
-            0,
-            Hash40::new("handl"),
-            10.0,
+            Hash40::new("top"),
+            7.8,
             75,
             100,
             0,
             45,
             8.0,
             0.0,
-            0.0,
-            0.0,
+            22.0,
+            MEDIAN,
             None,
             None,
             None,
-            1.0,
+            0.7,
             1.0,
             *ATTACK_SETOFF_KIND_OFF,
             *ATTACK_LR_CHECK_F,
