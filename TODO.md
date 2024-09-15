@@ -22,16 +22,21 @@
     - Ganondorf will continue the piledriver. 
     - If Ganondorf hits the ground, do the landing hit box. 
 - If special button is not held: 
-    - Ganondorf will continue the dive for 30 frames, slow down, then transition to falling state.
+    - Ganondorf will continue the dive for 10 frames, slow down, then transition to falling state.
     - If ganondorf hits the ground during...
         - the slow down state, do normal landing. 
         - prior to slow down state, do landing hit box.
+    - If Ganondorf hits an opponent during ...
+        - the slowdown state, a weak hitbox will send them somewhat flying 
+        - prior to slowdown state, normal hitbox. 
 - Landing hitbox 
     - Create another hitbox that extends out from explosion along the ground only, similar 
     to down smash, but farther out. 
+    - If Ganondorf's dive lasts longer than 19 frames, 1.5x size of landing hitboxes / effects...
+        - ... but landing lag is also increased by 1.5 times.
+        - ... maybe take damage too?
 - Increase startup time, increase end lag of landing hitbox. 
-- The longer the move is in the air for, the greater the explosion hitbox size.
-- Hand hitbox should act as a pseudo grab. Think of it like the incineroar final smash spike into explosion.
+- Hand hitbox should act as a pseudo grab, ensuring opponent will be caught in explosion??? IDK if this is a good idea.
 
 # Down Special (Ground)
 - Replace with heavy ryu shoryuken 
