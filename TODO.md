@@ -1,5 +1,6 @@
 # Float
 - Implement a90float animation? Might be tough considering the variable float times. 
+- If jump button is held during teleport, that should translate into a jump
 
 # Up Smash 
 - buff the launch strength
@@ -8,8 +9,6 @@
 # Up Air 
 
 # Up Tilt
-- Move all effects / hitboxes ten units away from ganondorf
-- Bug: Furthest hitbox can send opponents zooming across the stage, fix the 368 angle on it. 
 
 # Down Air 
 - Reduce lignting bolt length / hitboxes by 10%.
