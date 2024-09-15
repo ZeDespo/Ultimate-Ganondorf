@@ -1,14 +1,14 @@
 # Float
 - Implement a90float animation? Might be tough considering the variable float times. 
-- If jump button is held during teleport, that should translate into a jump
+- If jump button is held during teleport, that should translate into a jump.
+    - Bug: Float will activate for a frame if this were the case. 
 
 # Up Smash 
-- buff the launch strength
-- Bring Robin's circle up higher so it's visible as an effect. 
 
 # Up Air 
 
 # Up Tilt
+- Allow cancel if and only if the attack connects at the current end frame. 
 
 # Down Air 
 - Reduce lignting bolt length / hitboxes by 10%.
@@ -30,6 +30,8 @@
     - Create another hitbox that extends out from explosion along the ground only, similar 
     to down smash, but farther out. 
 - Increase startup time, increase end lag of landing hitbox. 
+- The longer the move is in the air for, the greater the explosion hitbox size.
+- Hand hitbox should act as a pseudo grab. Think of it like the incineroar final smash spike into explosion.
 
 # Down Special (Ground)
 - Replace with heavy ryu shoryuken 
