@@ -11,11 +11,13 @@
 - Allow cancel if and only if the attack connects at the current end frame. 
 
 # Down Air 
-- Reduce lignting bolt length / hitboxes by 10%.
-- Non-spike hitboxes should send directly up.
-- Like Fox's shine, should give a tiny bit of verical velocity only once in the air. 
+- Like Fox's shine, should give a tiny bit of verical velocity only once in the air and not in float mode. 
 
 # Up Special 
+- Bug: If attempting to chain teleports from grounded position on successful first teleport 
+hit, Ganon freezes up. 
+    - Maybe it's time to Remove the float mechanic from the teleport and have the up-special 
+    spawn its own hitboxes like a normal move...
 
 # Down Special (Air)
 - If special button is held: 
@@ -49,6 +51,7 @@
 # Side special 
 - Make change to swingblend.prc to have cape use animation instead of general physics.
 
+# Down Tilt 
 
 # Dash attack 
 - Replace effects with electricity

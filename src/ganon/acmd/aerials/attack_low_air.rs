@@ -13,6 +13,7 @@ unsafe extern "C" fn ganon_attackairlw(agent: &mut L2CAgentBase) {
         );
         JostleModule::set_status(agent.module_accessor, false);
     }
+    macros::FT_MOTION_RATE(agent, 0.7675);
     frame(agent.lua_state_agent, 16.0);
     if macros::is_excute(agent) {
         macros::ATTACK(
@@ -21,7 +22,7 @@ unsafe extern "C" fn ganon_attackairlw(agent: &mut L2CAgentBase) {
             0,
             Hash40::new("top"),
             5.0,
-            60,
+            82,
             100,
             0,
             40,
