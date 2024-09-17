@@ -128,7 +128,6 @@ impl FloatStatus {
                     *FIGHTER_STATUS_KIND_ESCAPE_AIR_SLIDE,
                     *FIGHTER_STATUS_KIND_SPECIAL_S,
                     *FIGHTER_STATUS_KIND_SPECIAL_HI,
-                    *FIGHTER_GANON_STATUS_KIND_SPECIAL_N_TURN,
                 ]
                 .contains(&init_values.status_kind)
                 || (init_values.status_kind == *FIGHTER_STATUS_KIND_DAMAGE_AIR
