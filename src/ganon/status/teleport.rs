@@ -50,6 +50,12 @@ fn add_teleport_distance(direction: f32) -> f32 {
     direction
 }
 
+unsafe extern "C" fn end_teleport(fighter: &mut L2CFighterCommon) {
+    macros::WHOLE_HIT(fighter, *HIT_STATUS_NORMAL);
+    VisibilityModule::set_whole(fighter.module_accessor, true);
+    WorkModule::set_int(boma, TeleportStatus::Ready as i32, GANON_TELEPORT_WORK_INT);
+}
+
 unsafe extern "C" fn teleport_fx(fighter: &mut L2CFighterCommon) {
     macros::EFFECT(
         fighter,
@@ -94,7 +100,6 @@ impl Position2D {
             if y < 0.0 {
                 y = 0.0
             }
-            y = y + 0.1;
         }
         Position2D { x: x, y: y }
     }
@@ -180,7 +185,9 @@ unsafe extern "C" fn teleport_calculator_main_loop(fighter: &mut L2CFighterCommo
         }
         TeleportStatus::EndTransit => {
             teleport_fx(fighter);
-            if boma.is_situation(*SITUATION_KIND_GROUND) {
+            if boma.is_situation(*SITUATION_KIND_GROUND)
+                && StatusModule::prev_situation_kind(boma) == *SITUATION_KIND_AIR
+            {
                 GroundModule::correct(
                     fighter.module_accessor,
                     GroundCorrectKind(*GROUND_CORRECT_KIND_GROUND_CLIFF_STOP),
@@ -200,7 +207,7 @@ unsafe extern "C" fn teleport_calculator_main_loop(fighter: &mut L2CFighterCommo
             return 0.into();
         }
         TeleportStatus::End => {
-            if frame >= 28.0 {
+            if frame >= TELEPORT_FRAMES {
                 macros::WHOLE_HIT(fighter, *HIT_STATUS_NORMAL);
                 VisibilityModule::set_whole(boma, true);
                 WorkModule::set_int(boma, TeleportStatus::Ready as i32, GANON_TELEPORT_WORK_INT);
