@@ -194,6 +194,8 @@ unsafe extern "C" fn teleport_calculator_main_loop(fighter: &mut L2CFighterCommo
                         fighter.module_accessor,
                         *FIGHTER_KINETIC_TYPE_GROUND_STOP,
                     );
+                    macros::WHOLE_HIT(fighter, *HIT_STATUS_NORMAL);
+                    VisibilityModule::set_whole(boma, true);
                     fighter.change_status(FIGHTER_STATUS_KIND_WAIT.into(), false.into());
                     WorkModule::set_int(
                         boma,
