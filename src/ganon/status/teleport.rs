@@ -180,34 +180,23 @@ unsafe extern "C" fn teleport_calculator_main_loop(fighter: &mut L2CFighterCommo
         }
         TeleportStatus::EndTransit => {
             teleport_fx(fighter);
-            WorkModule::set_int(boma, TeleportStatus::End as i32, GANON_TELEPORT_WORK_INT);
-            if !WorkModule::is_flag(
-                fighter.module_accessor,
-                GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG,
-            ) {
-                if boma.is_situation(*SITUATION_KIND_GROUND) {
-                    GroundModule::correct(
-                        fighter.module_accessor,
-                        GroundCorrectKind(*GROUND_CORRECT_KIND_GROUND_CLIFF_STOP),
-                    );
-                    KineticModule::change_kinetic(
-                        fighter.module_accessor,
-                        *FIGHTER_KINETIC_TYPE_GROUND_STOP,
-                    );
-                    macros::WHOLE_HIT(fighter, *HIT_STATUS_NORMAL);
-                    VisibilityModule::set_whole(boma, true);
-                    fighter.change_status(FIGHTER_STATUS_KIND_WAIT.into(), false.into());
-                    WorkModule::set_int(
-                        boma,
-                        TeleportStatus::Ready as i32,
-                        GANON_TELEPORT_WORK_INT,
-                    );
-                    return 1.into();
-                }
-                // WorkModule::set_flag(boma, true, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG);
-                WorkModule::set_int(boma, TeleportStatus::End as i32, GANON_TELEPORT_WORK_INT);
-                KineticModule::clear_speed_all(boma);
+            if boma.is_situation(*SITUATION_KIND_GROUND) {
+                GroundModule::correct(
+                    fighter.module_accessor,
+                    GroundCorrectKind(*GROUND_CORRECT_KIND_GROUND_CLIFF_STOP),
+                );
+                KineticModule::change_kinetic(
+                    fighter.module_accessor,
+                    *FIGHTER_KINETIC_TYPE_GROUND_STOP,
+                );
+                macros::WHOLE_HIT(fighter, *HIT_STATUS_NORMAL);
+                VisibilityModule::set_whole(boma, true);
+                WorkModule::set_int(boma, TeleportStatus::Ready as i32, GANON_TELEPORT_WORK_INT);
+                fighter.change_status(FIGHTER_STATUS_KIND_WAIT.into(), false.into());
+                return 1.into();
             }
+            WorkModule::set_int(boma, TeleportStatus::End as i32, GANON_TELEPORT_WORK_INT);
+            KineticModule::clear_speed_all(boma);
             return 0.into();
         }
         TeleportStatus::End => {
