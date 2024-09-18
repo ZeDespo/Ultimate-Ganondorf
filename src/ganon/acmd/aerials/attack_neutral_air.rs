@@ -15,11 +15,7 @@ pub fn install() {
 }
 
 unsafe extern "C" fn ganon_attackairn(agent: &mut L2CAgentBase) {
-    if !in_teleport(agent.module_accessor) {
-        normal_nair(agent);
-    } else {
-        portal_hitbox(agent);
-    }
+    normal_nair(agent);
 }
 
 unsafe extern "C" fn normal_nair(agent: &mut L2CAgentBase) {
@@ -400,64 +396,60 @@ unsafe extern "C" fn portal_hitbox(agent: &mut L2CAgentBase) {
 }
 
 unsafe extern "C" fn effect_attackairn(agent: &mut L2CAgentBase) {
-    if !in_teleport(agent.module_accessor) {
-        if macros::is_excute(agent) {
-            macros::EFFECT_FOLLOW(
-                agent,
-                Hash40::new("ganon_final_hand_triforce"),
-                Hash40::new("handr"),
-                2.5,
-                1,
-                0,
-                0,
-                0,
-                0,
-                1,
-                true,
-            );
-            EffectModule::enable_sync_init_pos_last(agent.module_accessor);
-        }
-        frame(agent.lua_state_agent, 15.0);
-        if macros::is_excute(agent) {
-            macros::EFFECT_OFF_KIND(agent, Hash40::new("ganon_final_hand_triforce"), false, true);
-            macros::EFFECT_FOLLOW(
-                agent,
-                Hash40::new("ganon_raijin_bomb"),
-                Hash40::new("top"),
-                0,
-                10,
-                0,
-                0,
-                0,
-                0,
-                0.8,
-                true,
-            );
-            macros::LAST_EFFECT_SET_RATE(agent, 4.0);
-            EffectModule::enable_sync_init_pos_last(agent.module_accessor);
-        }
-        frame(agent.lua_state_agent, 17.0);
-        if macros::is_excute(agent) {
-            macros::EFFECT_OFF_KIND(agent, Hash40::new("ganon_majinken_flash"), false, false);
-        }
+    if macros::is_excute(agent) {
+        macros::EFFECT_FOLLOW(
+            agent,
+            Hash40::new("ganon_final_hand_triforce"),
+            Hash40::new("handr"),
+            2.5,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            true,
+        );
+        EffectModule::enable_sync_init_pos_last(agent.module_accessor);
+    }
+    frame(agent.lua_state_agent, 15.0);
+    if macros::is_excute(agent) {
+        macros::EFFECT_OFF_KIND(agent, Hash40::new("ganon_final_hand_triforce"), false, true);
+        macros::EFFECT_FOLLOW(
+            agent,
+            Hash40::new("ganon_raijin_bomb"),
+            Hash40::new("top"),
+            0,
+            10,
+            0,
+            0,
+            0,
+            0,
+            0.8,
+            true,
+        );
+        macros::LAST_EFFECT_SET_RATE(agent, 4.0);
+        EffectModule::enable_sync_init_pos_last(agent.module_accessor);
+    }
+    frame(agent.lua_state_agent, 17.0);
+    if macros::is_excute(agent) {
+        macros::EFFECT_OFF_KIND(agent, Hash40::new("ganon_majinken_flash"), false, false);
     }
 }
 
 unsafe extern "C" fn sound_attackairn(agent: &mut L2CAgentBase) {
-    if !in_teleport(agent.module_accessor) {
-        // frame(agent.lua_state_agent, 13.0);
-        // if macros::is_excute(agent) {
-        //     macros::PLAY_SEQUENCE(agent, Hash40::new("seq_ganon_rnd_attack"));
-        // }
-        frame(agent.lua_state_agent, 14.0);
-        if macros::is_excute(agent) {
-            macros::PLAY_SE(agent, Hash40::new("se_ganon_swing_l"));
-        }
-        // frame(agent.lua_state_agent, 15.0);
-        // if macros::is_excute(agent) {
-        //     macros::PLAY_SE(agent, Hash40::new("se_edge_attackair_n03"));
-        // }
+    // frame(agent.lua_state_agent, 13.0);
+    // if macros::is_excute(agent) {
+    //     macros::PLAY_SEQUENCE(agent, Hash40::new("seq_ganon_rnd_attack"));
+    // }
+    frame(agent.lua_state_agent, 14.0);
+    if macros::is_excute(agent) {
+        macros::PLAY_SE(agent, Hash40::new("se_ganon_swing_l"));
     }
+    // frame(agent.lua_state_agent, 15.0);
+    // if macros::is_excute(agent) {
+    //     macros::PLAY_SE(agent, Hash40::new("se_edge_attackair_n03"));
+    // }
 }
 
 unsafe extern "C" fn expression_attackairn(agent: &mut L2CAgentBase) {

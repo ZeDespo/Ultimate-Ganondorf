@@ -15,7 +15,6 @@ pub unsafe extern "C" fn ganon_frame(fighter: &mut L2CFighterCommon) {
         motion_module_frame: MotionModule::frame(boma),
         motion_kind: MotionModule::motion_kind(boma),
         kinetic_kind: KineticModule::get_kinetic_type(boma),
-        teleport_into_float: in_teleport(boma),
         start_float: WorkModule::is_flag(boma, GANON_START_FLOAT_FLAG),
         jump_button_pressed: ControlModule::check_button_on(boma, *CONTROL_PAD_BUTTON_JUMP),
     };
