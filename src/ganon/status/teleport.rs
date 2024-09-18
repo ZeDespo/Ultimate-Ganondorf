@@ -191,13 +191,23 @@ unsafe extern "C" fn teleport_calculator_main_loop(fighter: &mut L2CFighterCommo
                 } else {
                     TELEPORT_TO_FLOAT_FRAMES.into()
                 });
-                WorkModule::set_flag(boma, true, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG);
-                WorkModule::set_int(boma, TeleportStatus::Ready as i32, GANON_TELEPORT_WORK_INT);
+                // WorkModule::set_flag(boma, true, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG);
+                WorkModule::set_int(boma, TeleportStatus::End as i32, GANON_TELEPORT_WORK_INT);
                 KineticModule::clear_speed_all(boma);
             }
             return 0.into();
         }
         TeleportStatus::End => {
+            if frame >= 28.0 {
+                macros::WHOLE_HIT(fighter, *HIT_STATUS_NORMAL);
+                VisibilityModule::set_whole(boma, true);
+                WorkModule::set_int(boma, TeleportStatus::Ready as i32, GANON_TELEPORT_WORK_INT);
+                if fighter.global_table[0x16].get_i32() == *SITUATION_KIND_GROUND {
+                    fighter.change_status(FIGHTER_STATUS_KIND_WAIT.into(), false.into());
+                } else {
+                    fighter.change_status(FIGHTER_STATUS_KIND_FALL.into(), false.into());
+                }
+            }
             return 0.into();
         }
     }
