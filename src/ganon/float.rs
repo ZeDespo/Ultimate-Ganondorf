@@ -130,6 +130,7 @@ impl FloatStatus {
                     *FIGHTER_STATUS_KIND_SPECIAL_HI,
                 ]
                 .contains(&init_values.status_kind)
+                || !init_values.jump_button_pressed
             {
                 return FloatStatus::CannotFloat;
             }

@@ -156,6 +156,11 @@ unsafe extern "C" fn teleport_calculator_main_loop(fighter: &mut L2CFighterCommo
         ),
         TeleportStatus::PreTransit => {
             Position2D::next_teleport_position(boma).set_to_array(entry_id);
+            if frame == TELEPORT_START_INTANGIBILITY_FRAME {
+                macros::WHOLE_HIT(fighter, *HIT_STATUS_XLU);
+                VisibilityModule::set_whole(fighter.module_accessor, false);
+                JostleModule::set_status(fighter.module_accessor, false);
+            }
             if frame == TELEPORT_TRANSIT_FRAME {
                 KineticModule::clear_speed_all(boma);
                 WorkModule::set_int(
@@ -174,9 +179,6 @@ unsafe extern "C" fn teleport_calculator_main_loop(fighter: &mut L2CFighterCommo
                     y: teleport_position.y,
                 },
             );
-            macros::WHOLE_HIT(fighter, *HIT_STATUS_XLU);
-            VisibilityModule::set_whole(fighter.module_accessor, false);
-            JostleModule::set_status(fighter.module_accessor, false);
             GroundModule::set_correct(
                 fighter.module_accessor,
                 GroundCorrectKind(*GROUND_CORRECT_KIND_AIR),
@@ -209,6 +211,7 @@ unsafe extern "C" fn teleport_calculator_main_loop(fighter: &mut L2CFighterCommo
             return 0.into();
         }
         TeleportStatus::End => {
+            KineticModule::clear_speed_all(boma);
             if frame >= TELEPORT_FRAMES || MotionModule::is_end(boma) {
                 end_teleport(fighter);
                 if fighter.global_table[0x16].get_i32() == *SITUATION_KIND_GROUND {
@@ -224,10 +227,6 @@ unsafe extern "C" fn teleport_calculator_main_loop(fighter: &mut L2CFighterCommo
 }
 
 unsafe extern "C" fn teleport_calculator_exit(fighter: &mut L2CFighterCommon) -> L2CValue {
-    WorkModule::set_int(
-        fighter.module_accessor,
-        TeleportStatus::Ready as i32,
-        GANON_TELEPORT_WORK_INT,
-    );
+    end_teleport(fighter);
     0.into()
 }
