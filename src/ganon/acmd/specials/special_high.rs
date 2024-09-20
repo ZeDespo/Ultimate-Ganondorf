@@ -181,34 +181,16 @@ unsafe extern "C" fn ganon_teleport_eff(fighter: &mut L2CAgentBase) {
         );
         macros::LAST_EFFECT_SET_RATE(fighter, 1.875); // 2.5 == 30 frames
     }
-    frame(fighter.lua_state_agent, 35.0);
-    // if macros::is_excute(fighter) {
-    //     macros::EFFECT(
-    //         fighter,
-    //         Hash40::new("ganon_entry"),
-    //         Hash40::new("hip"),
-    //         0,
-    //         0,
-    //         0,
-    //         0,
-    //         0,
-    //         0,
-    //         0.6,
-    //         0,
-    //         0,
-    //         0,
-    //         0,
-    //         0,
-    //         0,
-    //         true,
-    //     );
-    //     macros::LAST_EFFECT_SET_RATE(fighter, 2.5);
-    // }
 }
 
 unsafe extern "C" fn ganon_teleport_snd(fighter: &mut L2CAgentBase) {
-    frame(fighter.lua_state_agent, 15.0);
+    frame(fighter.lua_state_agent, 8.0);
     if macros::is_excute(fighter) {
         macros::PLAY_SE(fighter, Hash40::new("se_ganon_appeal_h01"));
+    }
+    frame(fighter.lua_state_agent, TELEPORT_TRANSIT_FRAME);
+    if macros::is_excute(fighter) {
+        macros::STOP_SE(fighter, Hash40::new("se_ganon_appeal_h01"));
+        macros::PLAY_SE(fighter, Hash40::new("se_ganon_special_l01"));
     }
 }
