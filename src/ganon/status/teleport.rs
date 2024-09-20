@@ -188,7 +188,7 @@ unsafe extern "C" fn teleport_calculator_main_loop(fighter: &mut L2CFighterCommo
             );
         }
         TeleportStatus::EndTransit => {
-            teleport_fx(fighter);
+            // teleport_fx(fighter);
             if boma.is_situation(*SITUATION_KIND_GROUND)
                 && StatusModule::prev_situation_kind(boma) == *SITUATION_KIND_AIR
             {
