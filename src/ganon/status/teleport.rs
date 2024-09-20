@@ -53,7 +53,11 @@ fn add_teleport_distance(direction: f32) -> f32 {
 unsafe extern "C" fn end_teleport(fighter: &mut L2CFighterCommon) {
     macros::WHOLE_HIT(fighter, *HIT_STATUS_NORMAL);
     VisibilityModule::set_whole(fighter.module_accessor, true);
-    WorkModule::set_int(boma, TeleportStatus::Ready as i32, GANON_TELEPORT_WORK_INT);
+    WorkModule::set_int(
+        fighter.module_accessor,
+        TeleportStatus::Ready as i32,
+        GANON_TELEPORT_WORK_INT,
+    );
 }
 
 unsafe extern "C" fn teleport_fx(fighter: &mut L2CFighterCommon) {
@@ -152,7 +156,7 @@ unsafe extern "C" fn teleport_calculator_main_loop(fighter: &mut L2CFighterCommo
         ),
         TeleportStatus::PreTransit => {
             Position2D::next_teleport_position(boma).set_to_array(entry_id);
-            if frame == 16.0 {
+            if frame == TELEPORT_TRANSIT_FRAME {
                 KineticModule::clear_speed_all(boma);
                 WorkModule::set_int(
                     boma,
@@ -196,9 +200,7 @@ unsafe extern "C" fn teleport_calculator_main_loop(fighter: &mut L2CFighterCommo
                     fighter.module_accessor,
                     *FIGHTER_KINETIC_TYPE_GROUND_STOP,
                 );
-                macros::WHOLE_HIT(fighter, *HIT_STATUS_NORMAL);
-                VisibilityModule::set_whole(boma, true);
-                WorkModule::set_int(boma, TeleportStatus::Ready as i32, GANON_TELEPORT_WORK_INT);
+                end_teleport(fighter);
                 fighter.change_status(FIGHTER_STATUS_KIND_WAIT.into(), false.into());
                 return 1.into();
             }
@@ -207,10 +209,8 @@ unsafe extern "C" fn teleport_calculator_main_loop(fighter: &mut L2CFighterCommo
             return 0.into();
         }
         TeleportStatus::End => {
-            if frame >= TELEPORT_FRAMES {
-                macros::WHOLE_HIT(fighter, *HIT_STATUS_NORMAL);
-                VisibilityModule::set_whole(boma, true);
-                WorkModule::set_int(boma, TeleportStatus::Ready as i32, GANON_TELEPORT_WORK_INT);
+            if frame >= TELEPORT_FRAMES || MotionModule::is_end(boma) {
+                end_teleport(fighter);
                 if fighter.global_table[0x16].get_i32() == *SITUATION_KIND_GROUND {
                     fighter.change_status(FIGHTER_STATUS_KIND_WAIT.into(), false.into());
                 } else {

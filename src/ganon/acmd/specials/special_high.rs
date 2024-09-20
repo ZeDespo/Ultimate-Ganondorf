@@ -18,7 +18,9 @@ pub fn install() {
 /// Later handling is elsewhere.
 unsafe extern "C" fn ganon_teleport(agent: &mut L2CAgentBase) {
     macros::FT_MOTION_RATE(agent, 0.75);
-    frame(agent.lua_state_agent, 18.0);
+    frame(agent.lua_state_agent, TELEPORT_TRANSIT_FRAME);
+    macros::FT_MOTION_RATE(agent, 1.0);
+    frame(agent.lua_state_agent, TELEPORT_HITBOX_FRAME);
     for _ in 0..3 {
         if macros::is_excute(agent) {
             macros::ATTACK(
@@ -61,9 +63,54 @@ unsafe extern "C" fn ganon_teleport(agent: &mut L2CAgentBase) {
                 *ATTACK_REGION_NONE,
             );
         }
-        wait(agent.lua_state_agent, 4.0)
+        wait(agent.lua_state_agent, 4.0);
+        if macros::is_excute(agent) {
+            AttackModule::clear_all(agent.module_accessor);
+        }
     }
-    frame(agent.lua_state_agent, 28.0);
+    frame(agent.lua_state_agent, TELEPORT_FRAMES - 1.0);
+    if macros::is_excute(agent) {
+        macros::ATTACK(
+            agent,
+            0,
+            0,
+            Hash40::new("top"),
+            7.2,
+            90,
+            108,
+            0,
+            23,
+            14.0,
+            0.0,
+            13.0,
+            2.0,
+            None,
+            None,
+            None,
+            1.0,
+            1.0,
+            *ATTACK_SETOFF_KIND_OFF,
+            *ATTACK_LR_CHECK_POS,
+            false,
+            0,
+            0.0,
+            0,
+            false,
+            false,
+            false,
+            false,
+            true,
+            *COLLISION_SITUATION_MASK_GA,
+            *COLLISION_CATEGORY_MASK_ALL,
+            *COLLISION_PART_MASK_ALL,
+            false,
+            Hash40::new("collision_attr_purple"),
+            *ATTACK_SOUND_LEVEL_M,
+            *COLLISION_SOUND_ATTR_ELEC,
+            *ATTACK_REGION_NONE,
+        );
+    }
+    wait(agent.lua_state_agent, 1.0);
     if macros::is_excute(agent) {
         AttackModule::clear_all(agent.module_accessor);
     }

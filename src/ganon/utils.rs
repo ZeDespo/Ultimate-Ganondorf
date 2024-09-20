@@ -135,6 +135,8 @@ pub const FIGHTER_GANON_STATUS_KIND_BACKHAND: i32 = 0x1EE;
 pub const MAX_FLOAT_FRAMES: i32 = 91; // Float duration when activated normally.
 pub const TELEPORT_FRAMES: f32 = 43.0;
 pub const TELEPORT_AIR_TO_GROUND_CANCEL_FRAMES: f32 = 33.0;
+pub const TELEPORT_TRANSIT_FRAME: f32 = 24.0;
+pub const TELEPORT_HITBOX_FRAME: f32 = 26.0;
 
 pub trait BomaExt {
     unsafe fn prev_status_kind(&mut self) -> i32;
