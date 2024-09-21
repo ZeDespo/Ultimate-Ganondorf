@@ -1,3 +1,6 @@
+//! Contains the status script for Ganondorf's new up-special. 
+//! Allows Ganondorf to teleport depending on the left analog stick's direction. 
+
 use crate::ganon::utils::*;
 use crate::imports::*;
 

@@ -12,7 +12,6 @@
 - Like Fox's shine, should give a tiny bit of verical velocity only once in the air and not in float mode. 
 
 # Forward Smash 
-- Adjust hitboxes, as current implementation is lazy and won't hit small targets.
 
 # Up Special 
 
