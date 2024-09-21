@@ -252,7 +252,7 @@ unsafe extern "C" fn ganon_effect_attackdash(agent: &mut L2CAgentBase) {
             0,
             0,
             0,
-            1.5,
+            0.5,
             true,
         );
         EffectModule::enable_sync_init_pos_last(agent.module_accessor);
