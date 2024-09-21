@@ -244,7 +244,7 @@ unsafe extern "C" fn ganon_effect_attackdash(agent: &mut L2CAgentBase) {
         );
         macros::EFFECT_FOLLOW(
             agent,
-            Hash40::new("trail_thunder_bullet"),
+            Hash40::new("trail_thunder_shot"),
             Hash40::new("top"),
             0.0,
             8.0,
