@@ -195,7 +195,7 @@ unsafe extern "C" fn ganon_effect_attackdash(agent: &mut L2CAgentBase) {
     if macros::is_excute(agent) {
         macros::EFFECT_FLW_POS_NO_STOP(
             agent,
-            Hash40::new("ganon_appeal_aura"),
+            Hash40::new("sys_thunder"),
             Hash40::new("handr"),
             2,
             0,
