@@ -231,7 +231,7 @@ unsafe extern "C" fn ganon_effect_attackdash(agent: &mut L2CAgentBase) {
         );
         macros::EFFECT_FLW_POS_NO_STOP(
             agent,
-            Hash40::new("ganon_majinken_start"),
+            Hash40::new("sys_damage_elec"),
             Hash40::new("handr"),
             2,
             1,
@@ -244,7 +244,7 @@ unsafe extern "C" fn ganon_effect_attackdash(agent: &mut L2CAgentBase) {
         );
         macros::EFFECT_FOLLOW(
             agent,
-            Hash40::new("ganon_majinken_hold"),
+            Hash40::new("trail_thunder_bullet"),
             Hash40::new("top"),
             0.0,
             8.0,
