@@ -54,7 +54,6 @@ pub struct InitValues {
     pub entry_id: usize,
     pub motion_module_frame: f32,
     pub kinetic_kind: i32,
-    pub teleport_into_float: bool,
     pub start_float: bool,
     pub jump_button_pressed: bool,
 }
@@ -126,20 +125,19 @@ pub static mut GS: [GanonState; 8] = [GanonState {
 
 pub const GANON_TELEPORT_WORK_INT: i32 = 0x42069;
 pub const GANON_FLOAT_DURATION_WORK_INT: i32 = 0x42070;
-pub const GANON_TELEPORT_INTO_FLOAT_INIT_FLAG: i32 = 0x69420;
-pub const GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG: i32 = 0x69421;
-pub const GANON_TELEPORT_INTO_FLOAT_WAS_CANNOT_FLOAT_FLAG: i32 = 0x69422;
 pub const GANON_START_FLOAT_FLAG: i32 = 0x69423;
 pub const GANON_CAN_TELEPORT_FLAG: i32 = 0x69424;
 pub const GANON_PRE_FLOAT_MUTEX: i32 = 0x69425;
 pub const GANON_DOWN_TILT_2_FLAG: i32 = 0x69426;
-pub const GANON_END_FLOAT_HANDLER_FLAG: i32 = 0x69427;
 pub const FIGHTER_GANON_STATUS_KIND_PRE_TELEPORT: i32 = 0x1ED;
 pub const FIGHTER_GANON_STATUS_KIND_BACKHAND: i32 = 0x1EE;
 
 pub const MAX_FLOAT_FRAMES: i32 = 91; // Float duration when activated normally.
-pub const TELEPORT_TO_FLOAT_FRAMES: i32 = 35; // Float duration when using up-special.
-pub const TELEPORT_TO_FLOAT_CANCEL_FRAMES: i32 = 1;
+pub const TELEPORT_FRAMES: f32 = 43.0;
+pub const TELEPORT_AIR_TO_GROUND_CANCEL_FRAMES: f32 = 33.0;
+pub const TELEPORT_START_INTANGIBILITY_FRAME: f32 = 18.0;
+pub const TELEPORT_TRANSIT_FRAME: f32 = 24.0;
+pub const TELEPORT_HITBOX_FRAME: f32 = 26.0;
 
 pub trait BomaExt {
     unsafe fn prev_status_kind(&mut self) -> i32;
@@ -156,7 +154,6 @@ pub trait BomaExt {
     unsafe fn motion_module_frame(&mut self) -> f32;
     unsafe fn kinetic_kind(&mut self) -> i32;
 
-    unsafe fn teleport_into_float(&mut self) -> bool;
     unsafe fn start_float(&mut self) -> bool;
 
     unsafe fn jump_button_pressed(&mut self) -> bool;
@@ -205,10 +202,6 @@ impl BomaExt for BattleObjectModuleAccessor {
         KineticModule::get_kinetic_type(self)
     }
 
-    unsafe fn teleport_into_float(&mut self) -> bool {
-        in_teleport(self)
-    }
-
     unsafe fn start_float(&mut self) -> bool {
         WorkModule::is_flag(self, GANON_START_FLOAT_FLAG)
     }
@@ -222,11 +215,6 @@ impl BomaExt for BattleObjectModuleAccessor {
     unsafe fn set_float_duration(&mut self, n: i32) {
         WorkModule::set_int(self, n, GANON_FLOAT_DURATION_WORK_INT);
     }
-}
-
-/// Convenience function for checking teleport status via a handler flag.
-pub unsafe extern "C" fn in_teleport(boma: *mut BattleObjectModuleAccessor) -> bool {
-    WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG)
 }
 
 pub unsafe extern "C" fn triforce_hand_fx(agent: &mut L2CAgentBase, rate: f32) {

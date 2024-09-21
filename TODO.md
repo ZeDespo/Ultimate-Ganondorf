@@ -1,7 +1,5 @@
 # Float
 - Implement a90float animation? Might be tough considering the variable float times. 
-- If jump button is held during teleport, that should translate into a jump.
-    - Bug: Float will activate for a frame if this were the case. 
 
 # Up Smash 
 
@@ -13,11 +11,9 @@
 # Down Air 
 - Like Fox's shine, should give a tiny bit of verical velocity only once in the air and not in float mode. 
 
+# Forward Smash 
+
 # Up Special 
-- Bug: If attempting to chain teleports from grounded position on successful first teleport 
-hit, Ganon freezes up. 
-    - Maybe it's time to Remove the float mechanic from the teleport and have the up-special 
-    spawn its own hitboxes like a normal move...
 
 # Down Special (Air)
 - If special button is held: 
@@ -50,6 +46,7 @@ hit, Ganon freezes up.
 
 # Side special 
 - Make change to swingblend.prc to have cape use animation instead of general physics.
+- Make second hitbox lower that will also reflect. 
 
 # Down Tilt 
 
@@ -60,7 +57,6 @@ hit, Ganon freezes up.
 
 # General 
 - Sounds, expressions, and effects 
-- Redo common prc file due to grab air stall glitch
 
 ## Sounds safe to replace
 - se_ganon_swing_s

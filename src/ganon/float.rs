@@ -130,9 +130,7 @@ impl FloatStatus {
                     *FIGHTER_STATUS_KIND_SPECIAL_HI,
                 ]
                 .contains(&init_values.status_kind)
-                || (init_values.status_kind == *FIGHTER_STATUS_KIND_DAMAGE_AIR
-                    && init_values.teleport_into_float)
-                || (!init_values.jump_button_pressed && !init_values.teleport_into_float)
+                || !init_values.jump_button_pressed
             {
                 return FloatStatus::CannotFloat;
             }
@@ -148,9 +146,6 @@ impl FloatStatus {
     ) -> FloatStatus {
         if init_values.start_float {
             return FloatStatus::Floating(MAX_FLOAT_FRAMES);
-        }
-        if init_values.teleport_into_float {
-            return FloatStatus::Floating(boma.get_float_duration());
         }
         self
     }
@@ -218,29 +213,14 @@ impl Position2D {
 /// determine the current float status and handle each case.
 pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitValues) {
     let boma = &mut *fighter.module_accessor;
-    if WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG) {
-        println!("Teleport into float!");
-        WorkModule::set_flag(boma, false, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG);
-        WorkModule::set_flag(boma, true, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG);
-        return;
-    }
     println!("Original float state: {}", GS[iv.entry_id].float_status);
     GS[iv.entry_id].float_status = match GS[iv.entry_id].float_status {
         FloatStatus::CanFloat => GS[iv.entry_id]
             .float_status
             .transition_to_floating_if_able(boma, &iv),
-        FloatStatus::CannotFloat => {
-            if iv.teleport_into_float {
-                WorkModule::on_flag(boma, GANON_TELEPORT_INTO_FLOAT_WAS_CANNOT_FLOAT_FLAG);
-                GS[iv.entry_id]
-                    .float_status
-                    .transition_to_floating_if_able(boma, &iv)
-            } else {
-                GS[iv.entry_id]
-                    .float_status
-                    .transition_to_can_float_if_able(boma)
-            }
-        }
+        FloatStatus::CannotFloat => GS[iv.entry_id]
+            .float_status
+            .transition_to_can_float_if_able(boma),
         FloatStatus::Floating(_) => {
             let fs = GS[iv.entry_id]
                 .float_status
@@ -263,16 +243,6 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
                     *FIGHTER_STATUS_KIND_FALL_AERIAL,
                     true,
                 );
-            } else if iv.teleport_into_float {
-                WorkModule::turn_off_flag(boma, GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG);
-                macros::WHOLE_HIT(fighter, *HIT_STATUS_NORMAL);
-                VisibilityModule::set_whole(boma, true);
-                if WorkModule::is_flag(boma, GANON_TELEPORT_INTO_FLOAT_WAS_CANNOT_FLOAT_FLAG) {
-                    GS[iv.entry_id].float_status = FloatStatus::CannotFloat;
-                    WorkModule::off_flag(boma, GANON_TELEPORT_INTO_FLOAT_WAS_CANNOT_FLOAT_FLAG)
-                } else {
-                    GS[iv.entry_id].float_status = FloatStatus::CanFloat;
-                }
             } else if ![
                 *FIGHTER_STATUS_KIND_ESCAPE_AIR,
                 *FIGHTER_STATUS_KIND_ESCAPE_AIR_SLIDE,
@@ -283,31 +253,8 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
             }
         }
         FloatStatus::Floating(i) => {
-            if iv.teleport_into_float {
-                if i == TELEPORT_TO_FLOAT_FRAMES {
-                    StatusModule::change_status_request_from_script(
-                        boma,
-                        FIGHTER_STATUS_KIND_ATTACK_AIR.into(),
-                        false.into(),
-                    );
-                } else if i == 1 {
-                    StatusModule::change_status_request_from_script(
-                        boma,
-                        FIGHTER_STATUS_KIND_FALL.into(),
-                        false.into(),
-                    );
-                }
-            }
-            if i == TELEPORT_TO_FLOAT_FRAMES && iv.teleport_into_float {
-                StatusModule::change_status_request_from_script(
-                    boma,
-                    FIGHTER_STATUS_KIND_ATTACK_AIR.into(),
-                    false.into(),
-                );
-            }
             if iv.start_float {
                 macros::PLAY_SE(fighter, Hash40::new("se_ganon_float"));
-                CancelModule::enable_cancel(boma);
                 KineticModule::clear_speed_energy_id(boma, *FIGHTER_KINETIC_ENERGY_ID_GRAVITY);
                 // MotionModule::change_motion(
                 //     boma,
@@ -327,11 +274,7 @@ pub unsafe extern "C" fn ganon_float(fighter: &mut L2CFighterCommon, iv: &InitVa
             if KineticModule::get_kinetic_type(boma) != *FIGHTER_KINETIC_TYPE_MOTION_AIR {
                 KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_AIR);
             }
-            if i - 1 == 0 {
-                WorkModule::on_flag(boma, GANON_END_FLOAT_HANDLER_FLAG);
-            } else if !iv.teleport_into_float {
-                adjust_float_velocity(boma, &iv);
-            }
+            adjust_float_velocity(boma, &iv);
         }
         _ => GS[iv.entry_id].float_speed = Position2D::neutral(),
     }

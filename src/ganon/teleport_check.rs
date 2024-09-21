@@ -15,6 +15,8 @@ pub unsafe extern "C" fn teleport_check(fighter: &mut L2CFighterCommon) {
                 *FIGHTER_STATUS_KIND_DAMAGE_AIR,
                 *FIGHTER_STATUS_KIND_DAMAGE_FLY,
                 *FIGHTER_STATUS_KIND_DAMAGE_FLY_METEOR,
+                *FIGHTER_STATUS_KIND_DEAD,
+                *FIGHTER_STATUS_KIND_WIN,
             ]
             .contains(&boma.status_kind()))
         || boma.is_status(*FIGHTER_STATUS_KIND_CLIFF_CATCH)

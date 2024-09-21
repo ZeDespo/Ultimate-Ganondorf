@@ -1,3 +1,6 @@
+//! Contains the status script for Ganondorf's new up-special. 
+//! Allows Ganondorf to teleport depending on the left analog stick's direction. 
+
 use crate::ganon::utils::*;
 use crate::imports::*;
 
@@ -50,6 +53,16 @@ fn add_teleport_distance(direction: f32) -> f32 {
     direction
 }
 
+unsafe extern "C" fn end_teleport(fighter: &mut L2CFighterCommon) {
+    macros::WHOLE_HIT(fighter, *HIT_STATUS_NORMAL);
+    VisibilityModule::set_whole(fighter.module_accessor, true);
+    WorkModule::set_int(
+        fighter.module_accessor,
+        TeleportStatus::Ready as i32,
+        GANON_TELEPORT_WORK_INT,
+    );
+}
+
 unsafe extern "C" fn teleport_fx(fighter: &mut L2CFighterCommon) {
     macros::EFFECT(
         fighter,
@@ -94,7 +107,6 @@ impl Position2D {
             if y < 0.0 {
                 y = 0.0
             }
-            y = y + 0.1;
         }
         Position2D { x: x, y: y }
     }
@@ -147,7 +159,12 @@ unsafe extern "C" fn teleport_calculator_main_loop(fighter: &mut L2CFighterCommo
         ),
         TeleportStatus::PreTransit => {
             Position2D::next_teleport_position(boma).set_to_array(entry_id);
-            if frame == 16.0 {
+            if frame == TELEPORT_START_INTANGIBILITY_FRAME {
+                macros::WHOLE_HIT(fighter, *HIT_STATUS_XLU);
+                VisibilityModule::set_whole(fighter.module_accessor, false);
+                JostleModule::set_status(fighter.module_accessor, false);
+            }
+            if frame == TELEPORT_TRANSIT_FRAME {
                 KineticModule::clear_speed_all(boma);
                 WorkModule::set_int(
                     boma,
@@ -165,9 +182,6 @@ unsafe extern "C" fn teleport_calculator_main_loop(fighter: &mut L2CFighterCommo
                     y: teleport_position.y,
                 },
             );
-            macros::WHOLE_HIT(fighter, *HIT_STATUS_XLU);
-            VisibilityModule::set_whole(fighter.module_accessor, false);
-            JostleModule::set_status(fighter.module_accessor, false);
             GroundModule::set_correct(
                 fighter.module_accessor,
                 GroundCorrectKind(*GROUND_CORRECT_KIND_AIR),
@@ -179,25 +193,35 @@ unsafe extern "C" fn teleport_calculator_main_loop(fighter: &mut L2CFighterCommo
             );
         }
         TeleportStatus::EndTransit => {
-            teleport_fx(fighter);
-            WorkModule::set_int(boma, TeleportStatus::End as i32, GANON_TELEPORT_WORK_INT);
-            if !WorkModule::is_flag(
-                fighter.module_accessor,
-                GANON_TELEPORT_INTO_FLOAT_HANDLE_FLAG,
-            ) {
-                let cancellable = boma.is_situation(*SITUATION_KIND_GROUND);
-                boma.set_float_duration(if cancellable {
-                    TELEPORT_TO_FLOAT_CANCEL_FRAMES.into()
-                } else {
-                    TELEPORT_TO_FLOAT_FRAMES.into()
-                });
-                WorkModule::set_flag(boma, true, GANON_TELEPORT_INTO_FLOAT_INIT_FLAG);
-                WorkModule::set_int(boma, TeleportStatus::Ready as i32, GANON_TELEPORT_WORK_INT);
-                KineticModule::clear_speed_all(boma);
+            if boma.is_situation(*SITUATION_KIND_GROUND)
+                && StatusModule::prev_situation_kind(boma) == *SITUATION_KIND_AIR
+            {
+                GroundModule::correct(
+                    fighter.module_accessor,
+                    GroundCorrectKind(*GROUND_CORRECT_KIND_GROUND_CLIFF_STOP),
+                );
+                KineticModule::change_kinetic(
+                    fighter.module_accessor,
+                    *FIGHTER_KINETIC_TYPE_GROUND_STOP,
+                );
+                end_teleport(fighter);
+                fighter.change_status(FIGHTER_STATUS_KIND_WAIT.into(), false.into());
+                return 1.into();
             }
+            WorkModule::set_int(boma, TeleportStatus::End as i32, GANON_TELEPORT_WORK_INT);
+            KineticModule::clear_speed_all(boma);
             return 0.into();
         }
         TeleportStatus::End => {
+            KineticModule::clear_speed_all(boma);
+            if frame >= TELEPORT_FRAMES || MotionModule::is_end(boma) {
+                end_teleport(fighter);
+                if fighter.global_table[0x16].get_i32() == *SITUATION_KIND_GROUND {
+                    fighter.change_status(FIGHTER_STATUS_KIND_WAIT.into(), false.into());
+                } else {
+                    fighter.change_status(FIGHTER_STATUS_KIND_FALL.into(), false.into());
+                }
+            }
             return 0.into();
         }
     }
@@ -205,10 +229,6 @@ unsafe extern "C" fn teleport_calculator_main_loop(fighter: &mut L2CFighterCommo
 }
 
 unsafe extern "C" fn teleport_calculator_exit(fighter: &mut L2CFighterCommon) -> L2CValue {
-    WorkModule::set_int(
-        fighter.module_accessor,
-        TeleportStatus::Ready as i32,
-        GANON_TELEPORT_WORK_INT,
-    );
+    end_teleport(fighter);
     0.into()
 }

@@ -1,7 +1,8 @@
-//! This function just deals with the ground special attack's startup. How the rest of
-//! the move is handled belongs to `crate::ganon::omni_teleport`.
-use crate::imports::*;
+//! ACMD for Ganondorf's teleport. 
+//! Although we use a different status kind for teleport, that status kind 
+//! SOMEHOW picks up these acmd values. 
 use crate::ganon::utils::*;
+use crate::imports::*;
 
 pub fn install() {
     Agent::new("ganon")
@@ -16,10 +17,108 @@ pub fn install() {
 
 /// Take that base teleport from Ultimate S, but only handle the entry animation.
 /// Later handling is elsewhere.
-unsafe extern "C" fn ganon_teleport(fighter: &mut L2CAgentBase) {
-    macros::FT_MOTION_RATE(fighter, 0.75);
+unsafe extern "C" fn ganon_teleport(agent: &mut L2CAgentBase) {
+    macros::FT_MOTION_RATE(agent, 0.75);
+    frame(agent.lua_state_agent, TELEPORT_TRANSIT_FRAME);
+    macros::FT_MOTION_RATE(agent, 1.0);
+    frame(agent.lua_state_agent, TELEPORT_HITBOX_FRAME);
+    for _ in 0..3 {
+        if macros::is_excute(agent) {
+            macros::ATTACK(
+                agent,
+                0,
+                0,
+                Hash40::new("top"),
+                1.1,
+                365,
+                100,
+                18,
+                0,
+                14.0,
+                0.0,
+                13.0,
+                2.0,
+                None,
+                None,
+                None,
+                1.0,
+                1.0,
+                *ATTACK_SETOFF_KIND_OFF,
+                *ATTACK_LR_CHECK_POS,
+                false,
+                0,
+                0.0,
+                0,
+                false,
+                false,
+                false,
+                false,
+                true,
+                *COLLISION_SITUATION_MASK_GA,
+                *COLLISION_CATEGORY_MASK_ALL,
+                *COLLISION_PART_MASK_ALL,
+                false,
+                Hash40::new("collision_attr_purple"),
+                *ATTACK_SOUND_LEVEL_M,
+                *COLLISION_SOUND_ATTR_ELEC,
+                *ATTACK_REGION_NONE,
+            );
+        }
+        wait(agent.lua_state_agent, 4.0);
+        if macros::is_excute(agent) {
+            AttackModule::clear_all(agent.module_accessor);
+        }
+    }
+    frame(agent.lua_state_agent, TELEPORT_FRAMES - 1.0);
+    if macros::is_excute(agent) {
+        macros::ATTACK(
+            agent,
+            0,
+            0,
+            Hash40::new("top"),
+            7.2,
+            90,
+            108,
+            0,
+            23,
+            14.0,
+            0.0,
+            13.0,
+            2.0,
+            None,
+            None,
+            None,
+            1.0,
+            1.0,
+            *ATTACK_SETOFF_KIND_OFF,
+            *ATTACK_LR_CHECK_POS,
+            false,
+            0,
+            0.0,
+            0,
+            false,
+            false,
+            false,
+            false,
+            true,
+            *COLLISION_SITUATION_MASK_GA,
+            *COLLISION_CATEGORY_MASK_ALL,
+            *COLLISION_PART_MASK_ALL,
+            false,
+            Hash40::new("collision_attr_purple"),
+            *ATTACK_SOUND_LEVEL_M,
+            *COLLISION_SOUND_ATTR_ELEC,
+            *ATTACK_REGION_NONE,
+        );
+    }
+    wait(agent.lua_state_agent, 1.0);
+    if macros::is_excute(agent) {
+        AttackModule::clear_all(agent.module_accessor);
+    }
 }
 
+// Create two teleport entry gates: at Ganondorf's base position and where he 
+// ends up after teleporting.
 unsafe extern "C" fn ganon_teleport_eff(fighter: &mut L2CAgentBase) {
     for _ in 0..6 {
         if macros::is_excute(fighter) {
@@ -62,7 +161,7 @@ unsafe extern "C" fn ganon_teleport_eff(fighter: &mut L2CAgentBase) {
         );
         macros::LAST_EFFECT_SET_RATE(fighter, 2.5);
     }
-    frame(fighter.lua_state_agent, 35.0);
+    frame(fighter.lua_state_agent, TELEPORT_TRANSIT_FRAME + 2.0);
     if macros::is_excute(fighter) {
         macros::EFFECT(
             fighter,
@@ -83,13 +182,18 @@ unsafe extern "C" fn ganon_teleport_eff(fighter: &mut L2CAgentBase) {
             0,
             true,
         );
-        macros::LAST_EFFECT_SET_RATE(fighter, 2.5);
+        macros::LAST_EFFECT_SET_RATE(fighter, 1.875); // 2.5 == 30 frames
     }
 }
 
 unsafe extern "C" fn ganon_teleport_snd(fighter: &mut L2CAgentBase) {
-    frame(fighter.lua_state_agent, 15.0);
+    frame(fighter.lua_state_agent, 8.0);
     if macros::is_excute(fighter) {
         macros::PLAY_SE(fighter, Hash40::new("se_ganon_appeal_h01"));
+    }
+    frame(fighter.lua_state_agent, TELEPORT_TRANSIT_FRAME);
+    if macros::is_excute(fighter) {
+        macros::STOP_SE(fighter, Hash40::new("se_ganon_appeal_h01"));
+        macros::PLAY_SE(fighter, Hash40::new("se_ganon_special_l01"));
     }
 }
