@@ -15,6 +15,10 @@ pub fn install() {
 }
 
 unsafe extern "C" fn ganon_attackairn(agent: &mut L2CAgentBase) {
+    normal_nair(agent);
+}
+
+unsafe extern "C" fn normal_nair(agent: &mut L2CAgentBase) {
     frame(agent.lua_state_agent, 1.0);
     macros::FT_MOTION_RATE(agent, 0.5);
     frame(agent.lua_state_agent, 3.0);
@@ -81,6 +85,316 @@ unsafe extern "C" fn ganon_attackairn(agent: &mut L2CAgentBase) {
     }
 }
 
+// 6 frames for every 1 successful hitbox
+unsafe extern "C" fn portal_hitbox(agent: &mut L2CAgentBase) {
+    // macros::FT_MOTION_RATE(agent, 0.87879);
+    frame(agent.lua_state_agent, 0.1);
+    if macros::is_excute(agent) {
+        WorkModule::on_flag(
+            agent.module_accessor,
+            *FIGHTER_STATUS_ATTACK_AIR_FLAG_ENABLE_LANDING,
+        );
+    }
+    frame(agent.lua_state_agent, 5.0);
+    for _ in 0..4 {
+        if macros::is_excute(agent) {
+            // macros::ATTACK(
+            //     agent,
+            //     0,
+            //     0,
+            //     Hash40::new("hip"),
+            //     1.1,
+            //     361,
+            //     100,
+            //     1,
+            //     0,
+            //     12.0,
+            //     0.0,
+            //     0.0,
+            //     0.0,
+            //     None,
+            //     None,
+            //     None,
+            //     1.0,
+            //     0.0,
+            //     *ATTACK_SETOFF_KIND_OFF,
+            //     *ATTACK_LR_CHECK_POS,
+            //     false,
+            //     0,
+            //     0.0,
+            //     0,
+            //     false,
+            //     false,
+            //     false,
+            //     false,
+            //     true,
+            //     *COLLISION_SITUATION_MASK_GA,
+            //     *COLLISION_CATEGORY_MASK_ALL,
+            //     *COLLISION_PART_MASK_ALL,
+            //     false,
+            //     Hash40::new("collision_attr_purple"),
+            //     *ATTACK_SOUND_LEVEL_M,
+            //     *COLLISION_SOUND_ATTR_ELEC,
+            //     *ATTACK_REGION_NONE,
+            // );
+            // top is foot
+            macros::ATTACK(
+                agent,
+                0,
+                0,
+                Hash40::new("top"),
+                1.1,
+                361,
+                100,
+                18,
+                0,
+                4.0,
+                0.0,
+                10.0,
+                0.0,
+                None,
+                None,
+                None,
+                1.0,
+                1.0,
+                *ATTACK_SETOFF_KIND_OFF,
+                *ATTACK_LR_CHECK_POS,
+                false,
+                0,
+                0.0,
+                0,
+                false,
+                false,
+                false,
+                false,
+                true,
+                *COLLISION_SITUATION_MASK_GA,
+                *COLLISION_CATEGORY_MASK_ALL,
+                *COLLISION_PART_MASK_ALL,
+                false,
+                Hash40::new("collision_attr_purple"),
+                *ATTACK_SOUND_LEVEL_M,
+                *COLLISION_SOUND_ATTR_ELEC,
+                *ATTACK_REGION_NONE,
+            );
+            macros::ATTACK(
+                agent,
+                1,
+                0,
+                Hash40::new("top"),
+                1.1,
+                90,
+                100,
+                18,
+                0,
+                6.0,
+                0.0,
+                4.0,
+                0.0,
+                None,
+                None,
+                None,
+                1.0,
+                1.0,
+                *ATTACK_SETOFF_KIND_OFF,
+                *ATTACK_LR_CHECK_POS,
+                false,
+                0,
+                0.0,
+                0,
+                false,
+                false,
+                false,
+                false,
+                true,
+                *COLLISION_SITUATION_MASK_GA,
+                *COLLISION_CATEGORY_MASK_ALL,
+                *COLLISION_PART_MASK_ALL,
+                false,
+                Hash40::new("collision_attr_purple"),
+                *ATTACK_SOUND_LEVEL_M,
+                *COLLISION_SOUND_ATTR_ELEC,
+                *ATTACK_REGION_NONE,
+            );
+            macros::ATTACK(
+                agent,
+                2,
+                0,
+                Hash40::new("top"),
+                1.1,
+                270,
+                100,
+                18,
+                0,
+                6.0,
+                0.0,
+                20.0,
+                0.0,
+                None,
+                None,
+                None,
+                1.0,
+                1.0,
+                *ATTACK_SETOFF_KIND_OFF,
+                *ATTACK_LR_CHECK_POS,
+                false,
+                0,
+                0.0,
+                0,
+                false,
+                false,
+                false,
+                false,
+                true,
+                *COLLISION_SITUATION_MASK_GA,
+                *COLLISION_CATEGORY_MASK_ALL,
+                *COLLISION_PART_MASK_ALL,
+                false,
+                Hash40::new("collision_attr_purple"),
+                *ATTACK_SOUND_LEVEL_M,
+                *COLLISION_SOUND_ATTR_ELEC,
+                *ATTACK_REGION_NONE,
+            );
+            macros::ATTACK(
+                agent,
+                3,
+                0,
+                Hash40::new("hip"),
+                1.1,
+                45,
+                100,
+                18,
+                0,
+                6.0,
+                2.5,
+                -5.0,
+                0.0,
+                None,
+                None,
+                None,
+                1.0,
+                1.0,
+                *ATTACK_SETOFF_KIND_OFF,
+                *ATTACK_LR_CHECK_POS,
+                false,
+                0,
+                0.0,
+                0,
+                false,
+                false,
+                false,
+                false,
+                true,
+                *COLLISION_SITUATION_MASK_GA,
+                *COLLISION_CATEGORY_MASK_ALL,
+                *COLLISION_PART_MASK_ALL,
+                false,
+                Hash40::new("collision_attr_purple"),
+                *ATTACK_SOUND_LEVEL_M,
+                *COLLISION_SOUND_ATTR_ELEC,
+                *ATTACK_REGION_NONE,
+            );
+            macros::ATTACK(
+                agent,
+                4,
+                0,
+                Hash40::new("hip"),
+                1.1,
+                180,
+                100,
+                18,
+                0,
+                6.0,
+                -2.5,
+                5.0,
+                0.0,
+                None,
+                None,
+                None,
+                1.0,
+                1.0,
+                *ATTACK_SETOFF_KIND_OFF,
+                *ATTACK_LR_CHECK_POS,
+                false,
+                0,
+                0.0,
+                0,
+                false,
+                false,
+                false,
+                false,
+                true,
+                *COLLISION_SITUATION_MASK_GA,
+                *COLLISION_CATEGORY_MASK_ALL,
+                *COLLISION_PART_MASK_ALL,
+                false,
+                Hash40::new("collision_attr_purple"),
+                *ATTACK_SOUND_LEVEL_M,
+                *COLLISION_SOUND_ATTR_ELEC,
+                *ATTACK_REGION_NONE,
+            );
+        }
+        wait(agent.lua_state_agent, 1.0);
+        if macros::is_excute(agent) {
+            AttackModule::clear_all(agent.module_accessor);
+        }
+    }
+    wait(agent.lua_state_agent, 1.0);
+    if macros::is_excute(agent) {
+        macros::ATTACK(
+            agent,
+            0,
+            0,
+            Hash40::new("hip"),
+            7.0,
+            90,
+            108,
+            0,
+            23,
+            12.0,
+            0.0,
+            0.0,
+            0.0,
+            None,
+            None,
+            None,
+            1.0,
+            1.0,
+            *ATTACK_SETOFF_KIND_OFF,
+            *ATTACK_LR_CHECK_POS,
+            false,
+            0,
+            0.0,
+            0,
+            false,
+            false,
+            false,
+            false,
+            true,
+            *COLLISION_SITUATION_MASK_GA,
+            *COLLISION_CATEGORY_MASK_ALL,
+            *COLLISION_PART_MASK_ALL,
+            false,
+            Hash40::new("collision_attr_purple"),
+            *ATTACK_SOUND_LEVEL_L,
+            *COLLISION_SOUND_ATTR_ELEC,
+            *ATTACK_REGION_NONE,
+        );
+    }
+    macros::FT_MOTION_RATE(agent, 0.4);
+    wait(agent.lua_state_agent, 2.0);
+    if macros::is_excute(agent) {
+        AttackModule::clear_all(agent.module_accessor);
+    }
+    frame(agent.lua_state_agent, 17.0);
+    if macros::is_excute(agent) {
+        WorkModule::off_flag(
+            agent.module_accessor,
+            *FIGHTER_STATUS_ATTACK_AIR_FLAG_ENABLE_LANDING,
+        );
+    }
+}
+
 unsafe extern "C" fn effect_attackairn(agent: &mut L2CAgentBase) {
     if macros::is_excute(agent) {
         macros::EFFECT_FOLLOW(
@@ -124,10 +438,18 @@ unsafe extern "C" fn effect_attackairn(agent: &mut L2CAgentBase) {
 }
 
 unsafe extern "C" fn sound_attackairn(agent: &mut L2CAgentBase) {
+    // frame(agent.lua_state_agent, 13.0);
+    // if macros::is_excute(agent) {
+    //     macros::PLAY_SEQUENCE(agent, Hash40::new("seq_ganon_rnd_attack"));
+    // }
     frame(agent.lua_state_agent, 14.0);
     if macros::is_excute(agent) {
         macros::PLAY_SE(agent, Hash40::new("se_ganon_swing_l"));
     }
+    // frame(agent.lua_state_agent, 15.0);
+    // if macros::is_excute(agent) {
+    //     macros::PLAY_SE(agent, Hash40::new("se_edge_attackair_n03"));
+    // }
 }
 
 unsafe extern "C" fn expression_attackairn(agent: &mut L2CAgentBase) {

@@ -1,6 +1,5 @@
-//! ACMD for Ganondorf's teleport. 
-//! Although we use a different status kind for teleport, that status kind 
-//! SOMEHOW picks up these acmd values. 
+//! This function just deals with the ground special attack's startup. How the rest of
+//! the move is handled belongs to `crate::ganon::omni_teleport`.
 use crate::ganon::utils::*;
 use crate::imports::*;
 
@@ -117,8 +116,6 @@ unsafe extern "C" fn ganon_teleport(agent: &mut L2CAgentBase) {
     }
 }
 
-// Create two teleport entry gates: at Ganondorf's base position and where he 
-// ends up after teleporting.
 unsafe extern "C" fn ganon_teleport_eff(fighter: &mut L2CAgentBase) {
     for _ in 0..6 {
         if macros::is_excute(fighter) {
