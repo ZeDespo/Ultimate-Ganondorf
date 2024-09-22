@@ -2,6 +2,7 @@ use super::utils::*;
 use crate::ganon::{
     down_tilt_followup::down_tilt_followup_input_checker, float::ganon_float,
     float_check::float_check, teleport_check::teleport_check, warlock_punch::warlock_punch,
+    down_air_stall::down_air_stall,
 };
 use crate::imports::*;
 
@@ -24,6 +25,7 @@ pub unsafe extern "C" fn ganon_frame(fighter: &mut L2CFighterCommon) {
     warlock_punch(fighter, &iv);
     teleport_check(fighter); // Removed InitValue
     down_tilt_followup_input_checker(fighter);
+    down_air_stall(fighter);
 }
 
 pub fn install() {

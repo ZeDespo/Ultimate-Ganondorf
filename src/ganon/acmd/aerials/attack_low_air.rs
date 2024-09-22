@@ -1,10 +1,23 @@
 //! D-Air can be cancelled on frame 30 instead of frame 32.
 use crate::imports::*;
+use crate::ganon::utils::*;
 
 const DAIR_LENGTH: f32 = 30.0;
 const DAIR_FRAME: f32 = 17.0;
 
 unsafe extern "C" fn ganon_attackairlw(agent: &mut L2CAgentBase) {
+    if macros::is_excute(agent) {
+        let boma = &mut *agent.module_accessor;
+
+        if !WorkModule::is_flag(agent.module_accessor, GANON_DOWN_AIR_STALL_FLAG)
+        && !boma.is_floating() {
+            WorkModule::on_flag(agent.module_accessor, GANON_DOWN_AIR_STALL_FLAG);
+
+            WorkModule::on_flag(agent.module_accessor, *FIGHTER_INSTANCE_WORK_ID_FLAG_NO_SPEED_OPERATION_CHK);
+            macros::SET_SPEED_EX(agent, 0, 1.45, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN);
+            WorkModule::off_flag(agent.module_accessor, *FIGHTER_INSTANCE_WORK_ID_FLAG_NO_SPEED_OPERATION_CHK);
+        }
+    }
     frame(agent.lua_state_agent, 4.0);
     if macros::is_excute(agent) {
         WorkModule::on_flag(
