@@ -120,8 +120,8 @@ unsafe extern "C" fn dash_attack_hitbox(agent: &mut L2CAgentBase, angle: u64, da
 // Hitbox on 16, 18, 20, with 22 hitting far way.
 unsafe extern "C" fn ganon_attackdash(agent: &mut L2CAgentBase) {
     frame(agent.lua_state_agent, 1.0);
-    macros::FT_MOTION_RATE(agent, 0.8);
-    frame(agent.lua_state_agent, 11.0);
+    macros::FT_MOTION_RATE(agent, 0.7286);
+    frame(agent.lua_state_agent, 14.0);
     macros::FT_MOTION_RATE(agent, 1.0);
     frame(agent.lua_state_agent, 16.0);
     for _ in 0..3 {
