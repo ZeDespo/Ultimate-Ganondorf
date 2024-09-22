@@ -125,6 +125,7 @@ pub static mut GS: [GanonState; 8] = [GanonState {
 
 pub const GANON_TELEPORT_WORK_INT: i32 = 0x42069;
 pub const GANON_FLOAT_DURATION_WORK_INT: i32 = 0x42070;
+pub const GANON_DOWN_SPECIAL_AIR_DURATION_FLAG: i32 = 0x69420;
 pub const GANON_START_FLOAT_FLAG: i32 = 0x69423;
 pub const GANON_CAN_TELEPORT_FLAG: i32 = 0x69424;
 pub const GANON_PRE_FLOAT_MUTEX: i32 = 0x69425;

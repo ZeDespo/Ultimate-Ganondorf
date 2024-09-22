@@ -1,7 +1,8 @@
 //! This function is for the ground/landing hitbox for piledrive
-use crate::imports::*;
+use crate::{ganon::utils::GANON_DOWN_SPECIAL_AIR_DURATION_FLAG, imports::*};
 
 unsafe extern "C" fn game_specialairs(agent: &mut L2CAgentBase) {
+    let increase_power = WorkModule::is_flag(agent.module_accessor, GANON_DOWN_SPECIAL_AIR_DURATION_FLAG);
     frame(agent.lua_state_agent, 1.0);
     if macros::is_excute(agent) {
         macros::ATTACK(
@@ -87,6 +88,7 @@ unsafe extern "C" fn game_specialairs(agent: &mut L2CAgentBase) {
         );
     }
     frame(agent.lua_state_agent, 7.0);
+    let size = if increase_power {48.0} else {18.0};
     if macros::is_excute(agent) {
         macros::ATTACK(
             agent,
@@ -98,7 +100,7 @@ unsafe extern "C" fn game_specialairs(agent: &mut L2CAgentBase) {
             60,
             0,
             20,
-            18.0,
+            size,
             0.0,
             0.0,
             0.0,
