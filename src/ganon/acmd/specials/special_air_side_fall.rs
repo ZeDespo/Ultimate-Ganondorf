@@ -1,5 +1,5 @@
 //! This function is for the dive hitbox for piledrive
-use crate::imports::*;
+use crate::{ganon::utils::GANON_DOWN_SPECIAL_AIR_DURATION_FLAG, imports::*};
 
 unsafe extern "C" fn ganon_specialairsfall(agent: &mut L2CAgentBase) {
     if macros::is_excute(agent) {
@@ -12,7 +12,6 @@ unsafe extern "C" fn ganon_specialairsfall(agent: &mut L2CAgentBase) {
             *FIGHTER_GANON_EXPLOSION_FALL_SETTING_FALL,
             *FIGHTER_GANON_STATUS_WORK_ID_INT_EXPLOSION_FALL_SETTING,
         );
-
         macros::ATTACK(
             agent,
             0,
@@ -43,7 +42,7 @@ unsafe extern "C" fn ganon_specialairsfall(agent: &mut L2CAgentBase) {
             false,
             false,
             true,
-            *COLLISION_SITUATION_MASK_GA,
+            *COLLISION_SITUATION_MASK_A,
             *COLLISION_CATEGORY_MASK_ALL,
             *COLLISION_PART_MASK_ALL,
             false,
@@ -52,6 +51,49 @@ unsafe extern "C" fn ganon_specialairsfall(agent: &mut L2CAgentBase) {
             *COLLISION_SOUND_ATTR_PUNCH,
             *ATTACK_REGION_PUNCH,
         );
+        macros::ATTACK(
+            agent,
+            1,
+            0,
+            Hash40::new("handl"),
+            8.0,
+            80,
+            100,
+            0,
+            50,
+            3.5,
+            0.0,
+            0.0,
+            0.0,
+            None,
+            None,
+            None,
+            1.0,
+            1.0,
+            *ATTACK_SETOFF_KIND_ON,
+            *ATTACK_LR_CHECK_POS,
+            false,
+            10,
+            0.0,
+            0,
+            false,
+            false,
+            false,
+            false,
+            true,
+            *COLLISION_SITUATION_MASK_G,
+            *COLLISION_CATEGORY_MASK_ALL,
+            *COLLISION_PART_MASK_ALL,
+            false,
+            Hash40::new("collision_attr_paralyze"),
+            *ATTACK_SOUND_LEVEL_L,
+            *COLLISION_SOUND_ATTR_PUNCH,
+            *ATTACK_REGION_PUNCH,
+        );
+    }
+    frame(agent.lua_state_agent, 19.0);
+    if macros::is_excute(agent) {
+        WorkModule::on_flag(agent.module_accessor, GANON_DOWN_SPECIAL_AIR_DURATION_FLAG);
     }
 }
 

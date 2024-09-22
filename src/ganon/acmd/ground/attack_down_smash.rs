@@ -14,10 +14,10 @@ unsafe extern "C" fn extended_hitbox_helper(
             0,
             Hash40::new("top"),
             8.0,
-            90,
-            100,
+            80,
+            104,
             0,
-            40,
+            51,
             5.0,
             x_offset,
             y_offset,
@@ -25,7 +25,7 @@ unsafe extern "C" fn extended_hitbox_helper(
             None,
             None,
             None,
-            1.0,
+            0.76,
             1.0,
             *ATTACK_SETOFF_KIND_OFF,
             *ATTACK_LR_CHECK_POS,
@@ -108,6 +108,10 @@ unsafe extern "C" fn ganon_attacklw4(agent: &mut L2CAgentBase) {
             17,
             false,
         );
+    }
+    frame(agent.lua_state_agent, 20.0);
+    if macros::is_excute(agent) {
+        AttackModule::clear(agent.module_accessor, 0, false);
     }
     frame(agent.lua_state_agent, 25.0);
     macros::FT_MOTION_RATE(agent, 1.25);
