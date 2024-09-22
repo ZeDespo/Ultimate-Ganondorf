@@ -126,6 +126,7 @@ pub static mut GS: [GanonState; 8] = [GanonState {
 pub const GANON_TELEPORT_WORK_INT: i32 = 0x42069;
 pub const GANON_FLOAT_DURATION_WORK_INT: i32 = 0x42070;
 pub const GANON_DOWN_SPECIAL_AIR_DURATION_FLAG: i32 = 0x69420;
+pub const GANON_DOWN_AIR_STALL_FLAG: i32 = 0x69421;
 pub const GANON_START_FLOAT_FLAG: i32 = 0x69423;
 pub const GANON_CAN_TELEPORT_FLAG: i32 = 0x69424;
 pub const GANON_PRE_FLOAT_MUTEX: i32 = 0x69425;
@@ -156,6 +157,7 @@ pub trait BomaExt {
     unsafe fn kinetic_kind(&mut self) -> i32;
 
     unsafe fn start_float(&mut self) -> bool;
+    unsafe fn is_floating(&mut self) -> bool;
 
     unsafe fn jump_button_pressed(&mut self) -> bool;
     // Or could do
@@ -205,6 +207,10 @@ impl BomaExt for BattleObjectModuleAccessor {
 
     unsafe fn start_float(&mut self) -> bool {
         WorkModule::is_flag(self, GANON_START_FLOAT_FLAG)
+    }
+
+    unsafe fn is_floating(&mut self) -> bool {
+        matches!(GS[self.entry_id()].float_status, FloatStatus::Floating(_))
     }
 
     unsafe fn jump_button_pressed(&mut self) -> bool {
