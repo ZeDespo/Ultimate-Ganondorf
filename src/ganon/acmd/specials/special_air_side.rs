@@ -65,19 +65,27 @@ unsafe extern "C" fn explosion_hitbox(
 }
 
 unsafe extern "C" fn ground_shockwave_hitbox(agent: &mut L2CAgentBase, id: u64, z_offset: f32) {
-    let kbg: i32 = 104 - ((id as i32 - 1) * 10);
+    let mut kbg: i32 = 104 - ((id as i32 - 1) * 10);
+    let increase_power =
+        WorkModule::is_flag(agent.module_accessor, GANON_DOWN_SPECIAL_AIR_DURATION_FLAG);
+    let (mut d, mut s) = (8.0, 5.0);
+    if increase_power {
+        kbg += 10;
+        d = 10.0;
+        s = 6.5;
+    }
     if macros::is_excute(agent) {
         macros::ATTACK(
             agent,
             id,
             0,
             Hash40::new("top"),
-            8.0,
+            d,
             90,
             kbg,
             0,
             51,
-            5.0,
+            s,
             0.0,
             0.0,
             z_offset,
@@ -114,20 +122,20 @@ unsafe extern "C" fn game_specialairs(agent: &mut L2CAgentBase) {
     explosion_hitbox(agent, 0, 20.0, 361, 5.5, 100, 40);
     ground_shockwave_hitbox(agent, 1, 8.0);
     ground_shockwave_hitbox(agent, 2, -8.0);
-    ground_shockwave_hitbox(agent, 3, 14.0);
-    ground_shockwave_hitbox(agent, 4, -14.0);
-    ground_shockwave_hitbox(agent, 5, 24.0);
-    ground_shockwave_hitbox(agent, 6, -24.0);
     frame(agent.lua_state_agent, 3.0);
     if macros::is_excute(agent) {
         AttackModule::clear_all(agent.module_accessor);
     }
     explosion_hitbox(agent, 1, 12.0, 73, 11.0, 80, 30);
+    ground_shockwave_hitbox(agent, 3, 16.0);
+    ground_shockwave_hitbox(agent, 4, -16.0);
     frame(agent.lua_state_agent, 7.0);
     if macros::is_excute(agent) {
         AttackModule::clear_all(agent.module_accessor);
     }
     explosion_hitbox(agent, 2, 8.0, 45, 22.0, 70, 30);
+    ground_shockwave_hitbox(agent, 5, 26.0);
+    ground_shockwave_hitbox(agent, 6, -26.0);
     frame(agent.lua_state_agent, 14.0);
     if macros::is_excute(agent) {
         AttackModule::clear_all(agent.module_accessor);
