@@ -1,4 +1,27 @@
 
+
+
+void FUN_7100010bc0(void *param_1)
+
+{
+  GroundCorrectKind GVar1;
+  L2CValue LStack_40;
+  L2CValue LStack_30;
+  
+  lib::L2CValue::L2CValue(&LStack_30,SITUATION_KIND_AIR);
+  lua2cpp::L2CFighterBase::set_situation(param_1,SUB81(&LStack_30,0));
+  lib::L2CValue::~L2CValue(&LStack_30);
+  lib::L2CValue::L2CValue(&LStack_40,GROUND_CORRECT_KIND_AIR);
+  GVar1 = lib::L2CValue::as_integer(&LStack_40);
+  app::lua_bind::GroundModule__correct_impl
+            (*(BattleObjectModuleAccessor **)((long)param_1 + 0x40),GVar1);
+  lib::L2CValue::~L2CValue(&LStack_40);
+  return;
+}
+
+
+
+
 void FUN_710000a9f0(L2CFighterCommon *param_1)
 
 {
