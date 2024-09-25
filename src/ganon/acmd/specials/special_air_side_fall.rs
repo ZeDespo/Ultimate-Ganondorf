@@ -1,5 +1,5 @@
 //! This function is for the dive hitbox for piledrive
-use crate::{ganon::utils::GANON_DOWN_SPECIAL_AIR_DURATION_FLAG, imports::*};
+use crate::{ganon::utils::GANON_DOWN_SPECIAL_AIR_MULTIPLIER_FLAG, imports::*};
 
 unsafe extern "C" fn ganon_specialairsfall(agent: &mut L2CAgentBase) {
     if macros::is_excute(agent) {
@@ -93,7 +93,10 @@ unsafe extern "C" fn ganon_specialairsfall(agent: &mut L2CAgentBase) {
     }
     frame(agent.lua_state_agent, 19.0);
     if macros::is_excute(agent) {
-        WorkModule::on_flag(agent.module_accessor, GANON_DOWN_SPECIAL_AIR_DURATION_FLAG);
+        WorkModule::on_flag(
+            agent.module_accessor,
+            GANON_DOWN_SPECIAL_AIR_MULTIPLIER_FLAG,
+        );
     }
 }
 
@@ -117,7 +120,15 @@ unsafe extern "C" fn effect_specialairsfall(agent: &mut L2CAgentBase) {
 
 pub fn install() {
     Agent::new("ganon")
-        .game_acmd("game_specialairsfall", ganon_specialairsfall, Priority::Default)
-        .game_acmd("effect_specialairsfall", effect_specialairsfall, Priority::Default)
+        .game_acmd(
+            "game_specialairsfall",
+            ganon_specialairsfall,
+            Priority::Default,
+        )
+        .game_acmd(
+            "effect_specialairsfall",
+            effect_specialairsfall,
+            Priority::Default,
+        )
         .install();
 }

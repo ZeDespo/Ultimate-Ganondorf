@@ -1,5 +1,7 @@
 use crate::{
-    ganon::utils::{BomaExt, GANON_DOWN_SPECIAL_AIR_DURATION_FLAG},
+    ganon::utils::{
+        BomaExt, GANON_DOWN_SPECIAL_AIR_CONTINUE_FLAG, GANON_DOWN_SPECIAL_AIR_MULTIPLIER_FLAG,
+    },
     imports::*,
 };
 
@@ -7,7 +9,7 @@ unsafe extern "C" fn ganon_speciallw_pre(fighter: &mut L2CFighterCommon) -> L2CV
     if fighter.global_table[0x16].get_i32() == *SITUATION_KIND_AIR {
         WorkModule::off_flag(
             fighter.module_accessor,
-            GANON_DOWN_SPECIAL_AIR_DURATION_FLAG,
+            GANON_DOWN_SPECIAL_AIR_MULTIPLIER_FLAG,
         );
         StatusModule::set_status_kind_interrupt(
             fighter.module_accessor,
@@ -17,6 +19,14 @@ unsafe extern "C" fn ganon_speciallw_pre(fighter: &mut L2CFighterCommon) -> L2CV
     }
 
     original_status(Pre, fighter, *FIGHTER_STATUS_KIND_SPECIAL_LW)(fighter)
+}
+
+unsafe extern "C" fn ganon_special_air_s_fall_pre(fighter: &mut L2CFighterCommon) -> L2CValue {
+    WorkModule::on_flag(
+        fighter.module_accessor,
+        GANON_DOWN_SPECIAL_AIR_CONTINUE_FLAG,
+    );
+    original_status(Pre, fighter, *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_FALL)(fighter)
 }
 
 unsafe extern "C" fn ganon_special_air_s_fall_main(fighter: &mut L2CFighterCommon) -> L2CValue {
@@ -52,11 +62,18 @@ unsafe extern "C" fn ganon_special_air_s_fall_main_loop(
     fighter: &mut L2CFighterCommon,
 ) -> L2CValue {
     let boma = &mut *fighter.module_accessor;
-    if boma.is_situation(*SITUATION_KIND_GROUND) {
-        fighter.change_status(
-            FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_END.into(),
-            false.into(),
-        );
+    let continue_fall = WorkModule::is_flag(boma, GANON_DOWN_SPECIAL_AIR_CONTINUE_FLAG);
+    if continue_fall {
+        if boma.is_situation(*SITUATION_KIND_GROUND) {
+            fighter.change_status(
+                FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_END.into(),
+                false.into(),
+            );
+        }
+        if ControlModule::check_button_off(boma, *CONTROL_PAD_BUTTON_SPECIAL) {
+            WorkModule::off_flag(boma, GANON_DOWN_SPECIAL_AIR_CONTINUE_FLAG);
+            fighter.change_status(FIGHTER_STATUS_KIND_FALL.into(), false.into());
+        }
     }
     0.into()
 }
@@ -64,6 +81,11 @@ unsafe extern "C" fn ganon_special_air_s_fall_main_loop(
 pub fn install() {
     Agent::new("ganon")
         .status(Pre, *FIGHTER_STATUS_KIND_SPECIAL_LW, ganon_speciallw_pre)
+        .status(
+            Pre,
+            *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_FALL,
+            ganon_special_air_s_fall_pre,
+        )
         .status(
             Main,
             *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_FALL,
