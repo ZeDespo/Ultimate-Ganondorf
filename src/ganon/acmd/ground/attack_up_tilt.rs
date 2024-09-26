@@ -141,11 +141,6 @@ unsafe extern "C" fn ganon_utilt(fighter: &mut L2CAgentBase) {
     if macros::is_excute(fighter) {
         AttackModule::clear_all(fighter.module_accessor);
     }
-    frame(fighter.lua_state_agent, 26.0);
-    macros::FT_MOTION_RATE(fighter, /*FSM*/ 0.75);
-    if macros::is_excute(fighter) {
-        CancelModule::enable_cancel(fighter.module_accessor);
-    }
 }
 
 unsafe extern "C" fn ganon_utilt_eff(agent: &mut L2CAgentBase) {
