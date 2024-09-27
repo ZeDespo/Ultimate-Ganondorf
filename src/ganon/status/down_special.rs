@@ -73,31 +73,42 @@ unsafe extern "C" fn ganon_special_air_s_fall_main_loop(
         }
         if ControlModule::check_button_off(boma, *CONTROL_PAD_BUTTON_SPECIAL) {
             WorkModule::off_flag(boma, GANON_DOWN_SPECIAL_AIR_CONTINUE_FLAG);
-            WorkModule::set_int(boma, 10, GANON_DOWN_SPECIAL_AIR_COUNTDOWN_FLOAT);
+            WorkModule::set_int(boma, 25, GANON_DOWN_SPECIAL_AIR_COUNTDOWN_FLOAT);
             return 1.into();
         }
-    } else if boma.is_situation(*SITUATION_KIND_AIR) {
-        let countdown = WorkModule::get_int(boma, GANON_DOWN_SPECIAL_AIR_COUNTDOWN_FLOAT);
-        sv_kinetic_energy!(
-            set_speed,
-            fighter,
-            FIGHTER_KINETIC_ENERGY_ID_GRAVITY,
-            KineticModule::get_sum_speed_y(boma, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN) / 2.0
-        );
-        if countdown == 0 {
-            if boma.is_situation(*SITUATION_KIND_AIR) {
-                KineticModule::clear_speed_all(boma);
-                KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_FALL);
-                fighter.change_status(FIGHTER_STATUS_KIND_FALL.into(), false.into());
-            } else {
-                fighter.change_status(FIGHTER_STATUS_KIND_LANDING.into(), false.into());
-            }
-        } else {
-            WorkModule::set_int(boma, countdown - 1, GANON_DOWN_SPECIAL_AIR_COUNTDOWN_FLOAT);
-        }
     } else {
-        fighter.change_status(FIGHTER_STATUS_KIND_LANDING.into(), false.into());
-        return 1.into();
+        let countdown = WorkModule::get_int(boma, GANON_DOWN_SPECIAL_AIR_COUNTDOWN_FLOAT);
+        if boma.is_situation(*SITUATION_KIND_AIR) {
+            if countdown <= 10 && countdown > 0 {
+                sv_kinetic_energy!(
+                    set_speed,
+                    fighter,
+                    FIGHTER_KINETIC_ENERGY_ID_GRAVITY,
+                    KineticModule::get_sum_speed_y(boma, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN)
+                        / 1.9
+                );
+            } else if countdown == 0 {
+                if boma.is_situation(*SITUATION_KIND_AIR) {
+                    KineticModule::clear_speed_all(boma);
+                    KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_FALL);
+                    fighter.change_status(FIGHTER_STATUS_KIND_FALL.into(), false.into());
+                } else {
+                    fighter.change_status(FIGHTER_STATUS_KIND_LANDING.into(), false.into());
+                }
+                return 0.into();
+            }
+            WorkModule::set_int(boma, countdown - 1, GANON_DOWN_SPECIAL_AIR_COUNTDOWN_FLOAT);
+        } else {
+            if countdown <= 10 {
+                fighter.change_status(FIGHTER_STATUS_KIND_LANDING.into(), false.into());
+                return 1.into();
+            } else {
+                fighter.change_status(
+                    FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_END.into(),
+                    false.into(),
+                );
+            }
+        }
     }
     0.into()
 }
