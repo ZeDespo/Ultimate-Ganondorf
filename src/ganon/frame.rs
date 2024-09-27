@@ -1,8 +1,8 @@
 use super::utils::*;
 use crate::ganon::{
-    down_tilt_followup::down_tilt_followup_input_checker, float::ganon_float,
-    float_check::float_check, teleport_check::teleport_check, warlock_punch::warlock_punch,
-    down_air_stall::down_air_stall,
+    down_air_stall::down_air_stall, down_tilt_followup::down_tilt_followup_input_checker,
+    float::ganon_float, float_check::float_check, teleport_check::teleport_check,
+    warlock_punch::warlock_punch,
 };
 use crate::imports::*;
 
@@ -20,6 +20,10 @@ pub unsafe extern "C" fn ganon_frame(fighter: &mut L2CFighterCommon) {
         jump_button_pressed: ControlModule::check_button_on(boma, *CONTROL_PAD_BUTTON_JUMP),
     };
     println!("{:#?}", iv);
+    println!(
+        "{}",
+        KineticModule::get_sum_speed_y(boma, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN)
+    );
     float_check(fighter, &iv);
     ganon_float(fighter, &iv);
     warlock_punch(fighter, &iv);
