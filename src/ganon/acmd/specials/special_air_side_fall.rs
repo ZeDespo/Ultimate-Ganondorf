@@ -1,7 +1,7 @@
 //! This function is for the dive hitbox for piledrive
 use crate::{
     ganon::utils::{
-        GANON_DOWN_SPECIAL_AIR_CONTINUE_FLAG, GANON_DOWN_SPECIAL_AIR_COUNTDOWN_FLOAT,
+        GANON_DOWN_SPECIAL_AIR_CONTINUE_FLAG, GANON_DOWN_SPECIAL_AIR_COUNTDOWN_INT,
         GANON_DOWN_SPECIAL_AIR_MULTIPLIER_FLAG,
     },
     imports::*,
@@ -9,15 +9,16 @@ use crate::{
 
 unsafe extern "C" fn use_weak_hitbox(agent: &mut L2CAgentBase) -> bool {
     if !WorkModule::is_flag(agent.module_accessor, GANON_DOWN_SPECIAL_AIR_CONTINUE_FLAG) {
-        let countdown = WorkModule::get_int(
-            agent.module_accessor,
-            GANON_DOWN_SPECIAL_AIR_COUNTDOWN_FLOAT,
-        );
+        let countdown =
+            WorkModule::get_int(agent.module_accessor, GANON_DOWN_SPECIAL_AIR_COUNTDOWN_INT);
         return countdown > 0 && countdown <= 10;
     }
     false
 }
 
+/// specialairsfall is on a 19 frame cycle. At any time in those 19 frames, the player
+/// can release the special button to transition into slowdown state of down special air,
+/// and should be reflected in the hitboxes.
 unsafe extern "C" fn ganon_specialairsfall(agent: &mut L2CAgentBase) {
     if macros::is_excute(agent) {
         macros::SET_SPEED_EX(agent, 0, -5, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN);

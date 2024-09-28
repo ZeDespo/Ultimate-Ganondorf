@@ -1,6 +1,6 @@
 use crate::{
     ganon::utils::{
-        BomaExt, GANON_DOWN_SPECIAL_AIR_CONTINUE_FLAG, GANON_DOWN_SPECIAL_AIR_COUNTDOWN_FLOAT,
+        BomaExt, GANON_DOWN_SPECIAL_AIR_CONTINUE_FLAG, GANON_DOWN_SPECIAL_AIR_COUNTDOWN_INT,
         GANON_DOWN_SPECIAL_AIR_MULTIPLIER_FLAG,
     },
     imports::*,
@@ -30,11 +30,12 @@ unsafe extern "C" fn ganon_special_air_s_fall_pre(fighter: &mut L2CFighterCommon
     WorkModule::set_int(
         fighter.module_accessor,
         -1,
-        GANON_DOWN_SPECIAL_AIR_COUNTDOWN_FLOAT,
+        GANON_DOWN_SPECIAL_AIR_COUNTDOWN_INT,
     );
     original_status(Pre, fighter, *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_FALL)(fighter)
 }
 
+/// Exact same as the vanilla, but need to recreate it to use a new main loop.
 unsafe extern "C" fn ganon_special_air_s_fall_main(fighter: &mut L2CFighterCommon) -> L2CValue {
     let boma = fighter.module_accessor;
     let fvar6 = WorkModule::get_param_float(
@@ -64,6 +65,12 @@ unsafe extern "C" fn ganon_special_air_s_fall_main(fighter: &mut L2CFighterCommo
     ))
 }
 
+/// The player can let go of the special button at any time during this move. After
+/// a certain number of frames, Ganondorf will begin a slowdown period of 10 frames.
+/// If Ganondorf is in the air after the 10 frames expire, he'll transition to a fall.
+/// If he hits the ground during the 10 frames or after, he'll land on the ground.
+/// If Ganondorf lands BEFORE the 10 frame countdown initiates, act as if the player
+/// still had the special button is held, which is the normal execution of the move.
 unsafe extern "C" fn ganon_special_air_s_fall_main_loop(
     fighter: &mut L2CFighterCommon,
 ) -> L2CValue {
@@ -78,11 +85,11 @@ unsafe extern "C" fn ganon_special_air_s_fall_main_loop(
         }
         if ControlModule::check_button_off(boma, *CONTROL_PAD_BUTTON_SPECIAL) {
             WorkModule::off_flag(boma, GANON_DOWN_SPECIAL_AIR_CONTINUE_FLAG);
-            WorkModule::set_int(boma, 25, GANON_DOWN_SPECIAL_AIR_COUNTDOWN_FLOAT);
+            WorkModule::set_int(boma, 25, GANON_DOWN_SPECIAL_AIR_COUNTDOWN_INT);
             return 1.into();
         }
     } else {
-        let countdown = WorkModule::get_int(boma, GANON_DOWN_SPECIAL_AIR_COUNTDOWN_FLOAT);
+        let countdown = WorkModule::get_int(boma, GANON_DOWN_SPECIAL_AIR_COUNTDOWN_INT);
         if boma.is_situation(*SITUATION_KIND_AIR) {
             if countdown <= 10 && countdown > 0 {
                 sv_kinetic_energy!(
@@ -103,7 +110,7 @@ unsafe extern "C" fn ganon_special_air_s_fall_main_loop(
                 return 0.into();
             }
             if !AttackModule::is_infliction(boma, *COLLISION_KIND_MASK_HIT) {
-                WorkModule::set_int(boma, countdown - 1, GANON_DOWN_SPECIAL_AIR_COUNTDOWN_FLOAT);
+                WorkModule::set_int(boma, countdown - 1, GANON_DOWN_SPECIAL_AIR_COUNTDOWN_INT);
             }
         } else {
             if countdown <= 10 {
