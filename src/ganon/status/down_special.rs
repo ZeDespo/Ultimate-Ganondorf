@@ -102,7 +102,7 @@ unsafe extern "C" fn ganon_special_air_s_fall_main_loop(
                 }
                 return 0.into();
             }
-            if !AttackModule::is_infliction_status(boma, *COLLISION_KIND_MASK_HIT) {
+            if !AttackModule::is_infliction(boma, *COLLISION_KIND_MASK_HIT) {
                 WorkModule::set_int(boma, countdown - 1, GANON_DOWN_SPECIAL_AIR_COUNTDOWN_FLOAT);
             }
         } else {
