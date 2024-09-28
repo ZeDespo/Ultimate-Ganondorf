@@ -27,6 +27,11 @@ unsafe extern "C" fn ganon_special_air_s_fall_pre(fighter: &mut L2CFighterCommon
         fighter.module_accessor,
         GANON_DOWN_SPECIAL_AIR_CONTINUE_FLAG,
     );
+    WorkModule::set_int(
+        fighter.module_accessor,
+        -1,
+        GANON_DOWN_SPECIAL_AIR_COUNTDOWN_FLOAT,
+    );
     original_status(Pre, fighter, *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_FALL)(fighter)
 }
 
@@ -97,7 +102,9 @@ unsafe extern "C" fn ganon_special_air_s_fall_main_loop(
                 }
                 return 0.into();
             }
-            WorkModule::set_int(boma, countdown - 1, GANON_DOWN_SPECIAL_AIR_COUNTDOWN_FLOAT);
+            if !AttackModule::is_infliction_status(boma, *COLLISION_KIND_MASK_HIT) {
+                WorkModule::set_int(boma, countdown - 1, GANON_DOWN_SPECIAL_AIR_COUNTDOWN_FLOAT);
+            }
         } else {
             if countdown <= 10 {
                 fighter.change_status(FIGHTER_STATUS_KIND_LANDING.into(), false.into());

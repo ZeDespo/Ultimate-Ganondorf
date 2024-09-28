@@ -20,10 +20,6 @@ pub unsafe extern "C" fn ganon_frame(fighter: &mut L2CFighterCommon) {
         jump_button_pressed: ControlModule::check_button_on(boma, *CONTROL_PAD_BUTTON_JUMP),
     };
     println!("{:#?}", iv);
-    println!(
-        "{}",
-        KineticModule::get_sum_speed_y(boma, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN)
-    );
     float_check(fighter, &iv);
     ganon_float(fighter, &iv);
     warlock_punch(fighter, &iv);
