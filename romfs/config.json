@@ -32,7 +32,10 @@
             "fighter/ganon/motion/body/c00/a90float.nuanmb",
             "fighter/ganon/motion/body/c00/c02attacklw32.nuanmb",
             "fighter/ganon/motion/body/c00/d01specialairsbackhand.nuanmb",
-            "fighter/ganon/motion/body/c00/d01specialsbackhand.nuanmb"
+            "fighter/ganon/motion/body/c00/d01specialsbackhand.nuanmb",
+            "fighter/ganon/motion/body/c00/main.nuanmb",
+            "fighter/ganon/motion/body/c00/motion_list.bin",
+            "fighter/ganon/motion/body/c00/update.prc"
         ],
         "fighter/ganon/c01": [
             "fighter/ganon/motion/body/c01/a90float.nuanmb",
