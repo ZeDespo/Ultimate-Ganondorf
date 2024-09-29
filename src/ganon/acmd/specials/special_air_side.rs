@@ -1,5 +1,5 @@
 //! This function is for the ground/landing hitbox for piledrive
-use crate::{ganon::utils::GANON_DOWN_SPECIAL_AIR_DURATION_FLAG, imports::*};
+use crate::{ganon::utils::GANON_DOWN_SPECIAL_AIR_MULTIPLIER_FLAG, imports::*};
 
 unsafe extern "C" fn explosion_hitbox(
     agent: &mut L2CAgentBase,
@@ -10,8 +10,10 @@ unsafe extern "C" fn explosion_hitbox(
     kbg: i32,
     bkb: i32,
 ) {
-    let increase_power =
-        WorkModule::is_flag(agent.module_accessor, GANON_DOWN_SPECIAL_AIR_DURATION_FLAG);
+    let increase_power = WorkModule::is_flag(
+        agent.module_accessor,
+        GANON_DOWN_SPECIAL_AIR_MULTIPLIER_FLAG,
+    );
     let shield_damage = if id == 0 { 4 } else { 1 };
     let (mut d, mut s) = (damage, size);
     let (mut k, mut b) = (kbg, bkb);
@@ -66,8 +68,10 @@ unsafe extern "C" fn explosion_hitbox(
 
 unsafe extern "C" fn ground_shockwave_hitbox(agent: &mut L2CAgentBase, id: u64, z_offset: f32) {
     let mut kbg: i32 = 104 - ((id as i32 - 1) * 10);
-    let increase_power =
-        WorkModule::is_flag(agent.module_accessor, GANON_DOWN_SPECIAL_AIR_DURATION_FLAG);
+    let increase_power = WorkModule::is_flag(
+        agent.module_accessor,
+        GANON_DOWN_SPECIAL_AIR_MULTIPLIER_FLAG,
+    );
     let (mut d, mut s) = (8.0, 5.0);
     if increase_power {
         kbg += 10;

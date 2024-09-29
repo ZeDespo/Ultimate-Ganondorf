@@ -1,8 +1,8 @@
 use super::utils::*;
 use crate::ganon::{
-    down_tilt_followup::down_tilt_followup_input_checker, float::ganon_float,
-    float_check::float_check, teleport_check::teleport_check, warlock_punch::warlock_punch,
-    down_air_stall::down_air_stall,
+    down_air_stall::down_air_stall, down_tilt_followup::down_tilt_followup_input_checker,
+    float::ganon_float, float_check::float_check, teleport_check::teleport_check,
+    warlock_punch::warlock_punch,
 };
 use crate::imports::*;
 
