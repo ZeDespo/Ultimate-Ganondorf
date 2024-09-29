@@ -23,7 +23,7 @@ unsafe extern "C" fn ganon_specialairsfall(agent: &mut L2CAgentBase) {
     if macros::is_excute(agent) {
         macros::SET_SPEED_EX(agent, 0, -5, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN);
     }
-    for i in 1..19 {
+    for i in 1..20 {
         frame(agent.lua_state_agent, i as f32);
         let damage: f32;
         let kbg: i32;
@@ -53,6 +53,7 @@ unsafe extern "C" fn ganon_specialairsfall(agent: &mut L2CAgentBase) {
                     GANON_DOWN_SPECIAL_AIR_MULTIPLIER_FLAG,
                 );
             }
+            AttackModule::clear_all(agent.module_accessor);
             macros::ATTACK(
                 agent,
                 0,

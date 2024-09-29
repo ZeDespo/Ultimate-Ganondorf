@@ -35,19 +35,10 @@ unsafe extern "C" fn ganon_special_air_s_fall_pre(fighter: &mut L2CFighterCommon
     original_status(Pre, fighter, *FIGHTER_GANON_STATUS_KIND_SPECIAL_AIR_S_FALL)(fighter)
 }
 
-/// Exact same as the vanilla, but need to recreate it to use a new main loop.
+/// Exact same as the vanilla, but we don't need the part where ganondorf dies first
+/// for the catch fall.
 unsafe extern "C" fn ganon_special_air_s_fall_main(fighter: &mut L2CFighterCommon) -> L2CValue {
     let boma = fighter.module_accessor;
-    let fvar6 = WorkModule::get_param_float(
-        boma,
-        0xfea97fe73,
-        hash40("special_s_fall_check_dead_offset_y"),
-    );
-    WorkModule::set_float(
-        boma,
-        fvar6,
-        *FIGHTER_INSTANCE_WORK_ID_FLOAT_CHECK_DEAD_OFFSET_Y,
-    );
     MotionModule::change_motion(
         boma,
         Hash40::new("special_air_s_fall"),
@@ -85,6 +76,7 @@ unsafe extern "C" fn ganon_special_air_s_fall_main_loop(
         }
         if ControlModule::check_button_off(boma, *CONTROL_PAD_BUTTON_SPECIAL) {
             WorkModule::off_flag(boma, GANON_DOWN_SPECIAL_AIR_CONTINUE_FLAG);
+            WorkModule::off_flag(boma, GANON_DOWN_SPECIAL_AIR_MULTIPLIER_FLAG);
             WorkModule::set_int(boma, 25, GANON_DOWN_SPECIAL_AIR_COUNTDOWN_INT);
             return 1.into();
         }
@@ -101,8 +93,7 @@ unsafe extern "C" fn ganon_special_air_s_fall_main_loop(
                 );
             } else if countdown == 0 {
                 if boma.is_situation(*SITUATION_KIND_AIR) {
-                    KineticModule::clear_speed_all(boma);
-                    KineticModule::change_kinetic(boma, *FIGHTER_KINETIC_TYPE_MOTION_FALL);
+                    // KineticModule::clear_speed_all(boma);
                     fighter.change_status(FIGHTER_STATUS_KIND_FALL.into(), false.into());
                 } else {
                     fighter.change_status(FIGHTER_STATUS_KIND_LANDING.into(), false.into());
@@ -110,7 +101,7 @@ unsafe extern "C" fn ganon_special_air_s_fall_main_loop(
                 return 0.into();
             }
             if !AttackModule::is_infliction(boma, *COLLISION_KIND_MASK_HIT) {
-                WorkModule::set_int(boma, countdown - 1, GANON_DOWN_SPECIAL_AIR_COUNTDOWN_INT);
+                WorkModule::dec_int(boma, GANON_DOWN_SPECIAL_AIR_COUNTDOWN_INT);
             }
         } else {
             if countdown <= 10 {
