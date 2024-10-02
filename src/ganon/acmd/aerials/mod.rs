@@ -1,3 +1,4 @@
+mod attack_back_air;
 mod attack_forward_air;
 mod attack_low_air;
 mod attack_neutral_air;
@@ -8,4 +9,5 @@ pub fn install() {
     attack_neutral_air::install();
     attack_low_air::install();
     attack_forward_air::install();
+    attack_back_air::install();
 }
