@@ -143,7 +143,7 @@ pub const TELEPORT_START_INTANGIBILITY_FRAME: f32 = 18.0;
 pub const TELEPORT_TRANSIT_FRAME: f32 = 24.0;
 pub const TELEPORT_HITBOX_FRAME: f32 = 26.0;
 
-pub const FIGHTER_GANON_GENERATE_ARTICLE_BACK_AIR: i32 = 0x4;
+pub const FIGHTER_GANON_GENERATE_ARTICLE_BACK_AIR: i32 = 0x3;
 
 pub trait BomaExt {
     unsafe fn prev_status_kind(&mut self) -> i32;
