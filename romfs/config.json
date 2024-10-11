@@ -32,7 +32,19 @@
             "fighter/ganon/motion/body/c00/a90float.nuanmb",
             "fighter/ganon/motion/body/c00/c02attacklw32.nuanmb",
             "fighter/ganon/motion/body/c00/d01specialairsbackhand.nuanmb",
-            "fighter/ganon/motion/body/c00/d01specialsbackhand.nuanmb"
+            "fighter/ganon/motion/body/c00/d01specialsbackhand.nuanmb",
+            "fighter/ganon/motion/backairprojectile/c00/main.nuanmb",
+            "fighter/ganon/motion/backairprojectile/c00/motion_list.bin",
+            "fighter/ganon/motion/backairprojectile/c00/update.prc",
+            "fighter/ganon/model/backairprojectile/c00/dark_model.nuamtb",
+            "fighter/ganon/model/backairprojectile/c00/light_model.nuamtb",
+            "fighter/ganon/model/backairprojectile/c00/model.nuanmb",
+            "fighter/ganon/model/backairprojectile/c00/model.nuhlpb",
+            "fighter/ganon/model/backairprojectile/c00/model.numatb",
+            "fighter/ganon/model/backairprojectile/c00/model.numdlb",
+            "fighter/ganon/model/backairprojectile/c00/model.nusktb",
+            "fighter/ganon/model/backairprojectile/c00/model.nusrcmdlb",
+            "fighter/ganon/model/backairprojectile/c00/model.xmb"
         ],
         "fighter/ganon/c01": [
             "fighter/ganon/motion/body/c01/a90float.nuanmb",
